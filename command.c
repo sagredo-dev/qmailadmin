@@ -30,6 +30,7 @@
 #include <vpopmail.h>
 #include <vauth.h>
 
+#include "config.h"
 #include "alias.h"
 #include "autorespond.h"
 #include "cgi.h"

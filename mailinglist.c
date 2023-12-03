@@ -59,6 +59,10 @@ int checkopt[256];    /* used to display mailing list options */
 #define REPLYTO_LIST 2
 #define REPLYTO_ADDRESS 3
 
+#define GROUP_SUBSCRIBER 0
+#define GROUP_MODERATOR 1
+#define GROUP_DIGEST 2
+
 void set_options();
 void default_options();
 
@@ -110,24 +114,24 @@ void show_mailing_list_line(char *user, char* dom, time_t mytime, char *dir)
   }
 
   /* First display the title row */
-  printf ("<tr bgcolor=\"#cccccc\">");
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[72]);
+  printf ("<thead class=\"thead-dark\">\n");
+  printf ("<th scope=\"col\">%s</th>\n", html_text[72]);
 #ifdef EZMLMIDX
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[71]);  
+  printf ("<th scope=\"col\">%s</th>\n", html_text[71]);  
 #endif
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[81]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[83]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[84]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[85]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[81]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[83]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[84]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[85]);
 #ifdef EZMLMIDX
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[86]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[87]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[88]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[237]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[238]);
-  printf ("<th align=center><font size=2>%s</font></th>", html_text[239]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[86]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[87]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[88]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[237]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[238]);
+  printf ("<th scope=\"col\">%s</th>\n", html_text[239]);
 #endif
-  printf ("</tr>\n");
+  printf ("</thead>\n<tbody>\n");
  
   sort_init();
 
@@ -136,9 +140,9 @@ void show_mailing_list_line(char *user, char* dom, time_t mytime, char *dir)
     if ( strncmp(".qmail-", mydirent->d_name, 7) == 0 ) {
       if ( (fs=fopen(mydirent->d_name,"r"))==NULL) {
 #ifdef EZMLMIDX
-        printf ("<tr><td colspan=12>%s %s</td></tr>\n", html_text[144], mydirent->d_name);
+        printf ("<tr><td colspan=\"12\">%s %s</td></tr>\n", html_text[144], mydirent->d_name);
 #else
-        printf ("<tr><td colspan=5>%s %s</td></tr>\n", html_text[144], mydirent->d_name);
+        printf ("<tr><td colspan=\"5\">%s %s</td></tr>\n", html_text[144], mydirent->d_name);
 #endif
         continue;
       }
@@ -158,34 +162,34 @@ void show_mailing_list_line(char *user, char* dom, time_t mytime, char *dir)
     str_replace (addr, ':', '.');
 
     printf ("<tr>");
-    qmail_button(addr, "delmailinglist", user, dom, mytime, "trash.png");
+    qmail_button(addr, "delmailinglist", user, dom, mytime, "delete_forever");
 
 #ifdef EZMLMIDX
-    qmail_button(addr, "modmailinglist", user, dom, mytime, "modify.png");
+    qmail_button(addr, "modmailinglist", user, dom, mytime, "create");
 #endif
-    printh ("<td align=left>%H</td>\n", addr); 
+    printh ("<td>%H</td>\n", addr); 
 
-    qmail_button(addr, "addlistuser", user, dom, mytime, "delete.png");
-    qmail_button(addr, "dellistuser", user, dom, mytime, "delete.png");
-    qmail_button(addr, "showlistusers", user, dom, mytime, "delete.png");
+    qmail_button(addr, "addlistuser", user, dom, mytime, "radio_button_checked");
+    qmail_button(addr, "dellistuser", user, dom, mytime, "radio_button_checked");
+    qmail_button(addr, "showlistusers", user, dom, mytime, "radio_button_checked");
 
 #ifdef EZMLMIDX
-    qmail_button(addr, "addlistmod", user, dom, mytime, "delete.png");
-    qmail_button(addr, "dellistmod", user, dom, mytime, "delete.png");
-    qmail_button(addr, "showlistmod", user, dom, mytime, "delete.png");
+    qmail_button(addr, "addlistmod", user, dom, mytime, "radio_button_checked");
+    qmail_button(addr, "dellistmod", user, dom, mytime, "radio_button_checked");
+    qmail_button(addr, "showlistmod", user, dom, mytime, "radio_button_checked");
 
     /* Is it a digest list? */
     if ( (fs=fopen(testfn,"r"))==NULL) {
       /* not a digest list */
-      printf ("<TD COLSPAN=3> </TD>");
+      printf ("<td colspan=\"3\"> </td>");
     } else {
-      qmail_button(addr, "addlistdig", user, dom, mytime, "delete.png");
-      qmail_button(addr, "dellistdig", user, dom, mytime, "delete.png");
-      qmail_button(addr, "showlistdig", user, dom, mytime, "delete.png");
+      qmail_button(addr, "addlistdig", user, dom, mytime, "radio_button_checked");
+      qmail_button(addr, "dellistdig", user, dom, mytime, "radio_button_checked");
+      qmail_button(addr, "showlistdig", user, dom, mytime, "radio_button_checked");
       fclose(fs);
     }
 #endif
-    printf ("</tr>\n");
+    printf ("</tr>\n</tbody>\n");
   }
   sort_cleanup();
 }
@@ -222,7 +226,7 @@ void show_mailing_list_line2(char *user, char *dom, time_t mytime, char *dir)
   }
 
   if ( (mydir = opendir(".")) == NULL ) {
-    printf ("%s %d<BR>\n", html_text[143], 1);
+    printf ("%s %d<br>\n", html_text[143], 1);
     return;
   }
 
@@ -246,30 +250,27 @@ void show_mailing_list_line2(char *user, char *dom, time_t mytime, char *dir)
   }
   closedir(mydir);
 
+  /* subscibe user to the following lists */
   /* if there aren't any lists, don't display anything */
   if (listcount == 0) {
     sort_cleanup();
     return;
   }
 
-  printf ("<hr><table width=100%% cellpadding=1 cellspacing=0 border=0");
-  printf (" align=center bgcolor=\"#000000\"><tr><td>");
-  printf ("<table width=100%% cellpadding=0 cellspacing=0 border=0 bgcolor=\"#e6e6e6\">");
-  printf ("<tr><th bgcolor=\"#000000\" colspan=2>");
-  printf ("<font color=\"#ffffff\">%s</font></th>\n", 
-    html_text[95]);
+  printf ("<h4>%s</h4>\n", html_text[95]);
 
   sort_dosort();
 
-  printf ("<INPUT NAME=number_of_mailinglist TYPE=hidden VALUE=%d>\n", listcount);
+  printf ("<input name=\"number_of_mailinglist\" type=\"hidden\" value=\"%d\">\n", listcount);
+  printf ("<ul>");
   for (i = 0; i < listcount; ++i)
   {
     addr = sort_get_entry(i);
     str_replace (addr, ':', '.');
-    printh ("<TR><TD ALIGN=RIGHT><INPUT NAME=\"subscribe%d\" TYPE=checkbox VALUE=\"%H\"></TD>", i, addr);
-    printh ("<TD align=LEFT>%H@%H</TD></TR>", addr, Domain);
+    printh ("<li><input name=\"subscribe%d\" type=\"checkbox\" value=\"%H\"> ", i, addr);
+    printh ("%H@%H</li>", addr, Domain);
   }
-  printf ("</table></td></tr></table>\n");
+  printf ("</ul>\n");
   sort_cleanup();
 }
 
@@ -533,35 +534,12 @@ void ezmlm_make (int newlist)
     arguments[argc++]=TmpBuf3;
     arguments[argc++]=ActionUser;
     arguments[argc++]=Domain;
-    arguments[argc]=NULL;
+    arguments[argc]=(char *) NULL;
 
     execv(TmpBuf1, arguments);
     exit(127);
   } else {
     wait(&pid);
-  }
-
-  /* 
-   * ezmlm-make -e leaves .qmail-listname-(accept||reject) links for some reason.
-   * (causing file permission errors in "show mailing lists") Also, it doesn't 
-   * delete dir/digest/ when turning off digests.  This section cleans up...
-   */
-  if(listopt['M'-'A'] == 'M') { /* moderation off */
-    sprintf(tmp, "%s/.qmail-%s-accept-default", RealDir, dotqmail_name);
-    unlink (tmp);
-    sprintf(tmp, "%s/.qmail-%s-reject-default", RealDir, dotqmail_name);
-    unlink (tmp);
-  }
-  if(listopt['D'-'A'] == 'D') { /* digest off */
-    sprintf(tmp, "%s/.qmail-%s-digest-return-default", RealDir, dotqmail_name);
-    unlink (tmp);
-    sprintf(tmp, "%s/.qmail-%s-digest-owner", RealDir, dotqmail_name);
-    unlink (tmp);
-
-    /* delete the digest directory */
-    sprintf(tmp, "%s/%s/digest", RealDir, ActionUser);
-    vdelfiles(tmp);
-    chdir(RealDir);
   }
 
   /* Check for prefix setting */
@@ -617,10 +595,10 @@ void ezmlm_make (int newlist)
 #ifdef EZMLMIDX
   /* if this is a new list, add owner as subscriber */
   if (newlist && (*list_owner != '\0')) {
-    ezmlm_sub ("", list_owner);
+    ezmlm_sub (GROUP_SUBSCRIBER, list_owner);
     if (listopt['M'-'A'] == 'm') { /* moderation on */
       /* add owner as moderator/remote admin as well */
-      ezmlm_sub ("mod", list_owner);
+      ezmlm_sub (GROUP_MODERATOR, list_owner);
     }
   }
 #endif
@@ -680,14 +658,14 @@ void show_list_group_now(int mod)
     close(handles[0]);
     dup2(handles[1],fileno(stdout));
     sprintf(TmpBuf1, "%s/ezmlm-list", EZMLMDIR);
-    if(mod == 1) {
-        sprintf(TmpBuf2, "%s/%s/mod", RealDir, ActionUser);
-    } else if(mod == 2) {
-        sprintf(TmpBuf2, "%s/%s/digest", RealDir, ActionUser);
+    sprintf(TmpBuf2, "%s/%s", RealDir, ActionUser);
+    if(mod == GROUP_MODERATOR) {
+        execl(TmpBuf1, "ezmlm-list", TmpBuf2, "mod", (char *)NULL);
+    } else if(mod == GROUP_DIGEST) {
+        execl(TmpBuf1, "ezmlm-list", TmpBuf2, "digest", (char *)NULL);
     } else {
-        sprintf(TmpBuf2, "%s/%s/", RealDir, ActionUser);
+    	execl(TmpBuf1, "ezmlm-list", TmpBuf2, (char *)NULL);
     }
-    execl(TmpBuf1, "ezmlm-list", TmpBuf2, NULL);
     exit(127);
   } else {
     close(handles[1]);
@@ -715,16 +693,20 @@ void show_list_group_now(int mod)
         /* strcpy(TmpBuf2, "084"); */
     }
     strcpy(TmpBuf2, "072");
-    printf ("<TABLE border=0 width=\"100%%\">\n");
-    printf (" <TR>\n");
-    printf ("  <TH align=left COLSPAN=4><B>%s</B> %d<BR><BR></TH>\n", get_html_text(TmpBuf), subuser_count);
-    printf (" </TR>\n");
-    printf (" <TR align=center bgcolor=%s>\n", get_color_text("002"));
-    printf ("  <TH align=center><b><font size=2>%s</font></b></TH>\n", get_html_text(TmpBuf2));
-    printf ("  <TH align=center><b><font size=2>%s</font></b></TH>\n", get_html_text(TmpBuf1));
-    printf ("  <TH align=center><b><font size=2>%s</font></b></TH>\n", get_html_text(TmpBuf2));
-    printf ("  <TH align=center><b><font size=2>%s</font></b></TH>\n", get_html_text(TmpBuf1));
-    printf (" </TR>\n");
+    /* total subscribers */
+    printf ("<p>%s <span class=\"badge badge-primary badge-pill\">%d</span></p>", get_html_text(TmpBuf), subuser_count);
+
+    /* column names */
+    /*
+    printf ("<thead class=\"thead-dark\">\n");
+    printf ("<th scope=\"col\">%s</th>\n", get_html_text(TmpBuf2));
+    printf ("<th scope=\"col\">%s</th>\n", get_html_text(TmpBuf1));
+    printf ("<th scope=\"col\">%s</th>\n", get_html_text(TmpBuf2));
+    printf ("<th scope=\"col\">%s</th>\n", get_html_text(TmpBuf1));
+    printf ("</thead>\n");
+    */
+
+    printf ("<div class=\"d-flex flex-wrap\">\n");
 
     if(mod == 1) {
         strcpy(TmpBuf, "dellistmodnow");
@@ -733,25 +715,25 @@ void show_list_group_now(int mod)
     } else {
         strcpy(TmpBuf, "dellistusernow");
     }
+
     for(z = 0; (addr = sort_get_entry(z)); ++z) {
-      printf (" <TR align=center>");
-      printh ("  <TD align=right><A href=\"%s&modu=%C&newu=%C\"><IMG src=\"%s/trash.png\" border=0></A></TD>\n",
-        cgiurl(TmpBuf), ActionUser, addr, IMAGEURL);
-      printh ("  <TD align=left>%H</TD>\n", addr);
+      printh ("<div><a href=\"%s&modu=%C&newu=%C\"><span class=\"material-icons\">delete_forever</span></a> ",
+        cgiurl(TmpBuf), ActionUser, addr);
+      printh ("%H</div>\n", addr);
       ++z;
       if( (addr = sort_get_entry(z)) ) {
-        printh ("  <TD align=right><A href=\"%s&modu=%C&newu=%C\"><IMG src=\"%s/trash.png\" border=0></A></TD>\n",
-          cgiurl(TmpBuf), ActionUser, addr, IMAGEURL);
-      printh ("  <TD align=left>%H</TD>\n", addr);
+        printh ("<div><a href=\"%s&modu=%C&newu=%C\"><span class=\"material-icons\">delete_forever</span></a> ",
+          cgiurl(TmpBuf), ActionUser, addr);
+      printh ("%H</div>\n", addr);
       } else {
-        printf ("  <TD COLSPAN=2> </TD>");
+        printf (" ");
       }
-      printf (" </TR>");
     }
+
+    printf ("</div>\n");
 
     sort_cleanup();
 
-    printf ("</TABLE>");
     fclose(fs); close(handles[0]);
     wait(&pid);
     snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[190]);
@@ -790,7 +772,7 @@ void addlistmod() { addlistgroup( "add_listmod.html" ); }
 void addlistdig() { addlistgroup( "add_listdig.html" ); }
 
 /* returns 0 for success */
-int ezmlm_sub (char *dir, char *email)
+int ezmlm_sub (int mod, char *email)
 {
  int pid;
  char subpath[MAX_BUFF];
@@ -799,9 +781,14 @@ int ezmlm_sub (char *dir, char *email)
   pid=fork();
   if (pid==0) {
     snprintf(subpath, sizeof(subpath), "%s/ezmlm-sub", EZMLMDIR);
-    snprintf(listpath, sizeof(listpath), "%s/%s/%s",
-      RealDir, ActionUser, dir);
-    execl(subpath, "ezmlm-sub", listpath, email, NULL);
+    snprintf(listpath, sizeof(listpath), "%s/%s", RealDir, ActionUser);
+    if (mod == GROUP_MODERATOR) {
+        execl(subpath, "ezmlm-sub", listpath, "mod", email, (char *)NULL);
+    } else if (mod == GROUP_DIGEST) {
+        execl(subpath, "ezmlm-sub", listpath, "digest", email, (char *)NULL);
+    } else {
+        execl(subpath, "ezmlm-sub", listpath, email, (char *)NULL);
+    }
     exit(127);
   } else wait(&pid);
 
@@ -824,9 +811,9 @@ void addlistgroupnow (int mod)
 
   if ( check_email_addr(Newu) ) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[148], Newu);
-    if (mod == 1) {
+    if (mod == GROUP_MODERATOR) {
       addlistmod();
-    } else if (mod == 2) {
+    } else if (mod == GROUP_DIGEST) {
       addlistdig();
     } else {
       addlistuser();
@@ -835,18 +822,16 @@ void addlistgroupnow (int mod)
     exit(0);
   }
 
-  if(mod == 1 ) {
-    ezmlm_sub ("mod", Newu);
+  ezmlm_sub (mod, Newu);
+  if(mod == GROUP_MODERATOR ) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%H %s %H@%H\n", Newu, 
         html_text[194], ActionUser, Domain);
     send_template( "add_listmod.html" );
-  } else if(mod == 2) {
-    ezmlm_sub ("digest", Newu);
+  } else if(mod == GROUP_DIGEST) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%H %s %H@%H\n", Newu, 
         html_text[240], ActionUser, Domain);
     send_template( "add_listdig.html" );
   } else {
-    ezmlm_sub ("", Newu);
     snprinth (StatusMessage, sizeof(StatusMessage), "%H %s %H@%H\n", Newu, 
         html_text[193], ActionUser, Domain);
     send_template( "add_listuser.html" );
@@ -888,21 +873,21 @@ void dellistgroupnow(int mod)
   pid=fork();
   if (pid==0) {
     sprintf(TmpBuf1, "%s/ezmlm-unsub", EZMLMDIR);
-    if(mod == 1) {
-        sprintf(TmpBuf2, "%s/%s/mod", RealDir, ActionUser);
-    } else if(mod == 2 ) {
-        sprintf(TmpBuf2, "%s/%s/digest", RealDir, ActionUser);
+    sprintf(TmpBuf2, "%s/%s", RealDir, ActionUser);
+    if(mod == GROUP_MODERATOR) {
+        execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, "mod", Newu, (char *)NULL);
+    } else if(mod == GROUP_DIGEST ) {
+        execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, "digest", Newu, (char *)NULL);
     } else {
-        sprintf(TmpBuf2, "%s/%s/", RealDir, ActionUser);
+        execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, Newu, (char *)NULL);
     }
-    execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, Newu, NULL);
     exit(127);
   } else wait(&pid);
 
-  if(mod == 1) {
+  if(mod == GROUP_MODERATOR) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%H %s %H@%H\n", Newu, html_text[197],
         ActionUser, Domain);
-  } else if(mod == 2) {
+  } else if(mod == GROUP_DIGEST) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%H %s %H@%H\n", Newu, html_text[242],
         ActionUser, Domain);
   } else {
@@ -921,7 +906,7 @@ void count_mailinglists()
  FILE *fs;
 
   if ( (mydir = opendir(".")) == NULL ) {
-    printf ("%s %d<BR>\n", html_text[143], 1);
+    printf ("%s %d<br>\n", html_text[143], 1);
     printf ("</table>");
     return;
   }
@@ -1092,41 +1077,95 @@ void set_options() {
   // default to false for lowercase letters
   for (c = 'a'; c <= 'z'; checkopt[(int) c++] = 0);
 
-  // figure out some options in the -default file
+  // ------ newer configuration reads
+
+  // -s: Subscription moderation. touching dir/modsub
+  sprintf(TmpBuf, "%s/modsub", ActionUser);
+  checkopt['s'] = file_exists(TmpBuf);
+  // -h: Help  subscription. Don't require confirmation. Not recommented!
+  sprintf(TmpBuf, "%s/nosubconfirm", ActionUser);
+  checkopt['h'] = file_exists(TmpBuf);
+  // -j Jump off. Unsubscribe  does not require confirmation.
+  sprintf(TmpBuf, "%s/nounsubconfirm", ActionUser);
+  checkopt['j'] = file_exists(TmpBuf);
+
+  // -m: Message  moderation. touch dir/modpost
+  sprintf(TmpBuf, "%s/modpost", ActionUser);   // valid for newer ezmlm-versions
+  checkopt['m'] = file_exists(TmpBuf);
+  // -o: Reject others than; applicable to message moderated lists only
+  sprintf(TmpBuf, "%s/modpostonly", ActionUser);
+  checkopt['o'] = file_exists(TmpBuf);
+  // -u: User posts only. subscribers, digest-subscribers and dir/allow
+  sprintf(TmpBuf, "%s/subpostonly", ActionUser);
+  checkopt['u'] = file_exists(TmpBuf);
+
+  // -f: Subject Prefix. outgoing subject will be pre-fixed with the list name
+  sprintf(TmpBuf, "%s/prefix", ActionUser);
+  checkopt['f'] = file_exists(TmpBuf);
+  // -t: Message Trailer. create dir/text/trailer
+  sprintf(TmpBuf, "%s/addtrailer", ActionUser);
+  checkopt['t'] = file_exists(TmpBuf);
+
+  // -a: Archived: touch dir/archived and dir/indexed
+  sprintf(TmpBuf, "%s/archived", ActionUser);
+  checkopt['a'] = file_exists(TmpBuf);
+  // -i: indexed for WWW archive access
+  sprintf(TmpBuf, "%s/threaded", ActionUser);
+  checkopt['i'] = file_exists(TmpBuf);
+  // -p: Public archive. touch dir/public
+  sprintf(TmpBuf, "%s/public", ActionUser);
+  checkopt['p'] = file_exists(TmpBuf);
+  // -g: Guard archive. Access requests from unrecognized SENDERs will be rejected.
+  sprintf(TmpBuf, "%s/subgetonly", ActionUser);
+  checkopt['g'] = file_exists(TmpBuf);
+  // -b: Block archive. Only moderators are allowed to access the archive.
+  sprintf(TmpBuf, "%s/modgetonly", ActionUser);
+  checkopt['b'] = file_exists(TmpBuf);
+
+  // -d: Digest
+  sprintf(TmpBuf, "%s/digested", ActionUser);
+  checkopt['d'] = file_exists(TmpBuf);
+
+  // -r: Remote admin. touching dir/remote
+  sprintf(TmpBuf, "%s/remote", ActionUser);
+  checkopt['r'] = file_exists(TmpBuf);
+  // -l List subscribers. administrators can request a subscriber
+  sprintf(TmpBuf, "%s/modcanlist", ActionUser);
+  checkopt['l'] = file_exists(TmpBuf);
+  // -n New text file. administrators may edit texts
+  sprintf(TmpBuf, "%s/modcanedit", ActionUser);
+  checkopt['n'] = file_exists(TmpBuf);
+
+  // ------ end of newer configuration reads
+
+  // ------ read in old ezmlm's values
+  // figure out some options in the -default file;
   sprintf(TmpBuf, ".qmail-%s-default", dotqmail_name);
   if( (fs=fopen(TmpBuf, "r")) !=NULL ) {
     while(fgets(TmpBuf2, sizeof(TmpBuf2), fs)) {
+      // -b: Block archive. Only moderators are allowed to access the archive.
       if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-get", 'P')) > 0) {
         checkopt['b'] = 1;
       }
+      // -g: Guard archive. Access requests from unrecognized SENDERs will be rejected.
       if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-get", 's')) > 0) {
         checkopt['g'] = 1;
       }
-      if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-manage", 'S')) > 0) {
+      // -h: Help  subscription. Don't require confirmation. Not recommented!
+      if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-manage", 'S')) > 0){
         checkopt['h'] = 1;
       }
+      // -j Jump off. Unsubscribe  does not require confirmation.
       if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-manage", 'U')) > 0) {
         checkopt['j'] = 1;
       }
+      // -l List subscribers. administrators can request a subscriber
       if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-manage", 'l')) > 0) {
         checkopt['l'] = 1;
       }
+      // -n New text file. administrators may edit texts
       if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-manage", 'e')) > 0) {
         checkopt['n'] = 1;
-      }
-      if((strstr(TmpBuf2, "ezmlm-request")) != 0) {
-        checkopt['q'] = 1;
-      }
-    }
-    fclose(fs);
-  }
-
-  // figure out some options in the -accept-default file
-  sprintf(TmpBuf, ".qmail-%s-accept-default", dotqmail_name);
-  if( (fs=fopen(TmpBuf, "r")) !=NULL ) {
-    while(fgets(TmpBuf2, sizeof(TmpBuf2), fs)) {
-      if(strstr(TmpBuf2, "ezmlm-archive") !=0) {
-        checkopt['i'] = 1;
       }
     }
     fclose(fs);
@@ -1136,43 +1175,21 @@ void set_options() {
   sprintf(TmpBuf, ".qmail-%s", dotqmail_name);
   if( (fs=fopen(TmpBuf, "r")) !=NULL ) {
     while(fgets(TmpBuf2, sizeof(TmpBuf2), fs)) {
-      if((get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-store", 'P')) > 0) {
+      // -o: Reject others than; applicable to message moderated lists only
+      if( ( (get_ezmlmidx_line_arguments(TmpBuf2, "ezmlm-store", 'P')) > 0)){
         checkopt['o'] = 1;
-      }
-      if((strstr(TmpBuf2, "ezmlm-gate")) != 0 || (strstr(TmpBuf2, "ezmlm-issubn")) != 0) {
-        checkopt['u'] = 1;
-      }
-      if(strstr(TmpBuf2, "ezmlm-archive") !=0) {
-        checkopt['i'] = 1;
       }
     }
     fclose(fs);
   }
 
-  sprintf(TmpBuf, ".qmail-%s-accept-default", dotqmail_name);
-  checkopt['m'] = file_exists(TmpBuf);
-
-  sprintf(TmpBuf, "%s/archived", ActionUser);
-  checkopt['a'] = file_exists(TmpBuf);
-  
-  sprintf(TmpBuf, "%s/digest/bouncer", ActionUser);
-  checkopt['d'] = file_exists(TmpBuf);
-  
-  sprintf(TmpBuf, "%s/prefix", ActionUser);
-  checkopt['f'] = file_exists(TmpBuf);
-
-  sprintf(TmpBuf, "%s/public", ActionUser);
-  checkopt['p'] = file_exists(TmpBuf);
-  
-  sprintf(TmpBuf, "%s/remote", ActionUser);
-  checkopt['r'] = file_exists(TmpBuf);
-  
-  sprintf(TmpBuf, "%s/modsub", ActionUser);
-  checkopt['s'] = file_exists(TmpBuf);
-  
+  // -t: Message Trailer. create dir/text/trailer
   sprintf(TmpBuf, "%s/text/trailer", ActionUser);
-  checkopt['t'] = file_exists(TmpBuf);
-  
+  if (file_exists(TmpBuf)) {
+    checkopt['t'] = 1;
+  }
+  // ------ end of read in old ezmlm's values
+
   /* update the uppercase option letters (just the opposite of the lowercase) */
   for (c = 'A'; c <= 'Z'; c++)
   {
@@ -1208,7 +1225,7 @@ void default_options() {
   checkopt['n'] = 0; /* Remote admins can edit text files */
   checkopt['o'] = 0; /* Others rejected (for Moderated lists only */
   checkopt['p'] = 1; /* Public */
-  checkopt['q'] = 1; /* Service listname-request */
+  checkopt['q'] = 1; /* Service listname-request, no longer supported */
   checkopt['r'] = 0; /* Remote Administration */
   checkopt['s'] = 0; /* Subscriptions are moderated */
   checkopt['t'] = 0; /* Add Trailer to outgoing messages */
@@ -1253,93 +1270,88 @@ void show_current_list_values() {
     snprinth (listname, sizeof(listname), "%H", dotqmail_name);
     str_replace (listname, ':', '.');
   } else {
-    sprintf (listname, "<I>%s</I>", html_text[261]);
+    sprintf (listname, "<i>%s</i>", html_text[261]);
   }
 
   /* Posting Messages */
-  printf ("<P><B><U>%s</U></B><BR>\n", html_text[262]);
-  build_option_str ("RADIO", "opt1", "MU", html_text[263]);
-  printf ("<BR>\n");
-  build_option_str ("RADIO", "opt1", "Mu", html_text[264]);
-  printf ("<BR>\n");
-  build_option_str ("RADIO", "opt1", "mu", html_text[265]);
-  printf ("<BR>\n");
-  build_option_str ("RADIO", "opt1", "mUo", html_text[266]);
-  printf ("<BR>\n");
-  build_option_str ("RADIO", "opt1", "mUO", html_text[267]);
-  printf ("</P>\n");
+  printf ("<h4>%s</h4>\n<p>\n", html_text[262]);
+  build_option_str ("radio", "opt1", "MU", html_text[263]);
+  printf ("<br>\n");
+  build_option_str ("radio", "opt1", "Mu", html_text[264]);
+  printf ("<br>\n");
+  build_option_str ("radio", "opt1", "mu", html_text[265]);
+  printf ("<br>\n");
+  build_option_str ("radio", "opt1", "mUo", html_text[266]);
+  printf ("<br>\n");
+  build_option_str ("radio", "opt1", "mUO", html_text[267]);
+  printf ("</p>\n");
 
   /* List Options */
-  printf ("<P><B><U>%s</U></B><BR>\n", html_text[268]);
+  printf ("<h4>%s</h4>\n<p>\n", html_text[268]);
   /* this next option isn't necessary since we use the edit box to
    * set/delete the prefix
   sprintf (TmpBuf, html_text[269], listname);
-  build_option_str ("CHECKBOX", "opt3", "f", TmpBuf);
-  printf ("<BR>\n");
+  build_option_str ("checkbox", "opt3", "f", TmpBuf);
+  printf ("<p>\n");
   */
-  printf ("<TABLE><TR><TD ROWSPAN=3 VALIGN=TOP>%s</TD>",
+  printf ("<table><tr><td rowspan=\"3\" valign=\"top\">%s</td>",
     html_text[310]);
-  printf ("<TD><INPUT TYPE=RADIO NAME=\"replyto\" VALUE=\"%d\"%s>%s</TD></TR>\n",
-    REPLYTO_SENDER, (replyto == REPLYTO_SENDER) ? " CHECKED" : "", html_text[311]);
-  printf ("<TR><TD><INPUT TYPE=RADIO NAME=\"replyto\" VALUE=\"%d\"%s>%s</TD></TR>\n",
-    REPLYTO_LIST, (replyto == REPLYTO_LIST) ? " CHECKED" : "", html_text[312]);
-  printf ("<TR><TD><INPUT TYPE=RADIO NAME=\"replyto\" VALUE=\"%d\"%s>%s ",
-    REPLYTO_ADDRESS, (replyto == REPLYTO_ADDRESS) ? " CHECKED" : "", html_text[313]);
-  printh ("<INPUT TYPE=TEXT NAME=\"replyaddr\" VALUE=\"%H\" SIZE=30></TD></TR>\n",
+  printf ("<td><input type=\"radio\" name=\"replyto\" value=\"%d\"%s>%s</td></tr>\n",
+    REPLYTO_SENDER, (replyto == REPLYTO_SENDER) ? " checked" : "", html_text[311]);
+  printf ("<tr><td><input type=\"radio\" name=\"replyto\" value=\"%d\"%s>%s</td></tr>\n",
+    REPLYTO_LIST, (replyto == REPLYTO_LIST) ? " checked" : "", html_text[312]);
+  printf ("<tr><td><input type=\"radio\" name=\"replyto\" value=\"%d\"%s>%s ",
+    REPLYTO_ADDRESS, (replyto == REPLYTO_ADDRESS) ? " checked" : "", html_text[313]);
+  printh ("<input type=\"text\" name=\"replyaddr\" value=\"%H\" size=\"30\"></td></tr>\n",
     replyto_addr);
-  printf ("</TABLE><BR>\n");
-  build_option_str ("CHECKBOX", "opt4", "t", html_text[270]);
-  printf ("<BR>\n");
-  build_option_str ("CHECKBOX", "opt5", "d", html_text[271]);
+  printf ("</table><br>\n");
+  build_option_str ("checkbox", "opt4", "t", html_text[270]);
+  printf ("<br>\n");
+  build_option_str ("checkbox", "opt5", "d", html_text[271]);
   sprintf (TmpBuf, html_text[272], listname);
-  printf ("<SMALL>(%s)</SMALL>", TmpBuf);
-  printf ("<BR>\n");
-  sprintf (TmpBuf, html_text[273], listname);
-  build_option_str ("CHECKBOX", "opt6", "q", TmpBuf);
-  printf ("<BR>\n");
-  sprintf (TmpBuf, html_text[274], listname, listname, listname);
-  printf ("&nbsp; &nbsp; <SMALL>(%s)</SMALL></P>", TmpBuf);
+  printf ("<small>(%s)</small>", TmpBuf);
+  printf ("</p>", TmpBuf);
 
   /* Remote Administration */
-  printf ("<P><B><U>%s</U></B><BR>\n", html_text[275]);
-  build_option_str ("CHECKBOX", "opt7", "r", html_text[276]);
-  printf ("<BR>\n");
-  build_option_str ("CHECKBOX", "opt8", "P", html_text[277]);
-  printf ("<SMALL>(%s)</SMALL><BR>", html_text[278]);
-  printf ("<TABLE><TR><TD ROWSPAN=2 VALIGN=TOP>%s</TD>",
+  printf ("<h4>%s</h4>\n<p>\n", html_text[275]);
+  build_option_str ("checkbox", "opt7", "r", html_text[276]);
+  printf ("<br>\n");
+  build_option_str ("checkbox", "opt8", "P", html_text[277]);
+  printf ("<small>(%s)</small><br>", html_text[278]);
+  printf ("<table><tr><td rowspan=\"2\" valign=\"top\">%s</td>",
     html_text[279]);
-  printf ("<TD>");
-  build_option_str ("CHECKBOX", "opt9", "l", html_text[280]);
-  printf ("</TD>\n</TR><TR>\n<TD>");
-  build_option_str ("CHECKBOX", "opt10", "n", html_text[281]);
-  printf ("<SMALL>(%s)</SMALL>.</TD>\n", html_text[282]);
-  printf ("</TR></TABLE>\n</P>\n");
+  printf ("<td>");
+  build_option_str ("checkbox", "opt9", "l", html_text[280]);
+  printf ("</td>\n</tr><tr>\n<td>");
+  build_option_str ("checkbox", "opt10", "n", html_text[281]);
+  printf ("<small>(%s)</small>.</td>\n", html_text[282]);
+  printf ("</tr></table>\n</p>\n");
 
-  printf ("<P><B><U>%s</U></B><BR>\n", html_text[283]);
-  printf ("%s<BR>\n&nbsp; &nbsp; ", html_text[284]);
-  build_option_str ("CHECKBOX", "opt11", "H", html_text[285]);
-  printf ("<BR>\n&nbsp; &nbsp; ");
-  build_option_str ("CHECKBOX", "opt12", "s", html_text[286]);
-  printf ("<BR>\n%s<BR>\n&nbsp; &nbsp; ", html_text[287]);
-  build_option_str ("CHECKBOX", "opt13", "J", html_text[285]);
-  printf ("<BR>\n");
-  printf ("<SMALL>%s</SMALL>\n</P>\n", html_text[288]);
+  printf ("<h4>%s</h4>\n<p>\n", html_text[283]);
+  printf ("%s<br>\n&nbsp; &nbsp; ", html_text[284]);
+  build_option_str ("checkbox", "opt11", "H", html_text[285]);
+  printf ("<br>\n&nbsp; &nbsp; ");
+  build_option_str ("checkbox", "opt12", "s", html_text[286]);
+  printf ("<br>\n%s<br>\n&nbsp; &nbsp; ", html_text[287]);
+  build_option_str ("checkbox", "opt13", "J", html_text[285]);
+  printf ("<br>\n");
+  printf ("<small>%s</small>\n</p>\n", html_text[288]);
 
-  printf ("<P><B><U>%s</U></B><BR>\n", html_text[289]);
-  build_option_str ("CHECKBOX", "opt14", "a", html_text[290]);
-  printf (" &nbsp; %s\n<SELECT NAME=\"opt15\">", html_text[292]);
-  printf ("<OPTION VALUE=\"BG\"%s>%s\n",
-  	checkopt['B'] && checkopt['G'] ? " SELECTED" : "", html_text[293]);
-  printf ("<OPTION VALUE=\"Bg\"%s>%s\n",
-  	checkopt['B'] && checkopt['g'] ? " SELECTED" : "", html_text[294]);
-  printf ("<OPTION VALUE=\"b\"%s>%s\n",
-  	checkopt['b'] ? " SELECTED" : "", html_text[295]);
-  printf ("</SELECT>.");
-  printf ("<BR>\n");
+  printf ("<h4>%s</h4>\n<p>\n", html_text[289]);
+  build_option_str ("checkbox", "opt14", "a", html_text[290]);
+  printf (" &nbsp; %s\n<select class=\"my-select\" name=\"opt15\">", html_text[292]);
+  printf ("<option value=\"BG\"%s>%s\n",
+  	checkopt['B'] && checkopt['G'] ? " selected" : "", html_text[293]);
+  printf ("<option value=\"Bg\"%s>%s\n",
+  	checkopt['B'] && checkopt['g'] ? " selected" : "", html_text[294]);
+  printf ("<option value=\"b\"%s>%s\n",
+  	checkopt['b'] ? " selected" : "", html_text[295]);
+  printf ("</select>.");
+  printf ("<br>\n");
   /* note that if user doesn't have ezmlm-cgi installed, it might be
      a good idea to default to having option i off. */
-  build_option_str ("CHECKBOX", "opt16", "i", html_text[291]);
-  printf ("</P>\n");
+  build_option_str ("checkbox", "opt16", "i", html_text[291]);
+  printf ("</p>\n");
 
   /***********************/
   /* begin MySQL options */
@@ -1361,15 +1373,15 @@ void show_current_list_values() {
     fclose(fs);
   }
 #ifdef ENABLE_MYSQL
-  printf ("<P><B><U>%s</U></B><BR>\n", html_text[99]);
+  printf ("<h4>%s</h4>\n<p>\n", html_text[99]);
   printf ("<input type=checkbox name=\"sqlsupport\" value=\"-6\"%s> %s",
-    checked ? " CHECKED" : "", html_text[53]);
+    checked ? " checked" : "", html_text[53]);
 
   /* parse dir/sql file for SQL settings */
-  printf ("    <table cellpadding=0 cellspacing=2 border=0>\n");
+  printf ("<table>\n");
 #else
   if (checked)
-    printf ("<INPUT TYPE=HIDDEN NAME=sqlsupport VALUE=\"-6\">\n");
+    printf ("<input type=\"hidden\" name=\"sqlsupport\" value=\"-6\">\n");
 #endif
 
   /* get hostname */
@@ -1383,12 +1395,12 @@ void show_current_list_values() {
   }       
 
 #ifdef ENABLE_MYSQL
-  printf ("      <tr>\n");
-  printf ("        <td ALIGN=RIGHT>%s:\n", html_text[54]);
-  printf ("          </td><td>\n");
-  printh ("          <input type=text name=sql1 value=\"%H\"></td>\n", checked1);
+  printf ("<tr>\n");
+  printf ("<td align=\"right\">%s:\n", html_text[54]);
+  printf ("</td><td>\n");
+  printh ("<input type=\"text\" name=\"sql1\" value=\"%H\"></td>\n", checked1);
 #else
-  printh ("<INPUT TYPE=HIDDEN NAME=sql1 VALUE=\"%H\">\n", checked1);
+  printh ("<input type=\"hidden\" name=\"sql1\" value=\"%H\">\n", checked1);
 #endif
 
   /* get port */
@@ -1401,12 +1413,12 @@ void show_current_list_values() {
     }       
   }       
 #ifdef ENABLE_MYSQL
-  printf ("        <td ALIGN=RIGHT>%s:\n", html_text[55]);
-  printf ("          </td><td>\n");
-  printh ("          <input type=text size=7 name=sql2 value=\"%H\"></td>\n", checked1);
-  printf ("      </tr>\n");
+  printf ("<td align=\"right\">%s:\n", html_text[55]);
+  printf ("</td><td>\n");
+  printh ("<input type=\"text\" name=\"sql2\" value=\"%H\"></td>\n", checked1);
+  printf ("</tr>\n");
 #else
-  printh ("<INPUT TYPE=HIDDEN NAME=sql2 VALUE=\"%H\">\n", checked1);
+  printh ("<input type=\"hidden\" name=\"sql2\" value=\"%H\">\n", checked1);
 #endif
 
   /* get user */
@@ -1419,12 +1431,12 @@ void show_current_list_values() {
     }       
   }       
 #ifdef ENABLE_MYSQL
-  printf ("      <tr>\n");
-  printf ("        <td ALIGN=RIGHT>%s:\n", html_text[56]);
-  printf ("          </td><td>\n");
-  printh ("          <input type=text name=sql3 value=\"%H\"></td>\n", checked1);
+  printf ("<tr>\n");
+  printf ("<td align=\"right\">%s:\n", html_text[56]);
+  printf ("</td><td>\n");
+  printh ("<input type=\"text\" name=\"sql3\" value=\"%H\"></td>\n", checked1);
 #else
-  printh ("<INPUT TYPE=HIDDEN NAME=sql3 VALUE=\"%H\">\n", checked1);
+  printh ("<input type=\"hidden\" name=\"sql3\" value=\"%H\">\n", checked1);
 #endif
 
   /* get password */
@@ -1437,12 +1449,12 @@ void show_current_list_values() {
     }
   }
 #ifdef ENABLE_MYSQL
-  printf ("        <td ALIGN=RIGHT>%s:\n", html_text[57]);
-  printf ("          </td><td>\n");
-  printh ("          <input type=text name=sql4 value=\"%H\"></td>\n", checked1);
-  printf ("      </tr>\n");
+  printf ("<td align=\"right\">%s:\n", html_text[57]);
+  printf ("</td><td>\n");
+  printh ("<input type=\"text\" name=\"sql4\" value=\"%H\"></td>\n", checked1);
+  printf ("</tr>\n");
 #else
-  printh ("<INPUT TYPE=HIDDEN NAME=sql4 VALUE=\"%H\">\n", checked1);
+  printh ("<input type=\"hidden\" name=\"sql4\" value=\"%H\">\n", checked1);
 #endif
 
   /* get database name */
@@ -1455,12 +1467,12 @@ void show_current_list_values() {
     }       
   }       
 #ifdef ENABLE_MYSQL
-  printf ("      <tr>\n");
-  printf ("        <td ALIGN=RIGHT>%s:\n", html_text[58]);
-  printf ("          </td><td>\n");
-  printh ("          <input type=text name=sql5 value=\"%H\"></td>\n", checked1);
+  printf ("<tr>\n");
+  printf ("<td align=\right\">%s:\n", html_text[58]);
+  printf ("</td><td>\n");
+  printh ("<input type=\"text\" name=\"sql5\" value=\"%H\"></td>\n", checked1);
 #else
-  printh ("<INPUT TYPE=HIDDEN NAME=sql5 VALUE=\"%H\">\n", checked1);
+  printh ("<input type=\"hidden\" name=\"sql5\" value=\"%H\">\n", checked1);
 #endif
 
   /* get table name */
@@ -1473,13 +1485,13 @@ void show_current_list_values() {
     }       
   }       
 #ifdef ENABLE_MYSQL
-  printf ("        <td ALIGN=RIGHT>%s:\n", html_text[59]);
-  printf ("          </td><td>\n");
-  printh ("          <input type=text name=\"sql6\" value=\"%H\"></td>\n", checked1);
-  printf ("      </tr>\n");
-  printf ("    </table>\n");
+  printf ("<td align=\"right\">%s:\n", html_text[59]);
+  printf ("</td><td>\n");
+  printh ("<input type=\"text\" name=\"sql6\" value=\"%H\"></td>\n", checked1);
+  printf ("</tr>\n");
+  printf ("</table>\n");
 #else
-  printh ("<INPUT TYPE=HIDDEN NAME=sql6 VALUE=\"%H\">\n", checked1);
+  printh ("<input type=\"hidden\" name=\"sql6\" value=\"%H\">\n", checked1);
 #endif
 
 }

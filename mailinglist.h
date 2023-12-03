@@ -13,7 +13,7 @@ void dellistgroup(char *template);
 void dellistgroupnow(int mod);
 void delmailinglist();
 void delmailinglistnow();
-int ezmlm_sub (char *dir, char *email);
+int ezmlm_sub (int mod, char *email);
 void modmailinglist();
 void modmailinglistnow();
 void show_list_group(char *template);

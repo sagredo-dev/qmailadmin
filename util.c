@@ -123,9 +123,10 @@ void str_replace (char *s, char orig, char repl)
 
 void qmail_button(char *modu, char *command, char *user, char *dom, time_t mytime, char *png)    
 {
-  printf ("<td align=center>");
+  printf ("<td>");
   printh ("<a href=\"%s&modu=%C\">", cgiurl(command), modu);
-  printf ("<img src=\"%s/%s\" border=0></a>", IMAGEURL, png);
+/*  printf ("<img src=\"%s/%s\" border=0></a>", IMAGEURL, png); */
+  printf ("<span class=\"material-icons\">%s</span></a>", png);
   printf ("</td>\n");
 }
 
@@ -160,10 +161,10 @@ void show_counts()
   count_autoresponders();
   count_mailinglists();
 
-  printf ("%s = %d<BR>\n", html_text[61], CurPopAccounts);
-  printf ("%s = %d<BR>\n", html_text[74], CurForwards);
-  printf ("%s = %d<BR>\n", html_text[77], CurAutoResponders);
-  printf ("%s = %d<BR>\n", html_text[80], CurMailingLists);
+  printf ("%s = %d<br>\n", html_text[61], CurPopAccounts);
+  printf ("%s = %d<br>\n", html_text[74], CurForwards);
+  printf ("%s = %d<br>\n", html_text[77], CurAutoResponders);
+  printf ("%s = %d<br>\n", html_text[80], CurMailingLists);
 }
 
 /* check_email_addr( char *addr )
@@ -232,7 +233,7 @@ void ack(msg, extra)
  char *extra;
 {
   printf ("%s %s\n", get_html_text(msg), extra);
-  printf ("</BODY></HTML>\n");
+  printf ("</body></html>\n");
   vclose();
   exit(0);
 }
@@ -399,10 +400,10 @@ void print_user_index (char *action, int colspan, char *user, char *dom, time_t 
 #ifdef USER_INDEX
   int k;
 
-  printf ("<tr bgcolor=%s>", get_color_text("000"));
-  printf ("<td colspan=%d align=\"center\">", colspan);
+  printf ("<tr>");
+  printf ("<td class=\"text-center\" colspan=\"%d\">", colspan);
   printf ("<hr>");
-  printf ("<b>%s</b> &nbsp; ", html_text[133]);
+  printf ("%s ", html_text[133]);
   for (k = 0; k < 10; k++) {
 	printh ("<a href=\"%s&searchuser=%d\">%d</a>\n", cgiurl(action), k, k);
   }
@@ -412,17 +413,15 @@ void print_user_index (char *action, int colspan, char *user, char *dom, time_t 
   printf ("</td>");
   printf ("</tr>\n");
 
-  printf ("<tr bgcolor=%s>", get_color_text("000"));
-  printf ("<td colspan=%d>", colspan);
-  printf ("<table border=0 cellpadding=3 cellspacing=0 width=\"100%%\"><tr><td align=\"center\"><br>");
+  printf ("<tr>");
+  printf ("<td class=\"text-center\" colspan=\"%d\">", colspan);
   printf ("<form method=\"get\" action=\"%s/com/%s\">", CGIPATH, action);
   printh ("<input type=\"hidden\" name=\"user\" value=\"%H\">", user);
   printh ("<input type=\"hidden\" name=\"dom\" value=\"%H\">", dom);
   printf ("<input type=\"hidden\" name=\"time\" value=\"%u\">", (unsigned int) mytime);
-  printh ("<input type=\"text\" name=\"searchuser\" value=\"%H\">&nbsp;", SearchUser);
-  printf ("<input type=\"submit\" value=\"%s\">", html_text[204]);
+  printh ("<input class=\"my-input\" type=\"text\" name=\"searchuser\" value=\"%H\">&nbsp;", SearchUser);
+  printf ("<input class=\"btn btn-primary btn-sm\" type=\"submit\" value=\"%s\">", html_text[204]);
   printf ("</form>");
-  printf ("</td></tr></table>");
   printf ("<hr>");
   printf ("</td></tr>\n");
 

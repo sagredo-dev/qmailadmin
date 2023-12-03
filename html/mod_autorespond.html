@@ -1,71 +1,55 @@
- </head>
- <body bgcolor="#ffffff" onload="init();">
+<!-- modify robot/autoresponder -->	
 
-<script language="Javascript" type="text/javascript">
+<div class="col-sm-9">
+	
+	<h2>##X105</h2>
+	
+		<form method="post" action="##C/com/modautorespondnow?##&">
+				
+				<!-- name -->
+  				<div class="form-group">
+		    		<label for="none">##X004</label>
+					<input class="form-control" type="text" id="none" name="none" value="##A@##D" disabled>
+				</div>
+
+				<!-- send to -->
+  				<div class="form-group">
+		    		<label for="owner">##X005</label>
+					<input class="form-control" type="text" id="owner" name="owner" ##F 
+					
+					<!-- WHAT THE FUCK IS THIS???? IT BREAKS THE HTML TAG GO BACK TO SRC AND CONTINUE HTML THERE!!! AHAHAHAHA -->
 <!--
-function init()
-{
-document.modautorespond.owner.focus();
-}
-//-->
-</script>
+template.c line 223
+					value="%H@%H">
+				</div>
+				
+				// subject/alias
+				<div class="form-group">
+		         <label for="alias">text6</label>
+					<input class="form-control" type="text" name="alias" id="alias" value="##??">
+				</div>
+				
+				// message
+				<div class="form-group">
+       			<textarea class="form-control" rows="40" name="message"">##??</textarea>
+				</div>
+-->
 
-  <center>
-   <h2>##S</h2>
-   <!-- Black frame 2 pixels wide -->
-   <table cellpadding="2" cellspacing="0" border="0" align="center" valign="top" width="600" bgcolor="#000000"><tr><td>
-    <!-- Frame content -->
-    <table cellpadding="0" cellspacing="0" border="0" align="center" valign="top" width="100%" bgcolor="#ffffff">
-     <!-- Form title -->
-     <tr>
-      <td bgcolor="#000000" align="center">
-       <font color="#ffffff" size="3">
-        <b>##X105</b>
-       </font>
-      </td>
-     </tr>
-     <!-- End of form title -->
-     <!-- Form content -->
-     <tr>
-      <td>
-       <table cellpadding="5" cellspacing="1" border="0" width="100%">
-        <!-- Form fields -->
-        <tr>
-         <td>
-          <form method="post" name="modautorespond" action="##C/com/modautorespondnow?##&">
-           <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-             <td align=right><b>##X004</b>&nbsp;</td>
-             <td>##A@##D</td>
-            </tr>
-            <tr>
-             <td align=right><b>##X005</b>&nbsp;</td>
-             <td><input type="text" size="40" name="owner" maxlength="128" ##F
-           <input type="hidden" name="newu" value="##A">
-           <input type="submit" value="##X105">
-          </form>
-          <div align="right">
-           <hr>
-           <font size="2"><b>
-           [&nbsp;
-           <a href="##C/com/showautoresponders?##&">##X077</a>
-           &nbsp;|&nbsp;
-           <a href="##C/com/showmenu?##&">##X001</a>
-           &nbsp;|&nbsp;
-##x
-           &nbsp;]
-           </b></font>
-          </div>
-             </td>
-            </tr>
-        <!-- End of form fields -->
-           </table>
-         </td>
-        </tr>
-       </table>
-    <!-- End of frame content -->
-      </td>
-     </tr>
-    </table>
-   <!-- End of black frame -->
-  </center>
+				<input type="hidden" name="newu" value="##A">
+           
+           	<button type="submit" class="btn btn-primary">##X105</button>
+      </form>
+</div>
+
+<div class="col-sm-3">
+	<nav class="nav flex-column">
+##ta	
+		<!-- email accounts -->
+		<a class="nav-link" href="##C/com/showautoresponders?##&">##X077</a>
+		<!-- main menu -->
+  		<a class="nav-link" href="##C/com/showmenu?##&">##X001</a>
+##tt
+  		<!-- logout -->
+  		##x
+	</nav>
+</div>

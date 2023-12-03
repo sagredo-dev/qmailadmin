@@ -305,11 +305,11 @@ void show_dotqmail_lines(char *user, char *dom, time_t mytime)
      */
     
     printf ("%s", HTML_ALIAS_ROW_START);
-    qmail_button (this_alias, "deldotqmail", user, dom, mytime, "trash.png");
+    qmail_button (this_alias, "deldotqmail", user, dom, mytime, "delete_forever");
     if (*curalias->alias_command == '#')
       printf ("%s", HTML_EMPTY_TD);   /* don't allow modify on blackhole */
     else
-      qmail_button (this_alias, "moddotqmail", user, dom, mytime, "modify.png");
+      qmail_button (this_alias, "moddotqmail", user, dom, mytime, "create");
     printh (HTML_ALIAS_NAME, this_alias);
     printf (HTML_ALIAS_DEST_START);
     
@@ -511,7 +511,8 @@ void moddotqmailnow()
   if (strcmp(Action,"delentry")==0) {
     if (onevalidonly(ActionUser) ) {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[149]);
-    } else if (dotqmail_del_line(ActionUser,LineData) ) {
+    }
+    else if (dotqmail_del_line(ActionUser,LineData) ) {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[150], 1);
     } else {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[151] );
@@ -591,7 +592,8 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
     return(-1);
     
   /* check to see if we already have a user with this name (only for create) */
-  } else if (create != 0 && check_local_user(forwardname)) {
+  }
+  else if (create != 0 && check_local_user(forwardname)) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[175], forwardname);
     return(-1);
   }
@@ -715,7 +717,7 @@ char* dotqmail_alias_command(char* line)
 
     *s = '\0';
     if ((s = strrchr(user, '/')) == NULL) return NULL;
-    if (b != NULL) { snprinth (user, sizeof(user), "%H <I>(%H)</I>", s+1, b); }
+    if (b != NULL) { snprinth (user, sizeof(user), "%H <i>(%H)</i>", s+1, b); }
     else { snprinth (user, sizeof(user), "%H", s+1); }
 
     return (user);
@@ -739,7 +741,7 @@ char* dotqmail_alias_command(char* line)
     /* back up to pipe or first slash to remove path */
     while (line[len] != '/' && line[len] != '|') len--;
     len++;   /* len is now first char of program name */
-    snprinth (command, sizeof(command), "<I>%H</I>", &line[len]);
+    snprinth (command, sizeof(command), "%H", &line[len]);
     return(command);
 
   } else {

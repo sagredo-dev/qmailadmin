@@ -1,83 +1,41 @@
- </head>
- <body bgcolor="#ffffff" onload="init();">
+<!-- modify forward -->
+<div class="col-sm-9">
 
-<script language="Javascript" type="text/javascript">
-<!--
-function init()
-{
-document.moddotqmail.newu.focus();
-}
-//-->
-</script>
+	<h2>##X071</h2>
 
-  <center>
-   <h2>##S</h2>
-   <!-- Black frame 2 pixels wide -->
-   <table cellpadding="2" cellspacing="0" border="0" align="center" valign="top" width="600" bgcolor="#000000"><tr><td>
-    <!-- Frame content -->
-    <table cellpadding="0" cellspacing="0" border="0" align="center" valign="top" width="100%" bgcolor="#ffffff">
-     <!-- Form title -->
-     <tr>
-      <td bgcolor="#000000" align="center">
-       <font color="#ffffff" size="3">
-        <b>##X071</b>
-       </font>
-      </td>
-     </tr>
-     <!-- End of form title -->
-     <!-- Form content -->
-     <tr>
-      <td>
-       <table cellpadding="1" cellspacing="1" border="0" width="100%">
-        <tr>
-         <th>##X106</th>
-         <th>##X305</th>
-         <th>##X072</th>
-        </tr>
-        ##I
+		<table class="table table-borderless table-hover">
+      	<thead class="thead-dark"><tr>
+         	<th scope="col">##X106</th>
+         	<th scope="col">##X305</th>
+         	<th scope="col">##X072</th>
+        	</thead>
+			<tbody>        	
+        	##I
+        	</tbody>
        </table>
-       <table cellpadding="5" cellspacing="1" border="0" width="100%">
-        <!-- Form fields -->
-        <form method="post" name="moddotqmail" action="##C/com/moddotqmailnow?##&">
-        <tr>
-         <td valign=top>
-           <b>##X108</b>
-         </td>
-         <td valign=top>
-           <b>##X305</b><br>
-           <input type="text" size="48" name="newu" maxlength="128"><br>##X010
-         </td>
-        </tr>
-        <tr>
-         <td>&nbsp;</td>
-         <td align="right">
+
+        <form method="post" action="##C/com/moddotqmailnow?##&">
+        
+	        	<div class="form-group">
+		    		<label for="newu">##X108 ##X305</label><br>
+					<input class="form-control" type="text" name="newu" id="newu"  required>
+					<small class="form-text text-muted">##X010</small>
+				</div>	
+
            <input type="hidden" name="modu" value="##A">
            <input type="hidden" name="action" value="add">
-           <input type="submit" value="##X060"></td>
-        </tr>
+           <button type="submit" class="btn btn-primary">##X060</button>
         </form>
-        <tr>
-         <td colspan="2">
-          <div align="right">
-           <hr>
-           <font size="2"><b>
-           [&nbsp;
-           <a href="##C/com/showforwards?##&">##X122</a>
-           &nbsp;|&nbsp;
-           <a href="##C/com/showmenu?##&">##X001</a>
-           &nbsp;|&nbsp;
-##x
-           &nbsp;]
-           </b></font>
-          </div>
-         </td>
-        </tr>
-        <!-- End of form fields -->
-       </table>
-      </td>
-     </tr>
-    </table>
-    <!-- End of frame content -->
-   </td></tr></table>
-   <!-- End of black frame -->
-  </center>
+
+
+</div>
+<div class="col-sm-3">
+	<nav class="nav flex-column">
+		<!-- add forwards -->
+		<a class="nav-link" href="##C/com/showforwards?##&">##X122</a>
+		<!-- main menu -->
+  		<a class="nav-link" href="##C/com/showmenu?##&">##X001</a>
+		<!-- logout -->  		
+  		##x
+	</nav>
+</div>
