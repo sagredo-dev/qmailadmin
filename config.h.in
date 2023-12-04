@@ -9,8 +9,11 @@
 /* "" */
 #undef CGIPATH
 
-/* Define to 1 if the `closedir' function returns void instead of `int'. */
+/* Define to 1 if the `closedir' function returns void instead of int. */
 #undef CLOSEDIR_VOID
+
+/* "" */
+#undef CRACKLIB
 
 /* "" */
 #undef DOMAIN_AUTOFILL
@@ -31,17 +34,14 @@
 /* Define to 1 if you have the `dup2' function. */
 #undef HAVE_DUP2
 
-/* Define to 1 if you have the <inttypes.h> header file. */
-#undef HAVE_INTTYPES_H
+/* Define to 1 if you have the `crack' library (-lcrack). */
+#undef HAVE_LIBCRACK
 
 /* Define to 1 if you have the `crypt' library (-lcrypt). */
 #undef HAVE_LIBCRYPT
 
 /* Define to 1 if you have the `shadow' library (-lshadow). */
 #undef HAVE_LIBSHADOW
-
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
 
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
@@ -52,12 +52,6 @@
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
-/* Define to 1 if you have the <stdint.h> header file. */
-#undef HAVE_STDINT_H
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#undef HAVE_STDLIB_H
-
 /* Define to 1 if you have the `strcasecmp' function. */
 #undef HAVE_STRCASECMP
 
@@ -66,12 +60,6 @@
 
 /* Define to 1 if you have the `strdup' function. */
 #undef HAVE_STRDUP
-
-/* Define to 1 if you have the <strings.h> header file. */
-#undef HAVE_STRINGS_H
-
-/* Define to 1 if you have the <string.h> header file. */
-#undef HAVE_STRING_H
 
 /* Define to 1 if you have the `strncasecmp' function. */
 #undef HAVE_STRNCASECMP
@@ -89,15 +77,6 @@
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_NDIR_H
-
-/* Define to 1 if you have the <sys/stat.h> header file. */
-#undef HAVE_SYS_STAT_H
-
-/* Define to 1 if you have the <sys/types.h> header file. */
-#undef HAVE_SYS_TYPES_H
-
-/* Define to 1 if you have the <unistd.h> header file. */
-#undef HAVE_UNISTD_H
 
 /* "" */
 #undef HELP
@@ -129,7 +108,6 @@
 /* "" */
 #undef NO_CACHE
 
-#if 0
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -147,7 +125,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-#endif
 
 /* "" */
 #undef QA_PACKAGE
@@ -160,9 +137,6 @@
 
 /* "" */
 #undef SPAM_COMMAND
-
-/* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS
 
 /* "" */
 #undef TRIVIAL_PASSWORD_ENABLED

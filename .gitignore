@@ -69,7 +69,7 @@ autom4te.cache
 autoscan.log
 autoscan-*.log
 #aclocal.m4
-#compile
+compile
 config.cache
 #config.guess
 config.h
@@ -101,3 +101,6 @@ m4/
 # can automatically generate from config.status script
 # (which is called by configure script))
 Makefile
+
+# qmailadmin
+INSTALL
