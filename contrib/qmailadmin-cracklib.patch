@@ -1,0 +1,171 @@
+cracklib patch for qmailadmin-1.2.16 by Roberto Puzzanghera v. 2023.04.26
+Add a call to cracklib to enforce strong passwords
+Based on http://sourceforge.net/p/qmailadmin/patches/28/ by Inter7
+More info here: https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html
+
+Install as follows:
+
+cd qmailadmin.1.2.16
+patch -p1 < qmailadmin-cracklib.patch
+
+autoreconf -f -i
+./configure --enable-cracklib=/path/to/cracklib/pw_dict
+make
+make install-strip
+
+==================================================================================
+
+diff -ruN ../qmailadmin-1.2.16-original/configure.in qmailadmin-1.2.16/configure.in
+--- ../qmailadmin-1.2.16-original/configure.in	2011-02-22 15:45:47.000000000 +0100
++++ qmailadmin-1.2.16/configure.in	2023-04-25 21:31:17.205987784 +0200
+@@ -26,6 +26,7 @@
+ dnl Checks for libraries.
+ AC_CHECK_LIB(crypt,crypt)
+ AC_CHECK_LIB(shadow,crypt)
++AC_CHECK_LIB(crack,FascistCheck)
+ #AC_CHECK_LIB(m,floor)
+ #AC_CHECK_LIB(nsl, gethostbyaddr)
+ #AC_CHECK_LIB(socket, getsockname)
+@@ -421,6 +422,31 @@
+ AC_DEFINE_UNQUOTED(SPAM_COMMAND, "$spam_command","")
+ AC_SUBST(SPAM_COMMAND)
+ 
++cracklib=no
++AC_ARG_ENABLE(cracklib, [  --enable-cracklib=PATH     Path to cracklib dictionary.],
++    cracklib="$enableval",
++    [
++        if test "$cracklib" = ""
++        then
++            AC_MSG_ERROR([Unable to find your cracklib directory, specify --enable-cracklib.])
++        fi
++    ] )
++
++if test "$cracklib" = "yes"
++then
++       cracklib="/usr/lib/cracklib_dict"
++fi
++
++case $cracklib in
++0*|n*|N*)
++       echo "checking whether to use password checking... no"
++       ;;
++*)
++       AC_DEFINE_UNQUOTED(CRACKLIB,"$cracklib","")
++       echo "checking whether to use password checking... yes"
++       ;;
++esac
++
+ HELP=no
+ AC_ARG_ENABLE(help, [  --enable-help  Display help links on login page.],
+     HELP="$enableval",)
+@@ -485,4 +511,7 @@
+ then
+         echo "      spam command = "$spam_command""
+ fi
+-
++if test "$cracklib" != "no"
++then
++       echo "cracklib dictionary= "$cracklib""
++fi
+diff -ruN ../qmailadmin-1.2.16-original/qmailadmin.c qmailadmin-1.2.16/qmailadmin.c
+--- ../qmailadmin-1.2.16-original/qmailadmin.c	2011-02-22 15:45:48.000000000 +0100
++++ qmailadmin-1.2.16/qmailadmin.c	2023-04-25 21:31:52.051893616 +0200
+@@ -50,6 +50,11 @@
+ #include "template.h"
+ #include "user.h"
+ #include "util.h"
++/* cracklib patch */
++#ifdef CRACKLIB
++#      include <crack.h>
++#endif
++/* end cracklib */
+ 
+ char Username[MAX_BUFF];
+ char Domain[MAX_BUFF];
+@@ -131,6 +136,7 @@
+  int argc;
+  char *argv[];
+ {
++ char *tmpstr;
+  const char *ip_addr=getenv("REMOTE_ADDR");
+  const char *x_forward=getenv("HTTP_X_FORWARDED_FOR");
+  char *pi;
+@@ -221,12 +227,18 @@
+           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[200]);
+         } else if (*Password1 == '\0') {
+           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[234]);
+-        } else if (vpasswd (User, Domain, Password1, USE_POP) != VA_SUCCESS) {
+-          snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[140]);
+ #ifndef TRIVIAL_PASSWORD_ENABLED
+          } else if ( strstr(User,Password1)!=NULL) {
+           snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[320]);
+ #endif
++/* cracklib patch */
++#ifdef CRACKLIB
++	} else if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
++	  sprintf (StatusMessage, "Bad password - %s\n", tmpstr);
++#endif
++/* end cracklib */
++        } else if (vpasswd (User, Domain, Password1, USE_POP) != VA_SUCCESS) {
++          snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[140]);
+         } else {
+           /* success */
+           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[139]);
+diff -ruN ../qmailadmin-1.2.16-original/user.c qmailadmin-1.2.16/user.c
+--- ../qmailadmin-1.2.16-original/user.c	2011-02-22 15:45:48.000000000 +0100
++++ qmailadmin-1.2.16/user.c	2023-04-25 21:31:17.206987781 +0200
+@@ -47,7 +47,11 @@
+ #include "user.h"
+ #include "util.h"
+ #include "vauth.h"
+-
++/* cracklib patch */
++#ifdef CRACKLIB
++#	include <crack.h>
++#endif
++/* end cracklib patch */
+ 
+ #define HOOKS 1
+ 
+@@ -318,6 +322,7 @@
+ 
+ void addusernow()
+ {
++ char *tmpstr;
+  int cnt=0, num;
+  char *c_num;
+  char **mailingListNames;
+@@ -394,6 +399,16 @@
+     exit(0);
+   }
+ #endif
++/* cracklib patch */
++#ifdef CRACKLIB
++    if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
++       sprintf(StatusMessage, "Bad password - %s\n", tmpstr);
++       adduser();
++       vclose();
++       exit(0);
++    }
++#endif
++/* end cracklib */
+ 
+ #ifndef ENABLE_LEARN_PASSWORDS
+   if ( strlen(Password1) <= 0 ) {
+@@ -796,6 +811,16 @@
+        exit(0);
+      }
+ #endif
++/* cracklib patch */
++#ifdef CRACKLIB
++    if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
++       sprintf(StatusMessage, "Bad password - %s\n", tmpstr);
++       moduser();
++       vclose();
++       exit(0);
++    }
++#endif
++/* end cracklib */
+     ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
+     if ( ret_code != VA_SUCCESS ) {
+       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], 

@@ -1,0 +1,30 @@
+autorespond.c fix for qmailadmin-1.2.16 by Roberto Puzzanghera
+
+Creating the autoresponder (called robot in qmailadmin) .qmail files seems to be problematic in qmailadmin-1.2.16
+Infact the .qmail file shows the destination mail in the first line while the program tries to retrieve it
+from the second line when one wants to modify it.
+This patch is going to fix this trouble.
+
+===========================================================================================================
+
+diff -ruN ../qmailadmin-1.2.16-original/autorespond.c qmailadmin-1.2.16/autorespond.c
+--- ../qmailadmin-1.2.16-original/autorespond.c	2011-02-22 15:45:47.000000000 +0100
++++ qmailadmin-1.2.16/autorespond.c	2020-05-03 16:57:34.000000000 +0200
+@@ -192,13 +192,13 @@
+    * Make the autoresponder .qmail file
+    */
+   valias_delete (ActionUser, Domain);
+-  if ( strlen(Newu) > 0 ) {
+-    sprintf(TmpBuf, "&%s", Newu);
+-    valias_insert (ActionUser, Domain, TmpBuf);
+-  } 
+   sprintf(TmpBuf, "|%s/autorespond 10000 5 %s/%s/message %s/%s",
+     AUTORESPOND_PATH, RealDir, TmpBuf2, RealDir, TmpBuf2);
+   valias_insert (ActionUser, Domain, TmpBuf);
++  if ( strlen(Newu) > 0 ) {
++    sprintf(TmpBuf, "&%s", Newu);
++    valias_insert (ActionUser, Domain, TmpBuf);
++  }
+ 
+   /*
+    * Report success

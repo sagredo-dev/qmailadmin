@@ -1,0 +1,93 @@
+--- qmailadmin.c 2011-02-22 22:45:48.000000000 +0800
++++ qmailadmin.c.new 2015-05-11 12:06:58.984316573 +0800
+@@ -22,6 +22,7 @@
+ #include <string.h>
+ #include <unistd.h>
+ #include <sys/stat.h>
++#include <sys/time.h>
+ #include <unistd.h>
+ #include <pwd.h>
+ #include <dirent.h>
+@@ -109,6 +110,33 @@
+ char RealDir[156];
+ char Lang[40];
+ 
++static void
++log_auth(char *msg)
++{
++    FILE *fp = NULL;
++    if ((fp = fopen("/var/log/qma-auth.log", "a")) == NULL) {
++ exit(-1);
++    }
++
++    const char *ip_addr = getenv("REMOTE_ADDR");
++    if (!ip_addr)
++        ip_addr = "127.0.0.1";
++
++    time_t tv;
++    struct tm tm;
++    char time_buf[64];
++
++    time(&tv);
++    localtime_r(&tv, &tm);
++    strftime(time_buf, sizeof(time_buf) - 2, "%Y/%m/%d %H:%M:%S", &tm);
++
++    fprintf(fp, "%s user:%s@%s ip:%s auth:%s\n", time_buf, Username, Domain, ip_addr, msg);
++
++    if (fclose(fp) != 0) {
++        exit(-1);
++    }
++}
++
+ void qmailadmin_suid (gid_t Gid, uid_t Uid)
+ {
+   if ( geteuid() == 0 ) {
+@@ -195,6 +223,11 @@
+     if (*Username && (*Password == '\0') && (*Password1 || *Password2)) {
+       /* username entered, but no password */
+       snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[198]);
++
++      char log_buf[3 * MAX_BUFF];
++      memset(log_buf, 0x0, sizeof(log_buf));
++      snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
++      log_auth(log_buf);
+     } else if (*Username && *Password) {
+       /* attempt to authenticate user */
+       vget_assign (Domain, RealDir, sizeof(RealDir), &Uid, &Gid);
+@@ -208,6 +241,11 @@
+ 
+       if ( *Domain == '\0' ) {
+         snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[198]);
++
++        char log_buf[3 * MAX_BUFF];
++        memset(log_buf, 0x0, sizeof(log_buf));
++        snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
++        log_auth(log_buf);
+       } else {
+         chdir(RealDir);
+         load_limits();
+@@ -215,6 +253,11 @@
+         pw = vauth_user( User, Domain, Password, "" );
+         if ( pw == NULL ) {
+           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[198]);
++
++          char log_buf[3 * MAX_BUFF];
++          memset(log_buf, 0x0, sizeof(log_buf));
++          snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
++          log_auth(log_buf);
+         } else if (pw->pw_flags & NO_PASSWD_CHNG) {
+           strcpy (StatusMessage, "You don't have permission to change your password.");
+         } else if (strcmp (Password1, Password2) != 0) {
+@@ -264,6 +307,12 @@
+          pw = vauth_user( Username, Domain, Password, "" );
+          if ( pw == NULL ) {
+            snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[198]);
++
++           char log_buf[3 * MAX_BUFF];
++           memset(log_buf, 0x0, sizeof(log_buf));
++           snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
++           log_auth(log_buf);
++
+            show_login();
+            vclose();
+            exit(0);

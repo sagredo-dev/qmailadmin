@@ -1,0 +1,10 @@
+--- qmailadmin-1.2.13/command.c 2007-01-02 00:17:06.000000000 +0100
++++ qmailadmin-1.2.13/command.c 2009-05-02 20:20:30.000000000 +0100
+@@ -30,6 +30,7 @@
+ #include <vpopmail.h>
+ #include <vauth.h>
+
++#include "config.h"
+ #include "alias.h"
+ #include "autorespond.h"
+ #include "cgi.h"
