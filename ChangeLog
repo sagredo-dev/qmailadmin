@@ -6,8 +6,7 @@ patch or information related to the entry.
   - Added qmailadmin-skin patch, which provides a new responsive skin to the control panel.
     It modifies everything under the html dir and many .c files in order to adjust the html
     embedded into the source files. Added a style sheet in the "images" folder and a couple
-    of png files for the qmail logo. It will be much easier to modify the qmailadmin's skin
-    from now on.
+    of png files for the qmail logo.
   - Added a patch to call cracklib in order to check for the password strenght. This should
     avoid unsafe accounts created by domain administrators such as "test 123456". This
     patch is based on an original work by Inter7.
