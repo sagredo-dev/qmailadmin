@@ -15,4 +15,4 @@ This qmailadmin distribution puts together Inter7's last qmailadmin-1.2.16 with 
 * a fix to the catchall account
 * another fix to autorespond.c to correct the way .qmail files are modified
 
-The patches applyed can by found in the contrib directory.
+The patches applied can by found in the contrib directory.
