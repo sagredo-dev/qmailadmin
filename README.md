@@ -1,7 +1,5 @@
 # qmailadmin
 
-My patched qmailadmin.
-
 This qmailadmin distribution puts together Inter7's last qmailadmin-1.2.16 with the following patches:
 
 * qmailadmin-skin, which provides a new responsive skin to the control panel. It modifies everything under the html dir and many .c files in order to adjust the html embedded into the source files. Added a style sheet in the "images" folder and a couple of png files for the qmail logo.
