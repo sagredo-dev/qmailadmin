@@ -69,7 +69,7 @@ autom4te.cache
 autoscan.log
 autoscan-*.log
 #aclocal.m4
-compile
+#compile
 config.cache
 #config.guess
 config.h
