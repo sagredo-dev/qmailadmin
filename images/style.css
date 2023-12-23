@@ -75,3 +75,7 @@ td input[type="radio"] {
 	font-size: 0.8rem;
 	padding: .40rem;
 }
+.badge-pill {
+	color: #fff!important;
+	background-color: RGBA(25,135,84,1) !important;
+}
