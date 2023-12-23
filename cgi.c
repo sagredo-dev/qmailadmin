@@ -27,6 +27,12 @@
 #include <dirent.h>
 #include <ctype.h>
 #include "config.h"
+/* undef some macros that get redefined below */
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef QMAILDIR
 #include "qmailadmin.h"
 #include "qmailadminx.h"
 #include "cgi.h"

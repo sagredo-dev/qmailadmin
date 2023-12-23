@@ -27,16 +27,16 @@
 #include <pwd.h>
 #include <dirent.h>
 #include <vpopmail_config.h>
+#include <vpopmail.h>
+#include <vauth.h>
+#include <vlimits.h>
+
 /* undef some macros that get redefined in config.h below */
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
-
-#include <vpopmail.h>
-#include <vauth.h>
-#include <vlimits.h>
-
+#undef QMAILDIR
 #include "alias.h"
 #include "auth.h"
 #include "autorespond.h"

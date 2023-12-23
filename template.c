@@ -32,6 +32,7 @@
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
+#undef QMAILDIR
 #include <vauth.h>
 
 #include "alias.h"
@@ -510,9 +511,9 @@ int send_template_now(char *filename)
 
           /* show version number */
           case 'V':
-            printf("<a href=\"http://sourceforge.net/projects/qmailadmin/\" target=\"_blank\">%s</a> %s ~ ",
+            printf("<a href=\"https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html\" target=\"_blank\">%s</a> %s ~ ",
               QA_PACKAGE, QA_VERSION);
-            printf("<a href=\"http://www.inter7.com/vpopmail/\" target=\"_blank\">%s</a> %s",
+            printf("<a href=\"https://notes.sagredo.eu/en/qmail-notes-185/installing-and-configuring-vpopmail-81.html\" target=\"_blank\">%s</a> %s",
               PACKAGE, VERSION);
             break;
 
