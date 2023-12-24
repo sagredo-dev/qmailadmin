@@ -819,11 +819,10 @@ void modusergo()
 /* end cracklib */
     ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
     if ( ret_code != VA_SUCCESS ) {
-      snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], 
-        verror(ret_code));
-    } else {
-      /* snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H.", html_text[139], 
-ActionUser, Domain ); */
+      snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
+    }
+    else {
+//      snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H.", html_text[139], ActionUser, Domain );
       strcpy (StatusMessage, html_text[139]);
     }
   }
@@ -893,7 +892,7 @@ ActionUser, Domain ); */
   /* get the value of the vacation checkbox */
   GetValue(TmpCGI, box, "vacation=", sizeof(box));
   if ( strcmp(box, "on") == 0 ) vacation = 1;
-    
+
   /* if they want to save a copy */
   GetValue(TmpCGI, box, "fsaved=", sizeof(box));
   if ( strcmp(box,"on") == 0 ) saveacopy = 1;
@@ -901,7 +900,7 @@ ActionUser, Domain ); */
   /* get the value of the cforward radio button */
   GetValue(TmpCGI, cforward, "cforward=", sizeof(cforward));
   if ( strcmp(cforward, "vacation") == 0 ) vacation = 1;
-  
+
   /* open old .qmail file if it exists and load it into memory */
   snprintf (dotqmailfn, sizeof(dotqmailfn), "%s/.qmail", vpw->pw_dir);
   err = stat (dotqmailfn, &sb);
@@ -988,15 +987,28 @@ ActionUser, Domain ); */
     } else if (spam_check == 1) {
 #ifdef MODIFY_SPAM_NEED_EMAIL
        fprintf(fs, "%s %s@%s\n", SPAM_COMMAND, ActionUser, Domain);
-#else  
+#else
       fprintf (fs, "%s\n", SPAM_COMMAND);
 #endif
       emptydotqmail = 0;
-    } else {
+    }
+/**************************************************************************
+  R. Puzzanghera 23/12/23
+  If DEFAULT_DELIVERY is defined in vpopmail, do not allow user's .qmail
+  modifications. In fact, when an unknown (for qmailadmin) delivery agent
+  is already defined there, and qmailadmin adds another one, users will
+  get two messages for each delivery in their mailbox.
+  Of course in this case the autoresponder is out of question, but users
+  can create their out of office message by means of a plugin installed
+  in their webmail.
+ **************************************************************************/
+#ifndef DEFAULT_DELIVERY
+    else {
       fprintf (fs, "%s/" MAILDIR "/\n", vpw->pw_dir);
       /* this isn't enough to consider the .qmail file non-empty */
     }
-  }
+#endif
+/* end 23/12/23 patch */                                                                                                                                                }
 
   if (vacation) {
     err = makevacation (fs, vpw->pw_dir);
