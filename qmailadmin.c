@@ -167,7 +167,7 @@ int main(argc,argv)
  int argc;
  char *argv[];
 {
- char *tmpstr;
+ const char *tmpstr;
  const char *ip_addr=getenv("REMOTE_ADDR");
  const char *x_forward=getenv("HTTP_X_FORWARDED_FOR");
  char *pi;
@@ -402,7 +402,7 @@ void load_lang (char *lang)
 
   if (lang_entries == NULL) return;
   rewind (lang_fs);
-  
+
   bytes_read = fread (lang_entries, 1, lang_size, lang_fs);
   /* error handling for incomplete reads? */
 

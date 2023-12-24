@@ -369,8 +369,8 @@ void delmailinglistnow()
   closedir(mydir);
 
 
-  sprintf(TmpBuf2, "%s/%s", RealDir, ActionUser);
-  vdelfiles(TmpBuf2);
+  sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
+  vdelfiles(TmpBuf);
 
     count_mailinglists();
   snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[186], ActionUser);
@@ -389,11 +389,11 @@ void delmailinglistnow()
 void ezmlm_setreplyto (char *filename, char *newtext)
 {
   FILE *headerfile, *temp;
-  char realfn[256];
-  char tempfn[256];
+  char realfn[MAX_BUFF];
+  char tempfn[MAX_BUFF+4];
   char buf[256];
 
-  sprintf (realfn, "%s/%s/%s", RealDir, ActionUser, filename);
+  snprintf (realfn, sizeof(realfn)+1000, "%s/%s/%s", RealDir, ActionUser, filename);
   sprintf (tempfn, "%s.tmp", realfn);
 
   headerfile = fopen(realfn, "r");
@@ -528,7 +528,7 @@ void ezmlm_make (int newlist)
   pid=fork();
   if (pid==0) {
     sprintf(TmpBuf1, "%s/ezmlm-make", EZMLMDIR);
-    sprintf(TmpBuf2, "%s/%s", RealDir, ActionUser);
+    sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
     sprintf(TmpBuf3, "%s/.qmail-%s", RealDir, dotqmail_name);
 
     arguments[argc++]=TmpBuf2;
@@ -659,7 +659,7 @@ void show_list_group_now(int mod)
     close(handles[0]);
     dup2(handles[1],fileno(stdout));
     sprintf(TmpBuf1, "%s/ezmlm-list", EZMLMDIR);
-    sprintf(TmpBuf2, "%s/%s", RealDir, ActionUser);
+    sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
     if(mod == GROUP_MODERATOR) {
         execl(TmpBuf1, "ezmlm-list", TmpBuf2, "mod", (char *)NULL);
     } else if(mod == GROUP_DIGEST) {
@@ -777,7 +777,7 @@ int ezmlm_sub (int mod, char *email)
 {
  int pid;
  char subpath[MAX_BUFF];
- char listpath[MAX_BUFF];
+ char listpath[MAX_BIG_BUFF];
 
   pid=fork();
   if (pid==0) {
@@ -874,7 +874,7 @@ void dellistgroupnow(int mod)
   pid=fork();
   if (pid==0) {
     sprintf(TmpBuf1, "%s/ezmlm-unsub", EZMLMDIR);
-    sprintf(TmpBuf2, "%s/%s", RealDir, ActionUser);
+    sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
     if(mod == GROUP_MODERATOR) {
         execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, "mod", Newu, (char *)NULL);
     } else if(mod == GROUP_DIGEST ) {
@@ -1311,7 +1311,7 @@ void show_current_list_values() {
   build_option_str ("checkbox", "opt5", "d", html_text[271]);
   sprintf (TmpBuf, html_text[272], listname);
   printf ("<small>(%s)</small>", TmpBuf);
-  printf ("</p>", TmpBuf);
+  printf ("</p>");
 
   /* Remote Administration */
   printf ("<h4>%s</h4>\n<p>\n", html_text[275]);
@@ -1499,7 +1499,7 @@ void show_current_list_values() {
 
 int get_mailinglist_prefix(char* prefix)
 {
-  char buffer[MAX_BUFF];
+  char buffer[MAX_BIG_BUFF];
   char *b, *p;
   FILE* file;
 
