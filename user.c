@@ -31,6 +31,8 @@
 #include <vpopmail_config.h>
 #include "vpopmail.h"
 /* undef some macros that get redefined in config.h below */
+#undef PACKAGE
+#undef VERSION
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
@@ -318,7 +320,7 @@ void moduser()
 
 void addusernow()
 {
- char *tmpstr;
+ const char *tmpstr;
  int cnt=0, num;
  char *c_num;
  char **mailingListNames;
@@ -415,8 +417,8 @@ void addusernow()
   }
 #endif
 
-  snprintf (email, 128, "%s@%s", Newu, Domain);
-    
+  snprintf (email, MAX_BIG_BUFF, "%s@%s", Newu, Domain);
+
   GetValue(TmpCGI,Gecos, "gecos=", sizeof(Gecos));
   if ( strlen( Gecos ) == 0 ) {
     strcpy(Gecos, Newu);
@@ -759,6 +761,7 @@ int makevacation (FILE *d, char *dir)
 void modusergo()
 {
  char *tmpstr;
+ const char *tmpstr2;
  int ret_code;
  struct vqpasswd *vpw=NULL;
  static char box[500];
@@ -809,8 +812,8 @@ void modusergo()
 #endif
 /* cracklib patch */
 #ifdef CRACKLIB
-    if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
-       sprintf(StatusMessage, "Bad password - %s\n", tmpstr);
+    if ((tmpstr2 = FascistCheck(Password1, CRACKLIB)) != NULL ) {
+       sprintf(StatusMessage, "Bad password - %s\n", tmpstr2);
        moduser();
        vclose();
        exit(0);

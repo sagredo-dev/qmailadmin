@@ -1,6 +1,18 @@
 Numbers in square brackets ([]) indicate tracker item on SourceForge with 
 patch or information related to the entry.
 
+1.2.18
+  Roberto Puzzanghera
+  - If DEFAULT_DELIVERY is defined in vpopmail, do not allow user's .qmail modifications.
+    In fact, when an unknown (for qmailadmin) delivery agent is already defined there, and
+    qmailadmin adds another one, users will get two messages for each delivery in their
+    mailbox.
+  - undef macros that get redefined in config.h
+  - solved all gcc compilation warnings
+  - configure.in moved to configure.ac
+  - configure.ac modernization
+  - dropped autotools warnings
+
 1.2.17
   Roberto Puzzanghera
   - Added qmailadmin-skin patch, which provides a new responsive skin to the control panel.

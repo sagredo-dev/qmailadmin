@@ -31,6 +31,8 @@
 #include <vpopmail_config.h>
 #include <vauth.h>
 /* undef some macros that get redefined in config.h below */
+#undef PACKAGE
+#undef VERSION
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
@@ -583,6 +585,8 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
    /* fills StatusMessage if error occurs                     */
    /* jeff.hedlund@matrixsi.com                               */
 
+  char *dest2 = NULL;
+
   if (strlen(forwardname)<=0) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[163], forwardname);
     return(-1);
@@ -614,7 +618,8 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
        return(-1);
     } else {
        /* make it an email address */
-       sprintf (dest, "%s@%s", dest, Domain);
+       sprintf (dest2, "%s@%s", dest, Domain);
+       dest=dest2;
     }
   }
   

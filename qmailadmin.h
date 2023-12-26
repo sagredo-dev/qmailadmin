@@ -42,7 +42,7 @@
 #undef MAX_BUFF
 #endif
 #define MAX_BUFF 5000
-#define MAX_BIG_BUFF 5000
+#define MAX_BIG_BUFF 11000
 
 #define MAX_LANG_STR 500
 

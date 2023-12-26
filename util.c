@@ -30,6 +30,8 @@
 #include <vpopmail.h>
 
 /* undef some macros that get redefined in config.h below */
+#undef PACKAGE
+#undef VERSION
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
@@ -57,9 +59,9 @@ extern FILE *color_table;
 #define SORT_TABLE_ENTRIES 100000
 
 /* pointer to array of pointers */
-unsigned char **sort_list;
+char **sort_list;
 
-unsigned char *sort_block[200]; /* memory blocks for sort data */
+char *sort_block[200]; /* memory blocks for sort data */
 int memleft, memindex, sort_entry;
 char *sort_ptr;
 

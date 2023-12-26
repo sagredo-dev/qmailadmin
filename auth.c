@@ -27,6 +27,8 @@
 #include <dirent.h>
 #include "config.h"
 /* undef some macros that get redefined below */
+#undef PACKAGE
+#undef VERSION
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
@@ -60,9 +62,9 @@ void auth_system(ip_addr, pw)
     exit(0);
   }
 
-  snprintf(TmpBuf1, sizeof(TmpBuf1), "%s/" MAILDIR "/%s.qw", pw->pw_dir, Time);
+  snprintf(TmpBuf, sizeof(TmpBuf), "%s/" MAILDIR "/%s.qw", pw->pw_dir, Time);
 
-  fs = fopen(TmpBuf1, "r");
+  fs = fopen(TmpBuf, "r");
   if ( fs == NULL ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[172]);
     show_login();
@@ -116,9 +118,9 @@ void auth_user_domain(ip_addr,pw)
     exit(0);
   }
 
-  snprintf(TmpBuf1, sizeof(TmpBuf1), "%s/" MAILDIR "/%s.qw", pw->pw_dir, Time);
+  snprintf(TmpBuf, sizeof(TmpBuf), "%s/" MAILDIR "/%s.qw", pw->pw_dir, Time);
 
-  fs = fopen(TmpBuf1, "r");
+  fs = fopen(TmpBuf, "r");
   if ( fs == NULL ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[172]);
     show_login();
