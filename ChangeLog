@@ -1,5 +1,13 @@
-Numbers in square brackets ([]) indicate tracker item on SourceForge with 
+Numbers in square brackets ([]) indicate tracker item on SourceForge with
 patch or information related to the entry.
+
+1.2.19
+Roberto Puzzanghera
+  - if DEFAULT_DELIVERY is defined in vpopmail, do not allow installations of any delivery
+    agent in user's .qmail if it already contains a copy of control/defaultdelivery.
+    With respect to the previous version, the program recognizes if the control/defaultdelivery
+    line has been copied to the user's mailbox. If not, qmailadmin installs the delivery
+    agent when enabling the copy&forward.
 
 1.2.18
   Roberto Puzzanghera
