@@ -44,6 +44,7 @@ More info [here](https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html)
 -----------------------------------------
 
 1.2.14-1.2.16
+
     Matt Brookings
     - Removed mailbox image
 	- Updated quota code to work with vpopmail v5.4.33
