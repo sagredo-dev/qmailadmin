@@ -435,7 +435,7 @@ void ezmlm_make (int newlist)
   char *tmpstr;
   char loop_ch[64];
   int  loop;
-  
+
   /* Initialize listopt to be a string of the characters A-Z, with each one
    * set to the correct case (e.g., A or a) to match the expected behavior
    * of not checking any checkboxes.  Leave other letters blank.
@@ -530,10 +530,10 @@ void ezmlm_make (int newlist)
   pid=fork();
   if (pid==0) {
     sprintf(TmpBuf1, "%s/ezmlm-make", EZMLMDIR);
-    sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
+    sprintf(TmpBuf,  "%s/%s", RealDir, ActionUser);
     sprintf(TmpBuf3, "%s/.qmail-%s", RealDir, dotqmail_name);
 
-    arguments[argc++]=TmpBuf2;
+    arguments[argc++]=TmpBuf;
     arguments[argc++]=TmpBuf3;
     arguments[argc++]=ActionUser;
     arguments[argc++]=Domain;
@@ -1026,8 +1026,8 @@ void build_option_str (char *type, char *param, char *options, char *description
   }
   /* selected is now true if all options for this radio button are true */
 
-  printh ("<INPUT TYPE=%s NAME=\"%H\" VALUE=\"%H\"%s> %s\n", 
-    type, param, options, selected ? " CHECKED" : "", description);
+  printh ("<input type=\"%s\" name=\"%H\" value=\"%H\"%s> %s\n",
+    type, param, options, selected ? " checked=\"checked\"" : "", description);
 }
 
 int file_exists (char *filename)
