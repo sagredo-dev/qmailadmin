@@ -663,11 +663,11 @@ void show_list_group_now(int mod)
     sprintf(TmpBuf1, "%s/ezmlm-list", EZMLMDIR);
     sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
     if(mod == GROUP_MODERATOR) {
-        execl(TmpBuf1, "ezmlm-list", TmpBuf2, "mod", (char *)NULL);
+        execl(TmpBuf1, "ezmlm-list", TmpBuf, "mod", (char *)NULL);
     } else if(mod == GROUP_DIGEST) {
-        execl(TmpBuf1, "ezmlm-list", TmpBuf2, "digest", (char *)NULL);
+        execl(TmpBuf1, "ezmlm-list", TmpBuf, "digest", (char *)NULL);
     } else {
-    	execl(TmpBuf1, "ezmlm-list", TmpBuf2, (char *)NULL);
+    	execl(TmpBuf1, "ezmlm-list", TmpBuf, (char *)NULL);
     }
     exit(127);
   } else {
@@ -878,11 +878,11 @@ void dellistgroupnow(int mod)
     sprintf(TmpBuf1, "%s/ezmlm-unsub", EZMLMDIR);
     sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
     if(mod == GROUP_MODERATOR) {
-        execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, "mod", Newu, (char *)NULL);
+        execl(TmpBuf1, "ezmlm-unsub", TmpBuf, "mod", Newu, (char *)NULL);
     } else if(mod == GROUP_DIGEST ) {
-        execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, "digest", Newu, (char *)NULL);
+        execl(TmpBuf1, "ezmlm-unsub", TmpBuf, "digest", Newu, (char *)NULL);
     } else {
-        execl(TmpBuf1, "ezmlm-unsub", TmpBuf2, Newu, (char *)NULL);
+        execl(TmpBuf1, "ezmlm-unsub", TmpBuf, Newu, (char *)NULL);
     }
     exit(127);
   } else wait(&pid);
