@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 1.2.21
+Roberto Puzzanghera
+
+  - Bug fix in mailinglist.c which was preventing the display of the subscribers to the list
+
 ## 1.2.20
 Roberto Puzzanghera
 
