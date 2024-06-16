@@ -29,6 +29,7 @@
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
+#undef QMAILDIR
 #include "config.h"
 #include "dotqmail.h"
 #include "qmailadmin.h"

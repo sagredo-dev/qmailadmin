@@ -29,7 +29,12 @@
 #include <vpopmail_config.h>
 #include <vpopmail.h>
 #include <vauth.h>
-
+/* undef some macros that get redefined in config.h below */
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef QMAILDIR
 #include "config.h"
 #include "alias.h"
 #include "autorespond.h"

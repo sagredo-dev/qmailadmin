@@ -31,10 +31,11 @@
 #include <vpopmail_config.h>
 #include "vpopmail.h"
 /* undef some macros that get redefined in config.h below */
-#undef PACKAGE_NAME  
-#undef PACKAGE_STRING 
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
+#undef QMAILDIR
 #include "alias.h"
 #include "cgi.h"
 #include "config.h"
