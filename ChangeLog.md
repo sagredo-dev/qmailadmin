@@ -1,16 +1,17 @@
-Numbers in square brackets ([]) indicate tracker item on SourceForge with
-patch or information related to the entry.
+# ChangeLog
 
-1.2.19
+## 1.2.19 
 Roberto Puzzanghera
+
   - if DEFAULT_DELIVERY is defined in vpopmail, do not allow installations of any delivery
     agent in user's .qmail if it already contains a copy of control/defaultdelivery.
     With respect to the previous version, the program recognizes if the control/defaultdelivery
     line has been copied to the user's mailbox. If not, qmailadmin installs the delivery
     agent when enabling the copy&forward.
 
-1.2.18
-  Roberto Puzzanghera
+## 1.2.18
+Roberto Puzzanghera
+
   - If DEFAULT_DELIVERY is defined in vpopmail, do not allow user's .qmail modifications.
     In fact, when an unknown (for qmailadmin) delivery agent is already defined there, and
     qmailadmin adds another one, users will get two messages for each delivery in their
@@ -21,8 +22,9 @@ Roberto Puzzanghera
   - configure.ac modernization
   - dropped autotools warnings
 
-1.2.17
-  Roberto Puzzanghera
+## 1.2.17
+Roberto Puzzanghera
+
   - Added qmailadmin-skin patch, which provides a new responsive skin to the control panel.
     It modifies everything under the html dir and many .c files in order to adjust the html
     embedded into the source files. Added a style sheet in the "images" folder and a couple
@@ -37,10 +39,18 @@ Roberto Puzzanghera
     ezmlm-idx-7 (thanks to J.D. Trolinger for the advice).
   - a fix to the catchall account (thanks to Luca Franceschini).
   - a fix to autorespond.c to correct the way .qmail files are modified.
-  New patches can be found in the "contrib" folder.
-  More info at https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html
+
+New patches can be found in the "contrib" folder.
+
+More info [here](https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html)
+
+-----------------------------------------
+
+Numbers in square brackets ([]) indicate tracker item on SourceForge with
+patch or information related to the entry.
 
 1.2.14-1.2.16
+
     Matt Brookings
     - Removed mailbox image
 	- Updated quota code to work with vpopmail v5.4.33
