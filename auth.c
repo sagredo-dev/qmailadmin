@@ -27,6 +27,8 @@
 #include <dirent.h>
 #include "config.h"
 /* undef some macros that get redefined below */
+#undef PACKAGE
+#undef VERSION
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME

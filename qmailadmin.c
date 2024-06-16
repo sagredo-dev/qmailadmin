@@ -32,6 +32,8 @@
 #include <vlimits.h>
 
 /* undef some macros that get redefined in config.h below */
+#undef PACKAGE
+#undef VERSION
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME

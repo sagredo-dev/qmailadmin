@@ -25,20 +25,24 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <dirent.h>
-#include <vpopmail.h>
-#include <vpopmail_config.h>
+#include "config.h"
+#define VPOPMAIL_PACKAGE PACKAGE
+#define VPOPMAIL_VERSION VERSION
 /* undef some macros that get redefined in config.h below */
+#undef PACKAGE
+#undef VERSION
 #undef PACKAGE_NAME
 #undef PACKAGE_STRING
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef QMAILDIR
+#include <vpopmail.h>
+#include <vpopmail_config.h>
 #include <vauth.h>
 
 #include "alias.h"
 #include "autorespond.h"
 #include "cgi.h"
-#include "config.h"
 #include "forward.h"
 #include "limits.h"
 #include "mailinglist.h"

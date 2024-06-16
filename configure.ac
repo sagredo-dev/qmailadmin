@@ -1,15 +1,14 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT(qmailadmin.c)
-AM_INIT_AUTOMAKE($QA_PACKAGE,$QA_VERSION, [no-define])
-AM_CONFIG_HEADER(config.h)
+AC_PREREQ([2.71])
+AC_INIT([qmailadmin],[2.1.18])
+AC_CONFIG_SRCDIR([qmailadmin.c])
+AM_INIT_AUTOMAKE()
+AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_HOST
 
-QA_PACKAGE="qmailadmin"
-QA_VERSION="1.2.17"
-
-AC_DEFINE_UNQUOTED(QA_PACKAGE,"$QA_PACKAGE","")
-AC_DEFINE_UNQUOTED(QA_VERSION,"$QA_VERSION","")
+AC_DEFINE_UNQUOTED(QA_PACKAGE,"$PACKAGE_NAME", Package name)
+AC_DEFINE_UNQUOTED(QA_VERSION,"$PACKAGE_VERSION", Package version)
 AC_SUBST(QA_PACKAGE)
 AC_SUBST(QA_VERSION)
 
@@ -21,7 +20,7 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 
 dnl Checks for libraries.
 AC_CHECK_LIB(crypt,crypt)
@@ -484,34 +483,35 @@ case $EZMLMIDX in
         ;;
 esac
 
-AC_OUTPUT(Makefile)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
 
 echo ""
-echo "            $QA_PACKAGE $QA_VERSION"
-echo "            Current settings"
-echo "---------------------------------------"
-echo "       cgi-bin dir = "$cgibindir""
-echo "          html dir = "$htmldir""
-echo "         image dir = "$imagedir""
-echo "         image URL = "$imageurl""
-echo "      template dir = "$htmllibdir""
-echo "         qmail dir = "$qmaildir""
-echo "      vpopmail dir = "$vpopmaildir""
-echo "   autorespond dir = "$autorespond_path""
-echo "         ezmlm dir = "$ezmlmdir""
-echo "         ezmlm idx = "$ezmlmidx""
-echo "   mysql for ezmlm = "$mysql""
-echo "              help = "$enable_help""
-echo "      modify quota = "$MODIFY_QUOTA""
-echo "   domain autofill = "$DOMAIN_AUTOFILL""
-echo " catchall accounts = "$CATCHALL_ENABLED""
-echo " trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
-echo " modify spam check = "$MODIFY_SPAM""
+echo "          $PACKAGE_NAME $PACKAGE_VERSION"
+echo "             Current settings"
+echo "---------------------------------------------------------------"
+echo "        cgi-bin dir = "$cgibindir""
+echo "           html dir = "$htmldir""
+echo "          image dir = "$imagedir""
+echo "          image URL = "$imageurl""
+echo "       template dir = "$htmllibdir""
+echo "          qmail dir = "$qmaildir""
+echo "       vpopmail dir = "$vpopmaildir""
+echo "    autorespond dir = "$autorespond_path""
+echo "          ezmlm dir = "$ezmlmdir""
+echo "          ezmlm idx = "$ezmlmidx""
+echo "    mysql for ezmlm = "$mysql""
+echo "               help = "$enable_help""
+echo "       modify quota = "$MODIFY_QUOTA""
+echo "    domain autofill = "$DOMAIN_AUTOFILL""
+echo "  catchall accounts = "$CATCHALL_ENABLED""
+echo "  trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
+echo "  modify spam check = "$MODIFY_SPAM""
 if test "$MODIFY_SPAM" = "yes"
 then
         echo "      spam command = "$spam_command""
 fi
 if test "$cracklib" != "no"
 then
-       echo "cracklib dictionary= "$cracklib""
+       echo "cracklib dictionary = "$cracklib""
 fi
