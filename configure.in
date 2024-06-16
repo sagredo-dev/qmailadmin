@@ -6,7 +6,7 @@ AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_HOST
 
 QA_PACKAGE="qmailadmin"
-QA_VERSION="1.2.16"
+QA_VERSION="1.2.17"
 
 AC_DEFINE_UNQUOTED(QA_PACKAGE,"$QA_PACKAGE","")
 AC_DEFINE_UNQUOTED(QA_VERSION,"$QA_VERSION","")
@@ -26,6 +26,7 @@ AC_ISC_POSIX
 dnl Checks for libraries.
 AC_CHECK_LIB(crypt,crypt)
 AC_CHECK_LIB(shadow,crypt)
+AC_CHECK_LIB(crack,FascistCheck)
 #AC_CHECK_LIB(m,floor)
 #AC_CHECK_LIB(nsl, gethostbyaddr)
 #AC_CHECK_LIB(socket, getsockname)
@@ -421,6 +422,31 @@ AC_ARG_ENABLE(spam_command, [  --enable-spam-command=CMD     Remember to use '|p
 AC_DEFINE_UNQUOTED(SPAM_COMMAND, "$spam_command","")
 AC_SUBST(SPAM_COMMAND)
 
+cracklib=no
+AC_ARG_ENABLE(cracklib, [  --enable-cracklib=PATH     Path to cracklib dictionary.],
+    cracklib="$enableval",
+    [
+        if test "$cracklib" = ""
+        then
+            AC_MSG_ERROR([Unable to find your cracklib directory, specify --enable-cracklib.])
+        fi
+    ] )
+
+if test "$cracklib" = "yes"
+then
+       cracklib="/usr/lib/cracklib_dict"
+fi
+
+case $cracklib in
+0*|n*|N*)
+       echo "checking whether to use password checking... no"
+       ;;
+*)
+       AC_DEFINE_UNQUOTED(CRACKLIB,"$cracklib","")
+       echo "checking whether to use password checking... yes"
+       ;;
+esac
+
 HELP=no
 AC_ARG_ENABLE(help, [  --enable-help  Display help links on login page.],
     HELP="$enableval",)
@@ -485,4 +511,7 @@ if test "$MODIFY_SPAM" = "yes"
 then
         echo "      spam command = "$spam_command""
 fi
-
+if test "$cracklib" != "no"
+then
+       echo "cracklib dictionary= "$cracklib""
+fi

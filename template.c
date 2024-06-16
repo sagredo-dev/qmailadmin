@@ -92,11 +92,11 @@ int send_template_now(char *filename)
   snprintf(TmpBuf2, (sizeof(TmpBuf2) - 1), "%s/html/%s", tmpstr, filename);
 
   if (lstat(TmpBuf2, &mystat) == -1) {
-    printf("Warning: cannot lstat '%s', check permissions.<BR>\n", TmpBuf2);
+    printf("Warning: cannot lstat '%s', check permissions.<br>\n", TmpBuf2);
     return(-1);
   }
   if (S_ISLNK(mystat.st_mode)) {
-    printf("Warning: '%s' is a symbolic link.<BR>\n", TmpBuf2);
+    printf("Warning: '%s' is a symbolic link.<br>\n", TmpBuf2);
     return(-1);
   }
 
@@ -217,9 +217,10 @@ int send_template_now(char *filename)
                     TmpBuf3[j] = TmpBuf2[i];
                   }
                   TmpBuf3[j] = '\0';
-                  printh ("value=\"%H@%H\"></td>\n", TmpBuf3, Domain);
+		  /* mod_autorespond.html */
+                  printh ("value=\"%H@%H\"></div>\n", TmpBuf3, Domain);
                 } else {
-                  printh ("value=\"%H\"></td>\n", &TmpBuf2[1]);
+                  printh ("value=\"%H\"></div>\n", &TmpBuf2[1]);
                 }
               } 
               upperit(ActionUser);
@@ -229,19 +230,16 @@ int send_template_now(char *filename)
 
               fgets( TmpBuf2, sizeof(TmpBuf2), fs);
               fgets( TmpBuf2, sizeof(TmpBuf2), fs);
-              printf ("         <td>&nbsp;</td>\n");
-              printf ("         </tr>\n");
-              printf ("         <tr>\n");
-              printf ("         <td align=right><b>%s</b></td>\n", html_text[6]);
+	      printf("<div class=\"form-group\">");
+              printf("<label for=\"alias\">%s</label>\n", html_text[6]);
 
               /* take off newline */
               i = strlen(TmpBuf2); --i; TmpBuf2[i] = 0;
-              printh ("         <td><input type=\"text\" size=40 name=\"alias\" maxlength=128 value=\"%H\"></td>\n",
+	      printh ("<input class=\"form-control\" type=\"text\" name=\"alias\" id=\"alias\" value=\"%H\">\n",
                 &TmpBuf2[9]);
-              printf ("         <td>&nbsp;</td>\n");
-              printf ("        </tr>\n");
-              printf ("       </table>\n");
-              printf ("       <textarea cols=80 rows=40 name=\"message\">");
+              printf("</div>\n");
+	      printf("<div class=\"form-group\">\n");
+              printf ("<textarea class=\"form-control\" rows=\"10\" name=\"message\">");
 
 			  /*
 			     Skip custom headers
@@ -258,7 +256,7 @@ int send_template_now(char *filename)
               while (fgets(TmpBuf2, sizeof(TmpBuf2), fs)) {
                 printf ("%s", TmpBuf2);
               }
-              printf ("</textarea>");
+              printf ("</textarea>\n</div>\n");
               fclose(fs);
             }
             break;
@@ -469,7 +467,7 @@ int send_template_now(char *filename)
             GetValue (TmpCGI, value, "returntext=", sizeof(value));
             GetValue (TmpCGI, value2, "returnhttp=", sizeof(value2));
             if (*value != '\0') {
-              printh ("<A HREF=\"%C\">%H</A>", value2, value);
+              printh ("<a href=\"%C\">%H</a>", value2, value);
             }
             break;
 
@@ -512,49 +510,52 @@ int send_template_now(char *filename)
 
           /* show version number */
           case 'V':
-            printf("<a href=\"http://sourceforge.net/projects/qmailadmin/\">%s</a> %s<BR>", 
+            printf("<a href=\"http://sourceforge.net/projects/qmailadmin/\" target=\"_blank\">%s</a> %s ~ ",
               QA_PACKAGE, QA_VERSION);
-            printf("<a href=\"http://www.inter7.com/vpopmail/\">%s</a> %s<BR>", 
+            printf("<a href=\"http://www.inter7.com/vpopmail/\" target=\"_blank\">%s</a> %s",
               PACKAGE, VERSION);
             break;
 
           /* display the main menu */
           /* move this to a function... */
           case 'v':
-            printh ("<font size=\"2\" color=\"#000000\"><b>%H</b></font><br><br>", 
+            printh ("<h2>%H</h2>",
               Domain);
             printf (
-       "<font size=\"2\" color=\"#ff0000\"><b>%s</b></font><br>", 
+ 	      "<h5>%s</h5>",
               html_text[1]);
+	    printf ("<ul>");
             if (AdminType==DOMAIN_ADMIN){
 
               if (MaxPopAccounts != 0) {
-                printh ("<a href=\"%s\">", cgiurl("showusers")); 
+                printh ("<li><a href=\"%s\">", cgiurl("showusers"));
                 printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></font></a><br>",
+		"%s</a></li>",
                   html_text[61]);
               }
 
               if (MaxForwards != 0 || MaxAliases != 0) {
-                printh ("<a href=\"%s\">", cgiurl("showforwards")); 
+                printh ("<li><a href=\"%s\">", cgiurl("showforwards"));
                 printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></font></a><br>",
+		"%s</a></li>",
                   html_text[122]);
               }
 
               if (MaxAutoResponders != 0) {
-                printh ("<a href=\"%s\">", cgiurl("showautoresponders")); 
+                printh ("<li><a href=\"%s\">", cgiurl("showautoresponders")); 
                 printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></a></font><br>",
+		"%s</a></li>",
                   html_text[77]);
               }
 
               if (*EZMLMDIR != 'n' && MaxMailingLists != 0) {
-                printh ("<a href=\"%s\">", cgiurl("showmailinglists")); 
+                printh ("<li><a href=\"%s\">", cgiurl("showmailinglists")); 
                 printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></font></a><br>",
+		"%s</a></li>",
                   html_text[80]);
               }
+
+	      printf("</ul>");
             } else {
               /* the quota code in here is kinda screwy and could use review
                * then again, with recent changes, the non-admin shouldn't
@@ -565,53 +566,58 @@ int send_template_now(char *filename)
 	      char path[256];
               vpw = vauth_getpw(Username, Domain);
 
-               printh ("<a href=\"%s&moduser=%C\">", cgiurl("moduser"), Username);
+	      printf("<ul>");
+
+               printh ("<li><a href=\"%s&moduser=%C\">", cgiurl("moduser"), Username);
                printh (
-       "<font size=\"2\" color=\"#000000\"><b>%s %H</b></font></a><br><br>",
+		 "%s %H</a><li>",
                  html_text[111], Username);
               if (strncmp(vpw->pw_shell, "NOQUOTA", 2) != 0) {
                 quota_to_megabytes(qconvert, vpw->pw_shell);
               } else {
                 sprintf(qconvert, "%s", html_text[229]); qnote = "";
               }
-              printf ("<font size=\"2\" color=\"#000000\"><b>%s:</b><br>%s %s %s",
+              printf ("<li>%s: <br> %s %s %s",
                 html_text[249], html_text[253], qconvert, qnote);
               printf ("<br>%s ", html_text[254]);
 	      snprintf(path, sizeof(path), "%s/" MAILDIR, vpw->pw_dir);
               readuserquota(path, &diskquota, &maxmsg);
-              printf ("%-2.2lf MB</font><br>", ((double)diskquota)/1048576.0);  /* Convert to MB */
+              printf ("%-2.2lf MB</li>", ((double)diskquota)/1048576.0);  /* Convert to MB */
+
+	      printf("</ul>");
              }
 
              if (AdminType == DOMAIN_ADMIN) {
-               printf ("<br>");
+               printf ("<ul>");
 
                if (MaxPopAccounts != 0) {
-                 printh ("<a href=\"%s\">", cgiurl("adduser"));
+                 printh ("<li><a href=\"%s\">", cgiurl("adduser"));
                  printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></font></a><br>",
+		   "%s</a></li>",
                    html_text[125]);
                }
 
                if (MaxForwards != 0) {
-                 printh ("<a href=\"%s\">", cgiurl("adddotqmail"));
+                 printh ("<li><a href=\"%s\">", cgiurl("adddotqmail"));
                  printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></font></a><br>",
+		   "%s</a></li>",
                    html_text[127]);
                }
 
                if (MaxAutoResponders != 0) {
-                 printh ("<a href=\"%s\">", cgiurl("addautorespond"));
+                 printh ("<li><a href=\"%s\">", cgiurl("addautorespond"));
                  printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></a></font><br>",
+		   "%s</a></li>",
                    html_text[128]);
                }
 
                if (*EZMLMDIR != 'n' && MaxMailingLists != 0) {
-                 printh ("<a href=\"%s\">", cgiurl("addmailinglist"));
+                 printh ("<li><a href=\"%s\">", cgiurl("addmailinglist"));
                  printf (
-       "<font size=\"2\" color=\"#000000\"><b>%s</b></font></a><br>",
+		   "%s</a></li>",
                    html_text[129]);
                }
+	       printf("</ul>");
              }
              break;
 
@@ -633,9 +639,9 @@ int send_template_now(char *filename)
           case 'x':
             strcpy (value, get_session_val("returntext="));
             if(strlen(value) > 0) {
-               printh("<a href=\"%C\">%H", get_session_val("returnhttp="), value);
+               printh("<a class=\"nav-link\" href=\"%C\">%H", get_session_val("returnhttp="), value);
             } else {
-               printh("<a href=\"%s\">%s", cgiurl("logout"), html_text[218]);
+               printh("<a class=\"nav-link\" href=\"%s\">%s", cgiurl("logout"), html_text[218]);
             }
             printf("</a>\n");
             break;

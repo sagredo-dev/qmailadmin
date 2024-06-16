@@ -47,7 +47,11 @@
 #include "user.h"
 #include "util.h"
 #include "vauth.h"
-
+/* cracklib patch */
+#ifdef CRACKLIB
+#	include <crack.h>
+#endif
+/* end cracklib patch */
 
 #define HOOKS 1
 
@@ -88,7 +92,7 @@ int show_user_lines(char *user, char *dom, time_t mytime, char *dir)
   /* Get the default catchall box name */
   if ((fs=fopen(".qmail-default","r")) == NULL) {
     /* report error opening .qmail-default and exit */
-    printf ("<tr><td colspan=\"%i\">%s .qmail-default</tr></td>", 
+    printf ("<tr><td colspan=\"%i\">%s .qmail-default</td></tr>\n", 
       colspan, html_text[144]);
     vclose();
     exit(0);
@@ -160,8 +164,8 @@ int show_user_lines(char *user, char *dom, time_t mytime, char *dir)
   }
 
   if (pw == NULL) {
-    printf ("<tr><td colspan=\"%i\" bgcolor=%s>%s</td></tr>\n", 
-      colspan, get_color_text("000"), html_text[131]);
+    printf ("<tr><td colspan=\"%i\">%s</td></tr>\n", 
+      colspan, html_text[131]);
       moreusers = 0;
     } else {
       char path[256];
@@ -174,28 +178,28 @@ int show_user_lines(char *user, char *dom, time_t mytime, char *dir)
           storage_t maxmsg = 0;
 
           /* display account name and user name */
-          printf ("<tr bgcolor=%s>", get_color_text("000"));
-          printh ("<td align=\"left\">%H</td>", pw->pw_name);
-          printh ("<td align=\"left\">%H</td>", pw->pw_gecos);
+          printf ("<tr>\n");
+          printh ("<td>%H</td>\n", pw->pw_name);
+          printh ("<td>%H</td>\n", pw->pw_gecos);
 
           /* display user's quota */
 	  snprintf(path, sizeof(path), "%s/" MAILDIR, pw->pw_dir);
           readuserquota(path, &diskquota, &maxmsg);
-          printf ("<td align=\"right\">%-2.2lf&nbsp;/&nbsp;</td>", ((double)diskquota)/1048576.0);  /* Convert to MB */
+          printf ("<td>%-2.2lf&nbsp;/&nbsp;</td>\n", ((double)diskquota)/1048576.0);  /* Convert to MB */
           if (strncmp(pw->pw_shell, "NOQUOTA", 2) != 0) {
               if(quota_to_megabytes(qconvert, pw->pw_shell)) {
-                  printf ("<td align=\"left\">(BAD)</td>");
+                  printf ("<td>(BAD)</td>\n");
               }
-              else { printf ("<td align=\"left\">%s</td>", qconvert); }
+              else { printf ("<td>%s</td>\n", qconvert); }
           }
-          else { printf ("<td align=\"left\">%s</td>", html_text[229]); }
+          else { printf ("<td>%s</td>", html_text[229]); }
 
           /* display button to modify user */
-          printf ("<td align=\"center\">");
+          printf ("<td>");
           printh ("<a href=\"%s&moduser=%C\">", cgiurl("moduser"), pw->pw_name);
-          printf ("<img src=\"%s/modify.png\" border=\"0\"></a>", IMAGEURL);
-          printf ("</td>");
-            
+          printf ("<span class=\"material-icons\">create</span></a>");
+          printf ("</td>\n");
+
           /* if the user has admin privileges and pw->pw_name is not 
            * the user or postmaster, allow deleting 
            */
@@ -210,32 +214,29 @@ int show_user_lines(char *user, char *dom, time_t mytime, char *dir)
           }
 
           /* display trashcan for delete, or nothing if delete not allowed */
-          printf ("<td align=\"center\">");
+          printf ("<td>");
           if (allowdelete) {
             printh ("<a href=\"%s&deluser=%C\">", cgiurl("deluser"), pw->pw_name);
-            printf ("<img src=\"%s/trash.png\" border=\"0\"></a>", IMAGEURL);
+            printf ("<span class=\"material-icons\">delete_forever</span></a>");
           } else {
-            /* printf ("<img src=\"%s/disabled.png\" border=\"0\">", IMAGEURL); */
+            /* printf ("<span class=\"material-icons\">flash_off</span>"); */
           }
-          printf ("</td>");
+          printf ("</td>\n");
 
           /* display button in the 'set catchall' column */
-          printf ("<td align=\"center\">");
+          printf ("<td>");
           if (bounced==0 && strncmp(pw->pw_name,TmpBuf3,sizeof(TmpBuf3)) == 0) {
-            printf ("<img src=\"%s/radio-on.png\" border=\"0\"></a>", 
-              IMAGEURL);
+            printf ("<span class=\"material-icons\">radio_button_checked</span></a>");
 #ifdef CATCHALL_ENABLED
           } else if (AdminType==DOMAIN_ADMIN) {
             printh ("<a href=\"%s&deluser=%C&page=%s\">",
               cgiurl("setdefault"), pw->pw_name, Pagenumber);
-            printf ("<img src=\"%s/radio-off.png\" border=\"0\"></a>",
-              IMAGEURL);
+            printf ("<span class=\"material-icons\">radio_button_unchecked</span></a>");
 #endif
           } else {
-            printf ("<img src=\"%s/disabled.png\" border=\"0\">",
-              IMAGEURL);
+            printf ("<span class=\"material-icons\">flash_off</span>");
           }
-          printf ("</td>");
+          printf ("</td>\n");
           printf ("</tr>\n");
         }        
         pw = vauth_getall(dom,0,0);
@@ -246,10 +247,9 @@ int show_user_lines(char *user, char *dom, time_t mytime, char *dir)
     if (AdminType == DOMAIN_ADMIN) {
       print_user_index ("showusers", colspan, user, dom, mytime);
 
-      printf ("<tr bgcolor=%s>", get_color_text("000"));
-      printf ("<td colspan=\"%i\" align=\"right\">", colspan);
-      printf ("<font size=\"2\"><b>");
-      printf ("[&nbsp;");
+      printf ("<tr>\n");
+      printf ("<td class=\"text-center\" colspan=\"%i\">", colspan);
+//      printf ("[&nbsp;");
       bars = 0;
 #ifdef USER_INDEX
       /* only display "previous page" if pagenumber > 1 */
@@ -275,9 +275,8 @@ int show_user_lines(char *user, char *dom, time_t mytime, char *dir)
       printf ("&nbsp;|&nbsp;");
       printh ("<a href=\"%s\">%s</a>", cgiurl("setremotecatchall"), html_text[206]);
 #endif
-      printf ("&nbsp;]");
-      printf ("</b></font>");
-      printf ("</td></tr>\n");
+//      printf ("&nbsp;]");
+      printf ("</td>\n</tr>\n");
   }
   return 0;
 }
@@ -318,6 +317,7 @@ void moduser()
 
 void addusernow()
 {
+ char *tmpstr;
  int cnt=0, num;
  char *c_num;
  char **mailingListNames;
@@ -394,6 +394,16 @@ void addusernow()
     exit(0);
   }
 #endif
+/* cracklib patch */
+#ifdef CRACKLIB
+    if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
+       sprintf(StatusMessage, "Bad password - %s\n", tmpstr);
+       adduser();
+       vclose();
+       exit(0);
+    }
+#endif
+/* end cracklib */
 
 #ifndef ENABLE_LEARN_PASSWORDS
   if ( strlen(Password1) <= 0 ) {
@@ -491,7 +501,7 @@ void addusernow()
 
   } else {
     /* otherwise, report error */
-    snprinth (StatusMessage, sizeof(StatusMessage), "<font color=\"red\">%s %H@%H (%H) %s</font>", 
+    snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H (%H) %s",
       html_text[2], Newu, Domain, Gecos, html_text[120]);
   }
 
@@ -673,7 +683,7 @@ int get_catchall()
 
   /* Get the default catchall box name */
   if ((fs=fopen(".qmail-default","r")) == NULL) {
-    printf ("<tr><td colspan=\"5\">%s %s</td><tr>\n", 
+    printf ("<tr><td colspan=\"5\">%s %s</td></tr>\n", 
       html_text[144], ".qmail-default");
     vclose();
     exit(0);
@@ -682,19 +692,19 @@ int get_catchall()
   fclose(fs);
 
   if (strstr(TmpBuf, " bounce-no-mailbox\n") != NULL) {
-    printf ("<b>%s</b>", html_text[130]);
+    printf ("%s", html_text[130]);
 
   } else if (strstr(TmpBuf, " delete\n") != NULL) {
-    printf ("<b>%s</b>", html_text[236]);
+    printf ("%s", html_text[236]);
 
   } else if ( strstr(TmpBuf, "@") != NULL ) {
     i=strlen(TmpBuf);
     for(;TmpBuf[i-1]!=' ';--i);
     if (strncmp (&TmpBuf[i], "$EXT@", 5) == 0) {
       /* forward to an entire domain */
-      printh ("<b>%s <I>user</I>%H</b>", html_text[62], &TmpBuf[i+4]);
+      printh ("%s user%H", html_text[62], &TmpBuf[i+4]);
     } else {
-      printh ("<b>%s %H</b>", html_text[62], &TmpBuf[i]);
+      printh ("%s %H", html_text[62], &TmpBuf[i]);
     }
   } else {
     i = strlen(TmpBuf) - 1;
@@ -704,7 +714,7 @@ int get_catchall()
 
     /* take off newline */
     i = strlen(TmpBuf2); --i; TmpBuf2[i] = 0;/* take off newline */
-    printh ("<b>%s %H</b>", html_text[62], TmpBuf2);
+    printh ("%s %H", html_text[62], TmpBuf2);
   }
   return 0;
 }
@@ -796,6 +806,16 @@ void modusergo()
        exit(0);
      }
 #endif
+/* cracklib patch */
+#ifdef CRACKLIB
+    if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
+       sprintf(StatusMessage, "Bad password - %s\n", tmpstr);
+       moduser();
+       vclose();
+       exit(0);
+    }
+#endif
+/* end cracklib */
     ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
     if ( ret_code != VA_SUCCESS ) {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], 

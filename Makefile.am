@@ -79,4 +79,4 @@ install-data-local:
 	chmod 644                $(DESTDIR)@htmllibdir@/lang/*
 	$(mkinstalldirs)         $(DESTDIR)@imagedir@
 	cp $(srcdir)/images/*.png $(DESTDIR)@imagedir@
-
+	cp $(srcdir)/images/*.css $(DESTDIR)@imagedir@

@@ -77,17 +77,17 @@ void show_autorespond_line(char *user, char *dom, time_t mytime, char *dir)
   for (i = 0; (addr = sort_get_entry(i)); ++i) {
     printf ("<tr>");
     
-    printf ("<td align=\"center\">");
+    printf ("<td>");
     printh ("<a href=\"%s&modu=%C\">", cgiurl("delautorespond"), addr);
-    printf ("<img src=\"%s/trash.png\" border=\"0\"></a>", IMAGEURL);
+    printf ("<span class=\"material-icons\">delete_forever</span></a>");
     printf ("</td>");
 
-    printf ("<td align=\"center\">");
+    printf ("<td>");
     printh ("<a href=\"%s&modu=%C\">", cgiurl("modautorespond"), addr);
-    printf ("<img src=\"%s/modify.png\" border=\"0\"></a>", IMAGEURL);
+    printf ("<span class=\"material-icons\">create</span></a>");
     printf ("</td>");
 
-    printh ("<td align=\"left\">%H@%H</td>", addr, Domain);
+    printh ("<td>%H@%H</td>", addr, Domain);
     
     printf ("</tr>\n");
   }
@@ -192,13 +192,13 @@ void addautorespondnow()
    * Make the autoresponder .qmail file
    */
   valias_delete (ActionUser, Domain);
-  if ( strlen(Newu) > 0 ) {
-    sprintf(TmpBuf, "&%s", Newu);
-    valias_insert (ActionUser, Domain, TmpBuf);
-  } 
   sprintf(TmpBuf, "|%s/autorespond 10000 5 %s/%s/message %s/%s",
     AUTORESPOND_PATH, RealDir, TmpBuf2, RealDir, TmpBuf2);
   valias_insert (ActionUser, Domain, TmpBuf);
+  if ( strlen(Newu) > 0 ) {
+    sprintf(TmpBuf, "&%s", Newu);
+    valias_insert (ActionUser, Domain, TmpBuf);
+  }
 
   /*
    * Report success
