@@ -76,7 +76,6 @@ int send_template_now(char *filename)
 {
  FILE *fs;
  int i;
- int j;
  int inchar;
  char *tmpstr;
  struct stat mystat;
@@ -199,74 +198,8 @@ int send_template_now(char *filename)
             break;
 
           /* display a file (used for mod_autorespond ONLY) */
-          /* this code should be moved to a function in autorespond.c */
           case 'F':
-            {
-             FILE *fs;
-             char *alias_line;
-
-              alias_line = valias_select (ActionUser, Domain);
-              /* should verify here that alias_line contains "/autorespond " */
-
-              if ( (alias_line = valias_select_next()) ) {
-                strcpy (TmpBuf2, alias_line);
-
-                /* See if it's a Maildir path rather than address */
-                i = strlen(TmpBuf2) - 1;
-                if (TmpBuf2[i] == '/') {
-                  --i;
-                  for(; TmpBuf2[i] != '/'; --i);
-                  --i;
-                  for(;TmpBuf2[i]!='/';--i);
-                  for(++i, j=0; TmpBuf2[i] != '/'; ++j,++i) {
-                    TmpBuf3[j] = TmpBuf2[i];
-                  }
-                  TmpBuf3[j] = '\0';
-		  /* mod_autorespond.html */
-                  printh ("value=\"%H@%H\"></div>\n", TmpBuf3, Domain);
-                } else {
-                  printh ("value=\"%H\"></div>\n", &TmpBuf2[1]);
-                }
-              }
-              else {
-                printf("></div>\n");
-              }
-              upperit(ActionUser);
-              sprintf(TmpBuf, "%s/message", ActionUser);
-
-              if ((fs = fopen(TmpBuf, "r")) == NULL) ack("150", TmpBuf);
-
-              fgets( TmpBuf2, sizeof(TmpBuf2), fs);
-              fgets( TmpBuf2, sizeof(TmpBuf2), fs);
-	      printf("<div class=\"form-group\">");
-              printf("<label for=\"alias\">%s</label>\n", html_text[6]);
-
-              /* take off newline */
-              i = strlen(TmpBuf2); --i; TmpBuf2[i] = 0;
-	      printh ("<input class=\"form-control\" type=\"text\" name=\"alias\" id=\"alias\" value=\"%H\">\n",
-                &TmpBuf2[9]);
-              printf("</div>\n");
-	      printf("<div class=\"form-group\">\n");
-              printf ("<textarea class=\"form-control\" rows=\"10\" name=\"message\">");
-
-			  /*
-			     Skip custom headers
-			  */
-
-			  while(1) {
-                fgets(TmpBuf2, sizeof(TmpBuf2), fs);
-				if ((*TmpBuf2 == '\r') || (*TmpBuf2 == '\n'))
-				   break;
-			  }
-
-			  printf("%s", TmpBuf2);
-
-              while (fgets(TmpBuf2, sizeof(TmpBuf2), fs)) {
-                printf ("%s", TmpBuf2);
-              }
-              printf ("</textarea>\n</div>\n");
-              fclose(fs);
-            }
+            show_autoresponder(ActionUser, Domain);
             break;
 
           /* show the forwards */
