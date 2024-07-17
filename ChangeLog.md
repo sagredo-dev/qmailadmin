@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 1.2.22
+Roberto Puzzanghera
+
+  - owner no longer required in autorespond
+  - template.c code optimization
+
 ## 1.2.21
 Roberto Puzzanghera
 
