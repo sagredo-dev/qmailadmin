@@ -227,7 +227,10 @@ int send_template_now(char *filename)
                 } else {
                   printh ("value=\"%H\"></div>\n", &TmpBuf2[1]);
                 }
-              } 
+              }
+              else {
+                printf("></div>\n");
+              }
               upperit(ActionUser);
               sprintf(TmpBuf, "%s/message", ActionUser);
 
