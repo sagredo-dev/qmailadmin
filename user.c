@@ -729,7 +729,7 @@ int makevacation (FILE *d, char *dir)
   GetValue(TmpCGI, subject, "vsubject=", sizeof(subject));
 
   /* if no subject, error */
-  if ( (subject == NULL) || (*subject == '\0') ) {
+  if ( *subject == '\0' ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[216]);
     return 1;
   }
