@@ -430,7 +430,6 @@ void ezmlm_make (int newlist)
   char options[MAX_BUFF];
   char *arguments[MAX_BUFF];
   int argc;
-  int i=0;
   char tmp[MAX_BUFF];
   char *tmpstr;
   char loop_ch[64];
@@ -497,7 +496,7 @@ void ezmlm_make (int newlist)
   *tmpstr++ = 0;   /* add NULL terminator */
 #else
   /* ignore options v-z, but test a-u */
-  for (i = 0; i <= ('u'-'a'); i++)
+  for (int i = 0; i <= ('u'-'a'); i++)
   {
     if (listopt[i] != ' ') {
       *tmpstr++ = listopt[i];

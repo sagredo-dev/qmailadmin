@@ -326,7 +326,6 @@ void addusernow()
  char **mailingListNames;
  char *tmp;
  char *email;
- char **arguments;
 #ifdef MODIFY_QUOTA
  char qconvert[11];
 #endif
@@ -342,7 +341,6 @@ void addusernow()
   c_num = malloc(MAX_BUFF);
   email = malloc(128);
   tmp = malloc(MAX_BUFF);
-  arguments = (char **)malloc(MAX_BUFF);
 
   count_users();
   load_limits();
@@ -524,8 +522,8 @@ int call_hooks(char *hook_type, char *p1, char *p2, char *p3, char *p4)
  char *hooks_path;
  char *cmd = NULL;
  char *tmpstr;
- int error;
-    
+ // int error;
+
   hooks_path = malloc(MAX_BUFF);
 
   /* first look in directory for domain */
@@ -564,7 +562,7 @@ int call_hooks(char *hook_type, char *p1, char *p2, char *p3, char *p4)
     /* Second param to execl should actually be just the program name,
        without the path information.  Add a pointer to point into cmd
        at the start of the program name only.    BUG 2003-12 */
-    error = execl(cmd, cmd, p1, p2, p3, p4, NULL);
+    // error = execl(cmd, cmd, p1, p2, p3, p4, NULL);
     printf ("Error %d %s \"%s\", %s, %s, %s, %s, %s\n",
       errno, html_text[202], cmd, hook_type, p1, p2, p3, p4);
     /* if (error == -1) return (-1); */

@@ -46,7 +46,7 @@ AC_FUNC_CLOSEDIR_VOID
 AC_CHECK_FUNCS([dup2 memset mkdir strcasecmp strchr strdup strncasecmp strrchr strstr])
 
 if test "$GCC" = yes ; then
-  CFLAGS="-Wall -Wno-unused-but-set-variable"
+  CFLAGS="-Wall"
 fi
 
 CGIBINTARGETS=qmailadmin

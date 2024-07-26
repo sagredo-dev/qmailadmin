@@ -5425,7 +5425,7 @@ fi
 
 
 if test "$GCC" = yes ; then
-  CFLAGS="-Wall -Wno-unused-but-set-variable"
+  CFLAGS="-Wall"
 fi
 
 CGIBINTARGETS=qmailadmin
