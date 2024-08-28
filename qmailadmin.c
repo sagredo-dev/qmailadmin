@@ -404,6 +404,7 @@ void load_lang (char *lang)
   if (lang_entries == NULL) return;
   rewind (lang_fs);
 
+  fread (lang_entries, 1, lang_size, lang_fs);
   /* error handling for incomplete reads? */
 
   id = strtok (lang_entries, " \t");
