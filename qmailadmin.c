@@ -488,7 +488,7 @@ void init_globals()
   /* read in preferred languages */
   langptr = getenv("HTTP_ACCEPT_LANGUAGE");
   if (langptr != NULL) {
-    accept_lang = malloc (strlen(langptr));
+    accept_lang = malloc (strlen(langptr) + 1);
     strcpy (accept_lang, langptr);
     langptr = strtok(accept_lang, " ,\n");
     while (langptr != NULL) {
