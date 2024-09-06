@@ -147,6 +147,9 @@
 /* "" */
 #undef USER_INDEX
 
+/* "" */
+#undef USE_QMAIL_AUTORESPONDER
+
 /* Version number of package */
 #undef VERSION
 

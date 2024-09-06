@@ -320,7 +320,9 @@ void moduser()
 
 void addusernow()
 {
+#ifdef CRACKLIB
  const char *tmpstr;
+#endif
  int cnt=0, num;
  char *c_num;
  char **mailingListNames;
@@ -738,12 +740,21 @@ int makevacation (FILE *d, char *dir)
   snprintf (fn, sizeof(fn), "%s/vacation", dir);
   mkdir (fn, 0750);
 
+#ifdef USE_QMAIL_AUTORESPONDER
+  fprintf (d, "| %s/qmail-autoresponder %s/vacation\n",
+    AUTORESPOND_PATH, dir);
+
+  /* set up the message file */
+  snprintf(fn, sizeof(fn), "%s/vacation/message.txt", dir);
+  GetValue(TmpCGI, Message, "vmessage=", sizeof(Message));
+#else
   fprintf (d, "| %s/autorespond 86400 3 %s/vacation/message %s/vacation\n",
     AUTORESPOND_PATH, dir, dir );
       
   /* set up the message file */
   snprintf(fn, sizeof(fn), "%s/vacation/message", dir);
   GetValue(TmpCGI, Message, "vmessage=", sizeof(Message));
+#endif
 
   if ( (f = fopen(fn, "w")) == NULL ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s %s\n", html_text[150], fn);
@@ -759,7 +770,9 @@ int makevacation (FILE *d, char *dir)
 void modusergo()
 {
  char *tmpstr;
+#ifdef CRACKLIB
  const char *tmpstr2;
+#endif
  int ret_code;
  struct vqpasswd *vpw=NULL;
  static char box[500];
@@ -954,10 +967,17 @@ void modusergo()
   if (olddotqmail != NULL) {
     dotqmailline = strtok (olddotqmail, "\n");
     while (dotqmailline) {
+#ifdef USE_QMAIL_AUTORESPONDER
+      if ( (*dotqmailline == '|') &&
+          (strstr (dotqmailline, "/true delete") == NULL) &&
+          (strstr (dotqmailline, "/qmail-autoresponder ") == NULL) &&
+          (strstr (dotqmailline, SPAM_COMMAND) == NULL) ) {
+#else
       if ( (*dotqmailline == '|') &&
           (strstr (dotqmailline, "/true delete") == NULL) &&
           (strstr (dotqmailline, "/autorespond ") == NULL) &&
-          (strstr (dotqmailline, SPAM_COMMAND) == NULL) ) {
+          (strstr (dotqmailline, SPAM_COMMAND) == NULL) ) {	
+#endif
         fprintf (fs, "%s\n", dotqmailline);
         emptydotqmail = 0;
 /* defaultdelivery patch */
@@ -1120,13 +1140,20 @@ void parse_users_dotqmail (char newchar)
              */
             if (strstr (linebuf, "/true delete") != NULL)
               dotqmail_flags |= DOTQMAIL_BLACKHOLE;
-              
+
+#ifdef USE_QMAIL_AUTORESPONDER
+			else if (strstr (linebuf, "/qmail-autoresponder ") != NULL) {
+              dotqmail_flags |= DOTQMAIL_VACATION;
+              snprintf (fn, sizeof(fn), "%s/vacation/message.txt", vpw->pw_dir);
+              fs2 = fopen (fn, "r");
+            }
+#else
             else if (strstr (linebuf, "/autorespond ") != NULL) {
               dotqmail_flags |= DOTQMAIL_VACATION;
               snprintf (fn, sizeof(fn), "%s/vacation/message", vpw->pw_dir);
               fs2 = fopen (fn, "r");
             }
-            
+#endif
             else if (strstr (linebuf, SPAM_COMMAND) != NULL )
               dotqmail_flags |= DOTQMAIL_SPAMCHECK;
             

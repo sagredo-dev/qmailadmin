@@ -228,6 +228,19 @@ AC_ARG_ENABLE(autoresponder-bin, [], autorespond_path="$enableval", [])
     ] )
 AC_DEFINE_UNQUOTED(AUTORESPOND_PATH,"$autorespond_path","")
 
+qmailautoresponder=no
+AC_ARG_ENABLE(qmail-autoresponder, [  --enable-qmail-autoresponder  Replace autorespond by qmail autoresponder.],
+    qmailautoresponder="$enableval",)
+case $qmailautoresponder in
+1*|y*|Y*)
+	qmailautoresponder=yes
+        AC_DEFINE_UNQUOTED(USE_QMAIL_AUTORESPONDER,1,"")
+        ;;
+*)
+        qmailautoresponder=no
+        ;;
+esac
+
 vpopuser="vpopmail"
 AC_ARG_ENABLE(vpopuser, [  --enable-vpopuser=USER        User vpopmail was installed as [vpopmail].],
     vpopuser="$enableval",
@@ -509,9 +522,13 @@ echo "  trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
 echo "  modify spam check = "$MODIFY_SPAM""
 if test "$MODIFY_SPAM" = "yes"
 then
-        echo "      spam command = "$spam_command""
+        echo "       spam command = "$spam_command""
 fi
 if test "$cracklib" != "no"
 then
        echo "cracklib dictionary = "$cracklib""
+fi
+if test "$qmailautoresponder" != "no"
+then
+       echo "      autoresponder = qmail autoresponder"
 fi

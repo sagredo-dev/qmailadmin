@@ -665,6 +665,9 @@ AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
 AM_DEFAULT_V
 AM_V
+CSCOPE
+ETAGS
+CTAGS
 am__untar
 am__tar
 AMTAR
@@ -744,6 +747,7 @@ enable_ezmlmdir
 enable_cgipath
 enable_autoresponder_bin
 enable_autoresponder_path
+enable_qmail_autoresponder
 enable_vpopuser
 enable_vpopgroup
 enable_ezmlm_mysql
@@ -1414,6 +1418,7 @@ Optional Features:
   --enable-ezmlmdir=PATH    Path to ezmlm binaries or =n to disable.
   --enable-cgipath=PATH     URL path for cgi /cgi-bin/qmailadmin.
   --enable-autoresponder-path=PATH   Path to autoresponder directory.
+  --enable-qmail-autoresponder  Replace autorespond by qmail autoresponder.
   --enable-vpopuser=USER        User vpopmail was installed as vpopmail.
   --enable-vpopgroup=GROUP      Group vpopmail was installed as vchkpw.
   --disable-ezmlm-mysql         Disable MySQL options for mailing lists.
@@ -2664,12 +2669,7 @@ am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 
   if test x"${MISSING+set}" != xset; then
-  case $am_aux_dir in
-  *\ * | *\	*)
-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
-  *)
-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
-  esac
+  MISSING="\${SHELL} '$am_aux_dir/missing'"
 fi
 # Use eval to expand $SHELL
 if eval "$MISSING --is-lightweight"; then
@@ -3042,6 +3042,20 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
+
+
+# Variables for tags utilities; see am/tags.am
+if test -z "$CTAGS"; then
+  CTAGS=ctags
+fi
+
+if test -z "$ETAGS"; then
+  ETAGS=etags
+fi
+
+if test -z "$CSCOPE"; then
+  CSCOPE=cscope
+fi
 
 
 
@@ -5676,6 +5690,25 @@ fi
 printf "%s\n" "#define AUTORESPOND_PATH \"$autorespond_path\"" >>confdefs.h
 
 
+qmailautoresponder=no
+# Check whether --enable-qmail-autoresponder was given.
+if test ${enable_qmail_autoresponder+y}
+then :
+  enableval=$enable_qmail_autoresponder; qmailautoresponder="$enableval"
+fi
+
+case $qmailautoresponder in
+1*|y*|Y*)
+	qmailautoresponder=yes
+
+printf "%s\n" "#define USE_QMAIL_AUTORESPONDER 1" >>confdefs.h
+
+        ;;
+*)
+        qmailautoresponder=no
+        ;;
+esac
+
 vpopuser="vpopmail"
 # Check whether --enable-vpopuser was given.
 if test ${enable_vpopuser+y}
@@ -7515,10 +7548,14 @@ echo "  trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
 echo "  modify spam check = "$MODIFY_SPAM""
 if test "$MODIFY_SPAM" = "yes"
 then
-        echo "      spam command = "$spam_command""
+        echo "       spam command = "$spam_command""
 fi
 if test "$cracklib" != "no"
 then
        echo "cracklib dictionary = "$cracklib""
+fi
+if test "$qmailautoresponder" != "no"
+then
+       echo "      autoresponder = qmail autoresponder"
 fi
 
