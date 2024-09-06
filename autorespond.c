@@ -433,7 +433,11 @@ void show_autoresponder(char *ActionUser, char *Domain)
                 printf("></div>\n");
               }
               upperit(ActionUser);
+#ifdef USE_QMAIL_AUTORESPONDER
+              sprintf(TmpBuf, "%s/message.txt", ActionUser);
+#else
               sprintf(TmpBuf, "%s/message", ActionUser);
+#endif
 
               if ((fs = fopen(TmpBuf, "r")) == NULL) ack("150", TmpBuf);
 
