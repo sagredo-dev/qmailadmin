@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 1.2.23
+Nathanaël Semhoun 
+
+  - Added support for qmail-autoresponder
+  - Fixed load lang not retrieved
+
 ## 1.2.22
 Roberto Puzzanghera
 
