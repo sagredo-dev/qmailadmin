@@ -618,6 +618,7 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
        return(-1);
     } else {
        /* make it an email address */
+	   dest2 = malloc(strlen(dest) + strlen(Domain) + 2);
        sprintf (dest2, "%s@%s", dest, Domain);
        dest=dest2;
     }
@@ -626,10 +627,12 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
   /* check that it's a valid email address */
   if (check_email_addr(dest)) {
      snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[162], dest);
+	 if (dest2 != NULL) free(dest2);
      return(-1);
   }
 
   snprintf (TmpBuf2, sizeof(TmpBuf2), "&%s", dest);
+  if (dest2 != NULL) free(dest2);
   if (dotqmail_add_line(forwardname, TmpBuf2)) {
      snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[150], 2);
      return(-1);

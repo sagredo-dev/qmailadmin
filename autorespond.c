@@ -72,11 +72,18 @@ void show_autorespond_line(char *user, char *dom, time_t mytime, char *dir)
 
   sort_init();
 
+
   alias_line = valias_select_all (alias_name, Domain);
   while( alias_line != NULL ) {
-    if ( strstr( alias_line, "/autorespond ") != 0 ) {
+#ifdef USE_QMAIL_AUTORESPONDER
+    if ( strstr( alias_line, "/qmail-autoresponder ") != 0 ) {
       sort_add_entry (alias_name, 0);
     }
+#else
+	if ( strstr( alias_line, "/autorespond ") != 0 ) {
+      sort_add_entry (alias_name, 0);
+    }
+#endif
     alias_line = valias_select_all_next (alias_name);
   }
 
@@ -177,7 +184,11 @@ void addautorespondnow()
   /*
     * Make the autoresponder message file
    */
+#ifdef USE_QMAIL_AUTORESPONDER
+  sprintf(TmpBuf, "%s/message.txt", TmpBuf2);
+#else
   sprintf(TmpBuf, "%s/message", TmpBuf2);
+#endif
   if ( (fs = fopen(TmpBuf, "w")) == NULL ) ack("150", TmpBuf);
   fprintf(fs, "From: %s@%s\n", ActionUser,Domain);
   fprintf(fs, "Subject: %s\n", Alias);
@@ -200,8 +211,13 @@ void addautorespondnow()
    * Make the autoresponder .qmail file
    */
   valias_delete (ActionUser, Domain);
+#ifdef USE_QMAIL_AUTORESPONDER
+  sprintf(TmpBuf, "|%s/qmail-autoresponder %s/%s",
+    AUTORESPOND_PATH, RealDir, TmpBuf2);
+#else
   sprintf(TmpBuf, "|%s/autorespond 10000 5 %s/%s/message %s/%s",
     AUTORESPOND_PATH, RealDir, TmpBuf2, RealDir, TmpBuf2);
+#endif
   valias_insert (ActionUser, Domain, TmpBuf);
   if ( strlen(Newu) > 0 ) {
     sprintf(TmpBuf, "&%s", Newu);
@@ -316,8 +332,13 @@ void modautorespondnow()
    * Make the autoresponder .qmail file
    */
   valias_delete (ActionUser, Domain);
+#ifdef USE_QMAIL_AUTORESPONDER
+  sprintf(TmpBuf, "|%s/qmail-autoresponder %s/%s",
+    AUTORESPOND_PATH, RealDir, TmpBuf2);
+#else
   sprintf(TmpBuf, "|%s/autorespond 10000 5 %s/%s/message %s/%s",
     AUTORESPOND_PATH, RealDir, TmpBuf2, RealDir, TmpBuf2);
+#endif
   valias_insert (ActionUser, Domain, TmpBuf);
   if ( strlen(Newu) > 0 ) {
     sprintf(TmpBuf, "&%s", Newu);
@@ -362,9 +383,15 @@ void count_autoresponders()
 
   alias_line = valias_select_all (alias_name, Domain);
   while( alias_line != NULL ) {
-    if ( strstr( alias_line, "/autorespond ") != 0 ) {
+#ifdef USE_QMAIL_AUTORESPONDER
+    if ( strstr( alias_line, "/qmail-autoresponder ") != 0 ) {
       CurAutoResponders++;
     }
+#else
+    if ( strstr( alias_line, "/autorespond ") != 0 ) {
+      CurAutoResponders++;
+    }	
+#endif
     alias_line = valias_select_all_next (alias_name);
   }
 
@@ -406,7 +433,11 @@ void show_autoresponder(char *ActionUser, char *Domain)
                 printf("></div>\n");
               }
               upperit(ActionUser);
+#ifdef USE_QMAIL_AUTORESPONDER
+              sprintf(TmpBuf, "%s/message.txt", ActionUser);
+#else
               sprintf(TmpBuf, "%s/message", ActionUser);
+#endif
 
               if ((fs = fopen(TmpBuf, "r")) == NULL) ack("150", TmpBuf);
 
