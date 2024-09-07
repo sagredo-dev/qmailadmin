@@ -8,8 +8,9 @@ This `QmailAdmin` distribution puts together Inter7's last `qmailadmin-1.2.16` w
 * `ezmlm-idx 7` compatibility patch (author unknown), which restores the compatibility with `ezmlm-idx-7` (thanks to J.D. Trolinger for the advice).
 * a fix to the catchall account
 * another fix to autorespond.c to correct the way `.qmail` files are modified
+* [`qmail-autoresponder`](https://untroubled.org/qmail-autoresponder/) support (thanks Nathanaël Semhoun)
 
 The patches applied can be found in the contrib directory.
 
 ## Support
-To ask for support and find more informations have a look to the following page: https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html
+To ask for support and find more informations have a look at the following page: https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html
