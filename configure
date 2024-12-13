@@ -1431,7 +1431,7 @@ Optional Features:
   --enable-spamcmd-needs-email  Append the user's email to the end of the spam command.
   --enable-modify-spam  Allow users to enable/disable spam checking.
   --enable-spam-command=CMD     Remember to use '|preline' at the beginning, |preline /usr/local/bin/maildrop /etc/mailfilter.
-  --enable-cracklib=PATH     Path to cracklib dictionary.
+  --enable-cracklib=DIR      Path to cracklib dictionary directory.
   --enable-help  Display help links on login page.
 
 Some influential environment variables:
@@ -5981,36 +5981,85 @@ printf "%s\n" "#define SPAM_COMMAND \"$spam_command\"" >>confdefs.h
 
 
 
-cracklib=no
 # Check whether --enable-cracklib was given.
 if test ${enable_cracklib+y}
 then :
   enableval=$enable_cracklib; cracklib="$enableval"
 else $as_nop
-
-        if test "$cracklib" = ""
-        then
-            as_fn_error $? "Unable to find your cracklib directory, specify --enable-cracklib." "$LINENO" 5
-        fi
-
+  cracklib="no"
 fi
 
-
-if test "$cracklib" = "yes"
-then
-       cracklib="/usr/lib/cracklib_dict"
-fi
 
 case $cracklib in
 0*|n*|N*)
-       echo "checking whether to use password checking... no"
-       ;;
-*)
+     # --enable-cracklib=no|n|N|0
+     cracklib="disabled"
+     echo "checking whether to use password checking... no"
+     ;;
+1*|y*|Y*)
+     # --enable-cracklib=yes|y|Y|1
+     cracklib=""
+     for f in /usr/share/cracklib /usr/local/share/cracklib /usr/share/cracklib_dict /usr/share/cracklib_dict /usr/lib/cracklib /usr/lib/cracklib_dict
+     do
+       if test -d "$f"
+       then
+         cracklib="${f}/pw_dict"
+         echo "checking whether to use password checking... yes"
+         break
+       fi
+     done
+
+     if test -z $cracklib
+     then
+       as_fn_error $? "Unable to find your cracklib dictionary directory, specify --enable-cracklib=DIR" "$LINENO" 5
+     fi
+
 
 printf "%s\n" "#define CRACKLIB \"$cracklib\"" >>confdefs.h
 
-       echo "checking whether to use password checking... yes"
-       ;;
+     ;;
+*)
+     # --enable-cracklib with no argument
+     if test -z "$cracklib"
+     then
+       for f in /usr/share/cracklib /usr/local/share/cracklib /usr/share/cracklib_dict /usr/share/cracklib_dict /usr/lib/cracklib /usr/lib/cracklib_dict
+       do
+         if test -d "$f"
+         then
+           cracklib="${f}/pw_dict"
+           break
+         fi
+       done
+     else
+       # test dictionary dir --enable-cracklib=DIR
+       if test -d "$cracklib"
+       then
+         cracklib="${cracklib}/pw_dict"
+
+       # test dictionary path --enable-cracklib=PATH
+       else
+         if test -f "${cracklib}.hwm"
+         then
+           cracklib="$cracklib"
+         else
+           # cracklib not found
+           cracklib=""
+         fi
+       fi
+     fi
+
+     # test if anything has been found
+     if test -z $cracklib
+     then
+       as_fn_error $? "Unable to find your cracklib dictionary directory, specify --enable-cracklib=DIR" "$LINENO" 5
+     fi
+
+     echo "checking whether to use password checking... yes"
+
+printf "%s\n" "#define CRACKLIB \"$cracklib\"" >>confdefs.h
+
+
+     ;;
 esac
 
 HELP=no
@@ -7536,14 +7585,11 @@ echo "  trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
 echo "  modify spam check = "$MODIFY_SPAM""
 if test "$MODIFY_SPAM" = "yes"
 then
-        echo "       spam command = "$spam_command""
+echo "       spam command = "$spam_command""
 fi
-if test "$cracklib" != "no"
-then
-       echo "cracklib dictionary = "$cracklib""
-fi
+echo "cracklib dictionary = "$cracklib""
 if test "$qmailautoresponder" != "no"
 then
-       echo "      autoresponder = qmail autoresponder"
+echo "      autoresponder = qmail autoresponder"
 fi
 

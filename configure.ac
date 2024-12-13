@@ -434,29 +434,74 @@ AC_ARG_ENABLE(spam_command, [  --enable-spam-command=CMD     Remember to use '|p
 AC_DEFINE_UNQUOTED(SPAM_COMMAND, "$spam_command","")
 AC_SUBST(SPAM_COMMAND)
 
-cracklib=no
-AC_ARG_ENABLE(cracklib, [  --enable-cracklib=PATH     Path to cracklib dictionary.],
-    cracklib="$enableval",
-    [
-        if test "$cracklib" = ""
-        then
-            AC_MSG_ERROR([Unable to find your cracklib directory, specify --enable-cracklib.])
-        fi
-    ] )
-
-if test "$cracklib" = "yes"
-then
-       cracklib="/usr/lib/cracklib_dict"
-fi
+AC_ARG_ENABLE(cracklib, [  --enable-cracklib=DIR      Path to cracklib dictionary directory.], cracklib="$enableval", cracklib="no")
 
 case $cracklib in
 0*|n*|N*)
-       echo "checking whether to use password checking... no"
-       ;;
+     # --enable-cracklib=no|n|N|0
+     cracklib="disabled"
+     echo "checking whether to use password checking... no"
+     ;;
+1*|y*|Y*)
+     # --enable-cracklib=yes|y|Y|1
+     cracklib=""
+     for f in /usr/share/cracklib /usr/local/share/cracklib /usr/share/cracklib_dict /usr/share/cracklib_dict /usr/lib/cracklib /usr/lib/cracklib_dict
+     do
+       if test -d "$f"
+       then
+         cracklib="${f}/pw_dict"
+         echo "checking whether to use password checking... yes"
+         break
+       fi
+     done
+
+     if test -z $cracklib
+     then
+       AC_MSG_ERROR([Unable to find your cracklib dictionary directory, specify --enable-cracklib=DIR])
+     fi
+
+     AC_DEFINE_UNQUOTED(CRACKLIB,"$cracklib","")
+     ;;
 *)
-       AC_DEFINE_UNQUOTED(CRACKLIB,"$cracklib","")
-       echo "checking whether to use password checking... yes"
-       ;;
+     # --enable-cracklib with no argument
+     if test -z "$cracklib"
+     then
+       for f in /usr/share/cracklib /usr/local/share/cracklib /usr/share/cracklib_dict /usr/share/cracklib_dict /usr/lib/cracklib /usr/lib/cracklib_dict
+       do
+         if test -d "$f"
+         then
+           cracklib="${f}/pw_dict"
+           break
+         fi
+       done
+     else
+       # test dictionary dir --enable-cracklib=DIR
+       if test -d "$cracklib"
+       then
+         cracklib="${cracklib}/pw_dict"
+
+       # test dictionary path --enable-cracklib=PATH
+       else
+         if test -f "${cracklib}.hwm"
+         then
+           cracklib="$cracklib"
+         else
+           # cracklib not found
+           cracklib=""
+         fi
+       fi
+     fi
+
+     # test if anything has been found
+     if test -z $cracklib
+     then
+       AC_MSG_ERROR([Unable to find your cracklib dictionary directory, specify --enable-cracklib=DIR])
+     fi
+
+     echo "checking whether to use password checking... yes"
+     AC_DEFINE_UNQUOTED(CRACKLIB,"$cracklib","")
+
+     ;;
 esac
 
 HELP=no
@@ -522,13 +567,10 @@ echo "  trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
 echo "  modify spam check = "$MODIFY_SPAM""
 if test "$MODIFY_SPAM" = "yes"
 then
-        echo "       spam command = "$spam_command""
+echo "       spam command = "$spam_command""
 fi
-if test "$cracklib" != "no"
-then
-       echo "cracklib dictionary = "$cracklib""
-fi
+echo "cracklib dictionary = "$cracklib""
 if test "$qmailautoresponder" != "no"
 then
-       echo "      autoresponder = qmail autoresponder"
+echo "      autoresponder = qmail autoresponder"
 fi
