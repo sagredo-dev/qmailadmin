@@ -169,7 +169,9 @@ int main(argc,argv)
  int argc;
  char *argv[];
 {
+#ifdef CRACKLIB
  const char *tmpstr;
+#endif
  const char *ip_addr=getenv("REMOTE_ADDR");
  const char *x_forward=getenv("HTTP_X_FORWARDED_FOR");
  char *pi;
