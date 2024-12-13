@@ -1,5 +1,12 @@
 # ChangeLog
 
+## unreleased
+Roberto Puzzanghera
+
+  - cracklib check improved in configure.ac
+  - char *tmpstr in qmailadmin.c now under #ifdef CRACKLIB to avoid compilation warnings  
+    in case CRACKlib is not defined
+
 ## 1.2.23
 Nathanaël Semhoun 
 
