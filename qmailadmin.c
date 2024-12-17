@@ -299,7 +299,6 @@ int main(argc,argv)
 /* end pwd strength */
         } else {
           /* success */
-          snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[139]);
           *Password = '\0';
           send_template ("change_password_success.html");
 
