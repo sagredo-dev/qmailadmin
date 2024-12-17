@@ -407,9 +407,9 @@ void addusernow()
        vclose();
        exit(0);
     }
-#else
+#endif
 /* end cracklib */
-/* pwd strength */
+/* pwd strength check and change */
     ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
     if ( ret_code != VA_SUCCESS ) {
        snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
@@ -418,7 +418,6 @@ void addusernow()
        exit(0);
     }
 /* end pwd strength */
-#endif
 
 #ifndef ENABLE_LEARN_PASSWORDS
   if ( strlen(Password1) <= 0 ) {
@@ -840,9 +839,9 @@ void modusergo()
        vclose();
        exit(0);
     }
-#else
+#endif
 /* end cracklib */
-/* pwd strength */
+/* pwd strength check and change */
     ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
     if ( ret_code != VA_SUCCESS ) {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
@@ -851,7 +850,6 @@ void modusergo()
       exit(0);
     }
 /* end pwd strength */
-#endif
     else {
 //      snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H.", html_text[139], ActionUser, Domain );
       strcpy (StatusMessage, html_text[139]);
