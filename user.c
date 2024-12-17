@@ -71,6 +71,8 @@ implemented */
 #define HOOK_LISTDELUSER "dellistuser"
 #endif
 
+int ret_code;
+
 void show_users(char *Username, char *Domain, time_t Mytime)
 {
   if (MaxPopAccounts == 0) return;
@@ -294,7 +296,7 @@ void adduser()
     vclose();
     exit(0);
   }
-                                                
+
   if ( MaxPopAccounts != -1 && CurPopAccounts >= MaxPopAccounts ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[199],
       MaxPopAccounts);
@@ -405,8 +407,18 @@ void addusernow()
        vclose();
        exit(0);
     }
-#endif
+#else
 /* end cracklib */
+/* pwd strength */
+    ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
+    if ( ret_code != VA_SUCCESS ) {
+       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
+       adduser();
+       vclose();
+       exit(0);
+    }
+/* end pwd strength */
+#endif
 
 #ifndef ENABLE_LEARN_PASSWORDS
   if ( strlen(Password1) <= 0 ) {
@@ -773,7 +785,6 @@ void modusergo()
 #ifdef CRACKLIB
  const char *tmpstr2;
 #endif
- int ret_code;
  struct vqpasswd *vpw=NULL;
  static char box[500];
  char cforward[50];
@@ -829,12 +840,18 @@ void modusergo()
        vclose();
        exit(0);
     }
-#endif
+#else
 /* end cracklib */
+/* pwd strength */
     ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
     if ( ret_code != VA_SUCCESS ) {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
+      moduser();
+      vclose();
+      exit(0);
     }
+/* end pwd strength */
+#endif
     else {
 //      snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H.", html_text[139], ActionUser, Domain );
       strcpy (StatusMessage, html_text[139]);

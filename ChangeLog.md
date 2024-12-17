@@ -6,6 +6,9 @@ Roberto Puzzanghera
   - cracklib check improved in configure.ac
   - char *tmpstr in qmailadmin.c now under #ifdef CRACKLIB to avoid compilation warnings  
     in case CRACKlib is not defined
+  - pwd check is now performed only if cracklib is disabled.
+  - qmailadmin now shows an error message in case the change pwd failed due to the pwd  
+    strength feature in vpopmail
 
 ## 1.2.23
 Nathanaël Semhoun 

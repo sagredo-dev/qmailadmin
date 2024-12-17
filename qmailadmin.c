@@ -179,6 +179,9 @@ int main(argc,argv)
  char returnhttp[MAX_BUFF];
  char returntext[MAX_BUFF];
  struct vqpasswd *pw;
+#ifndef CRACKLIB
+ int ret_code;
+#endif
 
   init_globals();
 
@@ -285,10 +288,15 @@ int main(argc,argv)
 #ifdef CRACKLIB
 	} else if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
 	  sprintf (StatusMessage, "Bad password - %s\n", tmpstr);
-#endif
+#else
 /* end cracklib */
-        } else if (vpasswd (User, Domain, Password1, USE_POP) != VA_SUCCESS) {
-          snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[140]);
+/* pwd strength */
+        } else if ((ret_code = vpasswd (User, Domain, Password1, USE_POP)) != VA_SUCCESS) {
+          snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
+          send_template ("change_password.html");
+          return 1;
+#endif
+/* end pwd strength */
         } else {
           /* success */
           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[139]);
