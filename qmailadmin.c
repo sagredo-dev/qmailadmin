@@ -30,6 +30,7 @@
 #include <vpopmail.h>
 #include <vauth.h>
 #include <vlimits.h>
+#include "pwstr.h"
 
 /* undef some macros that get redefined in config.h below */
 #undef PACKAGE
@@ -288,10 +289,16 @@ int main(argc,argv)
 	  sprintf (StatusMessage, "Bad password - %s\n", tmpstr);
 #endif
 /* end cracklib */
-/* pwd strength check and change */
         } else if ((ret_code = vpasswd (User, Domain, Password1, USE_POP)) != VA_SUCCESS) {
+#ifndef CRACKLIB
+          /* pwd strength check. Not performed if CRACKLIB has been defined */
+          if (((ret_code <= -69) && (ret_code >= -74)) && (pw_strength_policy() != NULL)) {
+            snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H %s. %s",
+            html_text[2], User, Domain, html_text[120], pw_strength_policy());
+          }
+          /* end pwd check */
+#endif
           snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
-/* end pwd check */
         } else {
           /* success */
           *Password = '\0';

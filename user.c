@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <vpopmail_config.h>
 #include "vpopmail.h"
+#include "pwstr.h"
 /* undef some macros that get redefined in config.h below */
 #undef PACKAGE
 #undef VERSION
@@ -70,8 +71,6 @@ implemented */
 #define HOOK_LISTADDUSER "addlistuser"
 #define HOOK_LISTDELUSER "dellistuser"
 #endif
-
-int ret_code;
 
 void show_users(char *Username, char *Domain, time_t Mytime)
 {
@@ -409,15 +408,6 @@ void addusernow()
     }
 #endif
 /* end cracklib */
-/* pwd strength check and change */
-    ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
-    if ( ret_code != VA_SUCCESS ) {
-       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
-       adduser();
-       vclose();
-       exit(0);
-    }
-/* end pwd strength */
 
 #ifndef ENABLE_LEARN_PASSWORDS
   if ( strlen(Password1) <= 0 ) {
@@ -471,7 +461,8 @@ void addusernow()
   }
 
   /* add the user then get the vpopmail password structure */
-  if ( vadduser( Newu, Domain, Password1, Gecos, USE_POP ) == 0 && 
+  int i;
+  if ( (i = vadduser( Newu, Domain, Password1, Gecos, USE_POP )) == 0 && 
 #ifdef MYSQL_REPLICATION
     !sleep(2) &&
 #endif
@@ -512,10 +503,19 @@ void addusernow()
     snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H (%H) %s",
       html_text[2], Newu, Domain, Gecos,
       html_text[119]);
+  }
 
-  } else {
-    /* otherwise, report error */
-    snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H (%H) %s",
+#ifndef CRACKLIB
+  /* pwd strength check. Not performed if CRACKLIB has been defined */
+  else if (((i <= -69) && (i >= -74)) && (pw_strength_policy() != NULL)) {
+      snprinth (StatusMessage, sizeof(StatusMessage),
+      "%s %H@%H %s. %s",
+      html_text[2], Newu, Domain, html_text[120], pw_strength_policy());
+  }
+#endif
+  else {
+      /* otherwise, report error */
+      snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H (%H) %s",
       html_text[2], Newu, Domain, Gecos, html_text[120]);
   }
 
@@ -803,6 +803,7 @@ void modusergo()
  char *dotqmailline;
  struct stat sb;
  int err;
+ int ret_code;
 
  const char *flagfields[] = { "zeroflag=", "oneflag=", "twoflag=", "threeflag=" };
  const gid_t gidflags[] = { V_USER0, V_USER1, V_USER2, V_USER3 };
@@ -841,15 +842,23 @@ void modusergo()
     }
 #endif
 /* end cracklib */
-/* pwd strength check and change */
-    ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP);
-    if ( ret_code != VA_SUCCESS ) {
+    if ( (ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP)) != VA_SUCCESS ) {
+#ifndef CRACKLIB
+      /*
+        pwd strength check. Not performed if CRACKLIB has been defined
+       */
+      if (((ret_code <= -69) && (ret_code >= -74)) && (pw_strength_policy() != NULL)) {
+        snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H %s. %s",
+        html_text[2], ActionUser, Domain, html_text[120], pw_strength_policy());
+      }
+      /* end pwd strength */
+      else
+#endif
       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
       moduser();
       vclose();
       exit(0);
     }
-/* end pwd strength */
     else {
 //      snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H.", html_text[139], ActionUser, Domain );
       strcpy (StatusMessage, html_text[139]);
