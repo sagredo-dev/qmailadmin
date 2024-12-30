@@ -1,0 +1,202 @@
+<!-- Modify email account -->
+<script>
+function enablefields(txt)
+{
+  if (txt=="disable")
+  {
+    document.forms.namedItem("logon").nforward.disabled=true;
+    document.forms.namedItem("logon").fsaved.disabled=true;
+##ts document.forms.namedItem("logon").spamcheck.disabled=false; ##tt
+  }
+  else if (txt=="forward")
+  {
+    document.forms.namedItem("logon").nforward.disabled=false;
+    document.forms.namedItem("logon").fsaved.disabled=false;
+##ts document.forms.namedItem("logon").spamcheck.disabled=false; ##tt
+  }
+  else if (txt=="blackhole")
+  {
+    document.forms.namedItem("logon").nforward.disabled=true;
+    document.forms.namedItem("logon").fsaved.disabled=true;
+##ts document.forms.namedItem("logon").spamcheck.disabled=true; ##tt
+  }
+  else
+  {
+    document.forms.namedItem("logon").nforward.disabled=false;
+    document.forms.namedItem("logon").fsaved.disabled=false;
+##ts document.forms.namedItem("logon").spamcheck.disabled=false; ##tt
+  }
+}
+
+function GetSelected()
+{
+   var i;
+   for( i=0; i<document.forms.namedItem("logon").cforward.length; ++i)
+      if( document.forms.namedItem("logon").cforward[i].checked)
+         return document.forms.namedItem("logon")	.cforward[i].value;
+   // default (non selected)
+   return -1;
+}
+</script>
+
+<div class="col-sm-9">
+
+	<!-- Modify user -->
+	<h2>##X109: ##A@##D</h2>
+
+	<form method="post" id="logon" action="##C/com/modusernow?##&">
+ 		<input type="hidden" name="modu" value="##A">
+          
+		<!-- real name -->
+ 		<div class="form-group">
+	   	<label for="gecos">##X092</label>
+	    	<input type="text" class="form-control" name="gecos" value="##i7" id="gecos" required>
+	  	</div>
+
+		<!-- new pwd -->
+ 		<div class="form-group">
+	   	<label for="password1">##X110</label>
+	    	<input type="password" class="form-control" name="password1" id="password1">
+	  	</div>
+	  	
+	  	<!-- new pwd (again) -->
+ 		<div class="form-group">
+	   	<label for="password2">##X091</label>
+	    	<input type="password" class="form-control" name="password2" id="password2">
+	  	</div>
+##tq	  	
+	  	<!-- quota -->
+		##ta	  	
+ 		<div class="form-group">
+	   	<label for="quota">##X249</label>
+	    	<input type="text" class="form-control" name="quota" id="quota" value="##q" required>
+			<small class="form-text text-muted">##X251</small>
+	  	</div>
+		##tt
+		<!-- displays quota for simple users -->
+		##tu
+ 		<div class="form-group">
+	   	<label for="quota">##X249</label>
+	    	<input type="text" class="form-control" name="quota" id="quota" value="##q" disabled>
+			<small class="form-text text-muted">##Q ##q MB</small>
+	  	</div>
+		##tt
+##tt
+
+     	<!-- routing -->
+		<h3>##X260</h3>
+
+		<!-- standard -->
+ 		<div class="form-check">
+			<input class="form-check-input" type="radio" name="cforward" id="cforward" 
+				onclick="document.forms.namedItem('logon').nforward.disabled=true;
+				document.forms.namedItem('logon').fsaved.disabled=true; ##ts document.forms[1].spamcheck.disabled=false; ##tt"
+				value="disable" ##i0>
+			<label class="form-check-label" for="cforward">##X205</label>
+		</div>
+
+		<!-- all mail deleted -->
+ 		<div class="form-check">		
+      	<input class="form-check-input" type="radio" name="cforward" 
+				onclick="document.forms[1].nforward.disabled=true;
+				document.forms.namedItem('logon').fsaved.disabled=true;
+				##ts document.forms.namedItem('logon').spamcheck.disabled=true; ##tt"
+				value="blackhole" ##i8>
+			<label class="form-check-label" for="cforward">##X303</label>
+		</div>
+
+		<!-- forward to -->
+ 		<div class="form-check">		
+			<input class="form-check-input" type="radio" name="cforward"
+				onclick="document.forms.namedItem('logon').nforward.disabled=false;
+				document.forms.namedItem('logon').fsaved.disabled=false;
+				document.forms.namedItem('logon').nforward.select();
+				document.forms.namedItem('logon').nforward.focus();
+				##ts document.forms.namedItem('logon').spamcheck.disabled=false; ##tt"
+				value="forward" ##i1>
+			<label class="form-check-label" for="cforward">##X211</label>		
+			<input class="my-input" type="text" size="35" name="nforward" value="##i2">
+			&nbsp; &nbsp; <input "form-check-input" type="checkbox" name="fsaved" id="fsaved" ##i3> 
+			<label class="form-check-label" for="fsaved">##X210</label>
+   	</div>
+      
+      <hr>
+      
+      <!-- vacation msg -->
+ 		<div class="form-check">        
+			<input class="form-check-input" type="checkbox" name="vacation" id="vacation"
+				onclick="document.forms.namedItem('logon').vsubject.select()
+				document.forms.namedItem('logon').vsubject.focus()"
+				value="on" ##i4>
+        	<label class="form-check-label" for="vacation">##X212</label>
+		</div>
+        
+      <!-- vacation subject -->
+      <div class="form-group"><br>
+	   	<label for="vsubject">##X213</label>
+        	<input class="form-control" type="text" name="vsubject" id="vsubject" value="##i5">
+		</div>
+		
+		<div class="form-group">
+			<label for="vmessage">##X214</label>
+			<textarea class="form-control" name="vmessage" id="vmessage" rows="10" cols="60">##i6</textarea>
+		</div>
+
+
+		<!-- spamcheck -->
+##ts
+ 		<div class="form-check">
+         <input class="form-check-input" type="checkbox" name="spamcheck" id="spamcheck" ##i9> 
+			<label class="form-check-label" for="vacation">##X304</label>
+      </div>
+##tt
+
+    <!-- user mailbox flags
+    <tr>
+    <td align=right valign=top>##X296:</td>
+    <td align="left">
+     ##X299:
+     <input type="radio" name="zeroflag" value="on" ##J1>##X297
+     &nbsp; &nbsp;
+     <input type="radio" name="zeroflag" value="off" ##J2>##X298
+     <BR>
+     ##X300:
+     <input type="radio" name="oneflag" value="on" ##J3>##X297
+     &nbsp; &nbsp;
+     <input type="radio" name="oneflag" value="off" ##J4>##X298
+     <BR>
+     ##X301:
+     <input type="radio" name="twoflag" value="on" ##J5>##X297
+     &nbsp; &nbsp;
+     <input type="radio" name="twoflag" value="off" ##J6>##X298
+     <BR>
+     ##X302:
+     <input type="radio" name="threeflag" value="on" ##J7>##X297
+     &nbsp; &nbsp;
+     <input type="radio" name="threeflag" value="off" ##J8>##X298
+    </td>
+    </tr>
+    user mailbox flags -->
+
+      <button type="submit" class="btn btn-primary">##X111</button>
+   </form>
+
+<script>
+  // alert( GetSelected() );
+  enablefields( GetSelected() );
+</script>
+
+</div>
+
+<div class="col-sm-3">
+	<nav class="nav flex-column">
+##ta
+		<!-- email accounts -->
+		<a class="nav-link" href="##C/com/showusers?##&">##X061</a>
+		<!-- main menu -->
+  		<a class="nav-link" href="##C/com/showmenu?##&">##X001</a>
+##tt
+  		<!-- logout -->
+  		##x
+	</nav>
+</div>

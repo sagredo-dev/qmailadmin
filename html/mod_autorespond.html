@@ -1,0 +1,55 @@
+<!-- modify robot/autoresponder -->	
+
+<div class="col-sm-9">
+	
+	<h2>##X105</h2>
+	
+		<form method="post" action="##C/com/modautorespondnow?##&">
+				
+				<!-- name -->
+  				<div class="form-group">
+		    		<label for="none">##X004</label>
+					<input class="form-control" type="text" id="none" name="none" value="##A@##D" disabled>
+				</div>
+
+				<!-- send to -->
+  				<div class="form-group">
+		    		<label for="owner">##X005</label>
+					<input class="form-control" type="text" id="owner" name="owner" ##F 
+					
+					<!-- WHAT THE FUCK IS THIS???? IT BREAKS THE HTML TAG GO BACK TO SRC AND CONTINUE HTML THERE!!! AHAHAHAHA -->
+<!--
+template.c line 223
+					value="%H@%H">
+				</div>
+				
+				// subject/alias
+				<div class="form-group">
+		         <label for="alias">text6</label>
+					<input class="form-control" type="text" name="alias" id="alias" value="##??">
+				</div>
+				
+				// message
+				<div class="form-group">
+       			<textarea class="form-control" rows="40" name="message"">##??</textarea>
+				</div>
+-->
+
+				<input type="hidden" name="newu" value="##A">
+           
+           	<button type="submit" class="btn btn-primary">##X105</button>
+      </form>
+</div>
+
+<div class="col-sm-3">
+	<nav class="nav flex-column">
+##ta	
+		<!-- email accounts -->
+		<a class="nav-link" href="##C/com/showautoresponders?##&">##X077</a>
+		<!-- main menu -->
+  		<a class="nav-link" href="##C/com/showmenu?##&">##X001</a>
+##tt
+  		<!-- logout -->
+  		##x
+	</nav>
+</div>

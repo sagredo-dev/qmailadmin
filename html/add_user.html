@@ -1,0 +1,66 @@
+<!-- add email account -->
+<div class="col-sm-9">
+
+	<!-- domain -->
+	<h2>##D</h2>
+
+	<!-- add email account -->
+	<h5>##X090</h5>
+
+   <form method="post" action="##C/com/addusernow?##&">
+
+		<!-- email -->
+  		<div class="form-group mt">
+    		<label for="newu">##X002</label>
+			<input class="form-control" type="text" id="newu" name="newu" required autofocus>
+			<small class="form-text text-muted">@##D</small>
+ 		</div>
+##tq
+
+		<!-- quota -->
+		<div class="form-group">
+    		<label for="quota">##X249</label>
+			<input class="form-control" type="text" id="quota" name="quota" required>
+			<small class="form-text text-muted">##X251</small>
+		</div>
+##tt
+      <!-- password -->
+		<div class="form-group">
+    		<label for="password1">##X057</label>
+			<input class="form-control" type="password" id="password1" name="password1" required>
+		</div>
+		
+      <!-- password (again) -->
+		<div class="form-group">
+    		<label for="password2">##X091</label>
+			<input class="form-control" type="password" id="password2" name="password2" required>
+		</div>		
+		
+		<!-- real name -->
+		<div class="form-group">
+    		<label for="gecos">##X092</label>
+			<input class="form-control" type="text" id="gecos" name="gecos" required>
+		</div>
+##ts
+		<!-- spam check -->
+		<div class="form-group">
+    		<label for="spamcheck">##X304</label><br>
+			<input type="checkbox" class="form-check-input" id="spamcheck" name="spamcheck">
+		</div>
+##tt
+           ##c
+      <button type="submit" class="btn btn-primary">##X060</button>
+	</form>
+          
+</div>
+
+<div class="col-sm-3">
+	<nav class="nav flex-column">
+		<!-- email accounts -->
+		<a class="nav-link" href="##C/com/showusers?##&">##X061</a>
+		<!-- main menu -->
+  		<a class="nav-link" href="##C/com/showmenu?##&">##X001</a>
+  		<!-- logout -->
+  		##x
+	</nav>
+</div>
