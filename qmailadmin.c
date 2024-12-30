@@ -290,14 +290,12 @@ int main(argc,argv)
 #endif
 /* end cracklib */
         } else if ((ret_code = vpasswd (User, Domain, Password1, USE_POP)) != VA_SUCCESS) {
-#ifndef CRACKLIB
-          /* pwd strength check. Not performed if CRACKLIB has been defined */
+          /* pwd strength check */
           if (((ret_code <= -69) && (ret_code >= -74)) && (pw_strength_policy() != NULL)) {
             snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H %s. %s",
             html_text[2], User, Domain, html_text[120], pw_strength_policy());
           }
           /* end pwd check */
-#endif
           snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
         } else {
           /* success */

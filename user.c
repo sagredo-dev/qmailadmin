@@ -505,14 +505,12 @@ void addusernow()
       html_text[119]);
   }
 
-#ifndef CRACKLIB
-  /* pwd strength check. Not performed if CRACKLIB has been defined */
+  /* pwd strength check */
   else if (((i <= -69) && (i >= -74)) && (pw_strength_policy() != NULL)) {
       snprinth (StatusMessage, sizeof(StatusMessage),
       "%s %H@%H %s. %s",
       html_text[2], Newu, Domain, html_text[120], pw_strength_policy());
   }
-#endif
   else {
       /* otherwise, report error */
       snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H (%H) %s",
@@ -843,17 +841,13 @@ void modusergo()
 #endif
 /* end cracklib */
     if ( (ret_code = vpasswd( ActionUser, Domain, Password1, USE_POP)) != VA_SUCCESS ) {
-#ifndef CRACKLIB
-      /*
-        pwd strength check. Not performed if CRACKLIB has been defined
-       */
+      /* pwd strength check */
       if (((ret_code <= -69) && (ret_code >= -74)) && (pw_strength_policy() != NULL)) {
         snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H %s. %s",
         html_text[2], ActionUser, Domain, html_text[120], pw_strength_policy());
       }
       /* end pwd strength */
       else
-#endif
       snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
       moduser();
       vclose();
