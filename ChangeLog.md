@@ -1,13 +1,18 @@
 # ChangeLog
 
-## unreleased
+## 1.2.24
 Roberto Puzzanghera
 
+  - definition of CFLAGS in configure.ac prevented CFLAGS to be overwritten
   - cracklib check improved in configure.ac
   - char *tmpstr in qmailadmin.c now under #ifdef CRACKLIB to avoid compilation warnings  
     in case CRACKlib is not defined
   - qmailadmin now shows an error message in case the change pwd failed due to the pwd  
     strength feature in vpopmail
+  - dropped zombie function modusernow() from user.c
+  - fix: pwd changed with success messages was printed twice
+  - bug fix on pwd strength check
+  - pwd strength output now is always shown
 
 ## 1.2.23
 Nathanaël Semhoun 
