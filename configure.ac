@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([qmailadmin],[1.2.23])
+AC_INIT([qmailadmin],[1.2.24])
 AC_CONFIG_SRCDIR([qmailadmin.c])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
@@ -45,9 +45,10 @@ AC_FUNC_CLOSEDIR_VOID
 #AC_FUNC_STAT
 AC_CHECK_FUNCS([dup2 memset mkdir strcasecmp strchr strdup strncasecmp strrchr strstr])
 
-if test "$GCC" = yes ; then
-  CFLAGS="-Wall"
-fi
+# commented out as it prevents CFLAGS to be overwritten
+#if test "$GCC" = yes ; then
+#  CFLAGS="-Wall"
+#fi
 
 CGIBINTARGETS=qmailadmin
 AC_SUBST(CGIBINTARGETS)
