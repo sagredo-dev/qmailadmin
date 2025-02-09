@@ -56,7 +56,7 @@
 #include "util.h"
 /* cracklib patch */
 #ifdef CRACKLIB
-#      include <crack.h>
+#include <crack.h>
 #endif
 /* end cracklib */
 
