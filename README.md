@@ -14,4 +14,4 @@ This `QmailAdmin` distribution puts together Inter7's last `qmailadmin-1.2.16` w
 The patches applied can be found in the contrib directory.
 
 ## Support
-To ask for support and find more informations have a look at the following page: https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html
+To ask for support and find more informations have a look at the following page: https://www.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html

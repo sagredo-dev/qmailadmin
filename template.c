@@ -451,9 +451,9 @@ int send_template_now(char *filename)
 
           /* show version number */
           case 'V':
-            printf("<a href=\"https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html\" target=\"_blank\">%s</a> %s ~ ",
+            printf("<a href=\"https://www.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html\" target=\"_blank\">%s</a> %s ~ ",
               QA_PACKAGE, QA_VERSION);
-            printf("<a href=\"https://notes.sagredo.eu/en/qmail-notes-185/installing-and-configuring-vpopmail-81.html\" target=\"_blank\">%s</a> %s",
+            printf("<a href=\"https://www.sagredo.eu/en/qmail-notes-185/installing-and-configuring-vpopmail-81.html\" target=\"_blank\">%s</a> %s",
               PACKAGE, VERSION);
             break;
 

@@ -78,7 +78,7 @@ Roberto Puzzanghera
 
 New patches can be found in the "contrib" folder.
 
-More info [here](https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html)
+More info [here](https://www.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html)
 
 -----------------------------------------
 
