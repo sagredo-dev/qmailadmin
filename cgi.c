@@ -71,11 +71,7 @@ void get_cgi()
 /* source is encoded cgi parameters, name is "fieldname="
  * copies value of fieldname into dest
  */
-int GetValue(source,dest,name,dest_max)
- char *source;
- char *dest;
- char *name;
- int   dest_max;
+int GetValue( char *source,  char *dest,  char *name, int   dest_max)
 {
  int i,j,k;
 

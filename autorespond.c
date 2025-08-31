@@ -46,10 +46,7 @@
 #include "template.h"
 #include "util.h"
 
-void show_autoresponders(user,dom,mytime)
- char *user;
- char *dom;
- time_t mytime;
+void show_autoresponders(char *user, char *dom, time_t mytime)
 {
   if ( MaxAutoResponders == 0 ) return;
 

@@ -1,5 +1,10 @@
 # ChangeLog
 
+## unreleased
+Roberto Puzzanghera
+
+  - fixed a lot of -Wold-style-definition compilation warnings showed by gcc-15.2
+
 ## 1.2.24
 Roberto Puzzanghera
 

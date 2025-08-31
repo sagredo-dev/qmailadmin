@@ -138,8 +138,7 @@ void qmail_button(char *modu, char *command, char *user, char *dom, time_t mytim
   printf ("</td>\n");
 }
 
-int check_local_user( user )
- char *user;
+int check_local_user(char *user)
 {
  struct stat buf;
  int i,j;
@@ -210,8 +209,7 @@ int check_email_addr( char *addr )
   return 0;
 }
 
-int fixup_local_name( addr )
- char *addr;
+int fixup_local_name(char *addr)
 {
  char *taddr = addr;
 
@@ -236,9 +234,7 @@ int fixup_local_name( addr )
   return(0);
 }
 
-void ack(msg, extra)
- char *msg;
- char *extra;
+void ack(char *msg, char *extra)
 {
   printf ("%s %s\n", get_html_text(msg), extra);
   printf ("</body></html>\n");
@@ -246,8 +242,7 @@ void ack(msg, extra)
   exit(0);
 }
 
-void upperit( instr )
- char *instr;
+void upperit(char *instr)
 {
   while(*instr!=0) {
     if ( islower(*instr) ) *instr = toupper(*instr);
@@ -264,9 +259,7 @@ char *safe_getenv(char *var)
   return(s);
 }
 
-char *strstart(sstr, tstr)
- char *sstr;
- char *tstr;
+char *strstart(char *sstr, char *tstr)
 {
  char *ret_str;
 

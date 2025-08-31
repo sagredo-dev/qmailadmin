@@ -166,9 +166,7 @@ void qmailadmin_suid (gid_t Gid, uid_t Uid)
   }
 }
 
-int main(argc,argv)
- int argc;
- char *argv[];
+int main(int argc, char *argv[])
 {
 #ifdef CRACKLIB
  const char *tmpstr;

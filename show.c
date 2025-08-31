@@ -20,10 +20,7 @@
 #include "template.h"
 #include "show.h"
 
-void show_menu(user, dom, mytime)
- char *user;
- char *dom;
- time_t mytime;
+void show_menu(char *user, char *dom, time_t mytime)
 {
   send_template( "main_menu.html" );
 }

@@ -44,9 +44,7 @@
 
 //extern char *crypt();
 
-void auth_system(ip_addr, pw)
- const char *ip_addr;
- struct vqpasswd *pw;
+void auth_system(const char *ip_addr, struct vqpasswd *pw)
 {
  FILE *fs;
  time_t time1; 
@@ -100,9 +98,7 @@ void auth_system(ip_addr, pw)
   }
 }
 
-void auth_user_domain(ip_addr,pw)
- const char *ip_addr;
- struct vqpasswd *pw;
+void auth_user_domain(const char *ip_addr, struct vqpasswd *pw)
 {
  FILE *fs;
  time_t time1; 
