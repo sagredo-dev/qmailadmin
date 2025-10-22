@@ -968,7 +968,7 @@ void modusergo()
   char ln[MAX_BUFF], file_buf[MAX_BUFF];
 
   // open control/defaultdelivery
-  snprintf(file_buf, sizeof(file_buf), "%s/control/defaultdelivery2", QMAILDIR);
+  snprintf(file_buf, sizeof(file_buf), "%s/control/defaultdelivery", QMAILDIR);
   file = fopen(file_buf, "r");
   if( file == NULL ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[402]);
