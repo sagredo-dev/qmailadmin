@@ -1,9 +1,11 @@
 # ChangeLog
 
-## unreleased
+## 1.2.25
 Roberto Puzzanghera
 
   - fixed a lot of -Wold-style-definition compilation warnings showed by gcc-15.2
+  - user.c: added a warning in case of non existent control/defauldelivery and
+    'defaultdelivery' was enabled in vpopmail.
 
 ## 1.2.24
 Roberto Puzzanghera

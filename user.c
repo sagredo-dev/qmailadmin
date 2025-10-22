@@ -53,7 +53,7 @@
 #include "vauth.h"
 /* cracklib patch */
 #ifdef CRACKLIB
-#	include <crack.h>
+#include <crack.h>
 #endif
 /* end cracklib patch */
 
@@ -968,12 +968,18 @@ void modusergo()
   char ln[MAX_BUFF], file_buf[MAX_BUFF];
 
   // open control/defaultdelivery
-  snprintf(file_buf, sizeof(file_buf), "%s/control/defaultdelivery", QMAILDIR);
+  snprintf(file_buf, sizeof(file_buf), "%s/control/defaultdelivery2", QMAILDIR);
   file = fopen(file_buf, "r");
-  if( file == NULL ) exit(127);
-
-  // write out on ln the 1st line
-  fgets(ln, sizeof(ln), file);
+  if( file == NULL ) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[402]);
+    send_template( "mod_user.html" );
+    vclose();
+    exit(0);
+  }
+  else {
+    // write out on ln the 1st line
+    fgets(ln, sizeof(ln), file);
+  }
   fclose(file);
 #endif
 /* end patch */

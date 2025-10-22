@@ -281,3 +281,4 @@
 313 la dirección
 314 Quota incorrecta
 315 Usuario borrado.  No se puede reenviar a '%s'.
+402 Habilito' 'defaultdelivery' en vpopmail, pero el archivo control/defaultdelivery no existe.

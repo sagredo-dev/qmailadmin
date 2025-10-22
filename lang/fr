@@ -283,4 +283,4 @@
 315 Utilisateur supprim&eacute;. Impossible de redirig&eacute; vers '%s'.
 316 Modifier le mot de passe
 317 Suppression du compte Postmaster impossible.
-
+402 Vous avez active' 'defaultdelivery' dans vpopmail, mais le fichier control/defaultdelivery n'existe pas.

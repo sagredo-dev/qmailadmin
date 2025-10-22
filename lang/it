@@ -8,7 +8,7 @@
 007 Aggiungi Forward:
 008 Indirizzo Email Forward:
 009 Casella locale:
-010 L'indirizzo destinatario dell'inoltro deve essere indicato nella forma <b>casella@dominio.xxx</b>.  <br>Il nome locale deve essere indicato nella forma: <b>casella</b> <br><b> Esempio: </b> <br>Forward: remo@remo.it Nome locale: pluto <br>In questo modo tutto cio' che sara' inviato alla casella pluto del vostro dominio sara' inoltrato a remo@remo.it
+010 L'indirizzo destinatario dell'inoltro deve essere indicato nella forma <b>casella@dominio.it</b>.  <br>Il nome locale deve essere indicato nella forma: <i>casella</i> <br><b> Esempio: </b> <br>Forward: <i>casella@dominio.it</i>. Nome locale: <i>pluto</i> <br>In questo modo tutto cio' che sara' inviato alla casella <i>pluto</i> del vostro dominio sara' inoltrato a <i>casella@dominio.it</i>
 011 Aggiungi moderatore della lista
 012 Aggiungi moderatore alla Lista
 013 Indirizzo Email:
@@ -282,3 +282,4 @@
 314 Quota non valida
 315 Utente cancellato. Impossibile impostare forward a '%s'.
 320 Password non accettata. Pu&ograve; essere facilmente indovinata sapendo il nome utente
+402 Hai abilitato 'defaultdelivery' in vpopmail, ma il file control/defaultdelivery non esiste

@@ -288,3 +288,4 @@
 320 Invalid password: it can be easily guessed from the username
 400 Content-type: text/plain 
 401 Content-transfer-encoding: 7bit
+402 You enabled the 'defaultdelivery' feature in vpopmail but the control/defaultdelivery file is missing
