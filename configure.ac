@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([qmailadmin],[1.2.24])
+AC_INIT([qmailadmin],[1.2.25])
 AC_CONFIG_SRCDIR([qmailadmin.c])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
