@@ -53,6 +53,10 @@ AC_CHECK_FUNCS([dup2 memset mkdir strcasecmp strchr strdup strncasecmp strrchr s
 CGIBINTARGETS=qmailadmin
 AC_SUBST(CGIBINTARGETS)
 
+dnl ===============================================================
+dnl  Check for vpopmail headers and version >= 5.6.6
+dnl ===============================================================
+
 vpopmaildir=""
 for f in ~vpopmail
 do
@@ -76,6 +80,42 @@ auth_incs=`cat $vpopmaildir/etc/inc_deps`
 AC_SUBST(auth_incs)
 auth_libs=`cat $vpopmaildir/etc/lib_deps`
 AC_SUBST(auth_libs)
+
+CPPFLAGS="$CPPFLAGS -I$vpopmaildir/include"
+LDFLAGS="$LDFLAGS -L$vpopmaildir/lib"
+
+AC_CHECK_HEADERS([vpopmail.h],
+    [have_vpopmail_h=yes],
+    [AC_MSG_ERROR([vpopmail.h not found in $vpopmaildir/include])])
+
+AC_MSG_CHECKING([for vpopmail version >= 5.6.6])
+
+AC_RUN_IFELSE(
+  [AC_LANG_PROGRAM(
+     [[#include <config.h>
+       #include <stdio.h>
+       #include <stdlib.h>
+       #include <string.h>]],
+     [[
+       const char *ver = VERSION;
+       int major=0, minor=0, patch=0;
+       if (sscanf(ver, "%d.%d.%d", &major, &minor, &patch) != 3) {
+         printf("no, failed in parsing vpopmail version\n");
+         return 1;
+       }
+       if (major < 5 || (major == 5 && minor < 6) || (major == 5 && minor == 6 && patch < 6)) {
+         printf("no, found %s\n", ver);
+         return 1;
+       }
+       printf("yes, found %s\n", ver);
+       return 0;
+     ]]
+  )],
+  [],
+  [AC_MSG_ERROR([vpopmail version is too old, need >= 5.6.6])]
+)
+
+dnl ===============================================================
 
 htmldir=""
 for f in /home/httpd/html /usr/local/apache/htdocs /usr/local/www/data /var/www/html
