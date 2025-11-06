@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Directory for authentication logs */
+#undef AUTH_LOGDIR
+
 /* "" */
 #undef AUTORESPOND_PATH
 
@@ -17,6 +20,9 @@
 
 /* "" */
 #undef DOMAIN_AUTOFILL
+
+/* Define if authentication logging is disabled */
+#undef ENABLE_AUTH_LOG
 
 /* "" */
 #undef ENABLE_MYSQL

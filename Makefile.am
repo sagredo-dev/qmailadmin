@@ -64,19 +64,28 @@ dist-hook:
 
 # use the [^C]* pattern to skip the CVS directory
 install-data-local:
-	$(mkinstalldirs)         $(DESTDIR)@htmllibdir@
-	rm -rf                   $(DESTDIR)@htmllibdir@/html
-	$(mkinstalldirs)         $(DESTDIR)@htmllibdir@/html 
-	cp $(srcdir)/html/*.html $(DESTDIR)@htmllibdir@/html
+	$(MKDIR_P)                $(DESTDIR)@htmllibdir@
+	rm -rf                    $(DESTDIR)@htmllibdir@/html
+	$(MKDIR_P)                $(DESTDIR)@htmllibdir@/html
+	cp $(srcdir)/html/*.html  $(DESTDIR)@htmllibdir@/html
 	cp $(srcdir)/html/colortable $(DESTDIR)@htmllibdir@/html
-	chmod 755                $(DESTDIR)@htmllibdir@/html
-	chmod 644                $(DESTDIR)@htmllibdir@/html/*
-	rm -rf                   $(DESTDIR)@htmllibdir@/lang
-	$(mkinstalldirs)         $(DESTDIR)@htmllibdir@/lang 
-	cp $(srcdir)/lang/??     $(DESTDIR)@htmllibdir@/lang
-	cp $(srcdir)/lang/??-??  $(DESTDIR)@htmllibdir@/lang
-	chmod 755                $(DESTDIR)@htmllibdir@/lang
-	chmod 644                $(DESTDIR)@htmllibdir@/lang/*
-	$(mkinstalldirs)         $(DESTDIR)@imagedir@
+	chmod 755                 $(DESTDIR)@htmllibdir@/html
+	chmod 644                 $(DESTDIR)@htmllibdir@/html/*
+	rm -rf                    $(DESTDIR)@htmllibdir@/lang
+	$(MKDIR_P)                $(DESTDIR)@htmllibdir@/lang
+	cp $(srcdir)/lang/??      $(DESTDIR)@htmllibdir@/lang
+	cp $(srcdir)/lang/??-??   $(DESTDIR)@htmllibdir@/lang
+	chmod 755                 $(DESTDIR)@htmllibdir@/lang
+	chmod 644                 $(DESTDIR)@htmllibdir@/lang/*
+	$(MKDIR_P)                $(DESTDIR)@imagedir@
 	cp $(srcdir)/images/*.png $(DESTDIR)@imagedir@
 	cp $(srcdir)/images/*.css $(DESTDIR)@imagedir@
+
+if ENABLE_AUTH_LOG
+install-data-hook:
+	@echo "Creating authentication log directory: $(DESTDIR)$(auth_logdir)"
+	$(MKDIR_P) $(DESTDIR)$(auth_logdir)
+	@echo "Setting owner to vpopmail:vchkpw and permissions to 750"
+	-@chown vpopmail:vchkpw $(DESTDIR)$(auth_logdir) 2>/dev/null || true
+	chmod 750 $(DESTDIR)$(auth_logdir)
+endif

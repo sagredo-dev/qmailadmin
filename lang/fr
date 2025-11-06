@@ -284,3 +284,4 @@
 316 Modifier le mot de passe
 317 Suppression du compte Postmaster impossible.
 402 Vous avez active' 'defaultdelivery' dans vpopmail, mais le fichier control/defaultdelivery n'existe pas.
+403 Impossible d'ouvrir le fichier journal d'authentification. Consultez le journal du serveur web (stderr) pour plus d'informations.

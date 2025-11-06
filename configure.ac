@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([qmailadmin],[1.2.25])
+AC_INIT([qmailadmin],[1.2.26])
 AC_CONFIG_SRCDIR([qmailadmin.c])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
@@ -545,6 +545,39 @@ case $cracklib in
      ;;
 esac
 
+dnl ============================================================
+dnl  Authentication log option
+dnl ============================================================
+
+AC_ARG_WITH([auth-log],
+    [AS_HELP_STRING([--with-auth-log[=DIR]],
+                    [Enable authentication logging (default directory: ~vpopmail/log). Use --without-auth-log to disable.])],
+    [
+        if test "x$withval" = "xno"; then
+            enable_auth_log=no
+            auth_logdir="no"
+        elif test "x$withval" = "xyes"; then
+            enable_auth_log=yes
+            auth_logdir="$vpopmaildir/log"
+        else
+            enable_auth_log=yes
+            auth_logdir="$withval"
+        fi
+    ],
+    [enable_auth_log=yes; auth_logdir="$vpopmaildir/log"])
+
+if test "x$enable_auth_log" = "xyes"; then
+    AC_DEFINE([ENABLE_AUTH_LOG], [1], [Define if authentication logging is enabled])
+    AC_DEFINE_UNQUOTED([AUTH_LOGDIR], ["$auth_logdir"], [Directory for authentication logs])
+    AC_SUBST([auth_logdir])
+else
+    AC_DEFINE([ENABLE_AUTH_LOG], [0], [Define if authentication logging is disabled])
+fi
+
+AM_CONDITIONAL([ENABLE_AUTH_LOG], [test "x$enable_auth_log" = "xyes"])
+
+dnl ============================================================
+
 HELP=no
 AC_ARG_ENABLE(help, [  --enable-help  Display help links on login page.],
     HELP="$enableval",)
@@ -586,32 +619,34 @@ AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 echo ""
-echo "          $PACKAGE_NAME $PACKAGE_VERSION"
-echo "             Current settings"
-echo "---------------------------------------------------------------"
-echo "        cgi-bin dir = "$cgibindir""
-echo "           html dir = "$htmldir""
-echo "          image dir = "$imagedir""
-echo "          image URL = "$imageurl""
-echo "       template dir = "$htmllibdir""
-echo "          qmail dir = "$qmaildir""
-echo "       vpopmail dir = "$vpopmaildir""
-echo "    autorespond dir = "$autorespond_path""
-echo "          ezmlm dir = "$ezmlmdir""
-echo "          ezmlm idx = "$ezmlmidx""
-echo "    mysql for ezmlm = "$mysql""
-echo "               help = "$enable_help""
-echo "       modify quota = "$MODIFY_QUOTA""
-echo "    domain autofill = "$DOMAIN_AUTOFILL""
-echo "  catchall accounts = "$CATCHALL_ENABLED""
-echo "  trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
-echo "  modify spam check = "$MODIFY_SPAM""
+echo "              $PACKAGE_NAME $PACKAGE_VERSION"
+echo "                 Current settings"
+echo "-------------------------------------------------------------------"
+echo "            cgi-bin dir = "$cgibindir""
+echo "               html dir = "$htmldir""
+echo "              image dir = "$imagedir""
+echo "              image URL = "$imageurl""
+echo "           template dir = "$htmllibdir""
+echo "              qmail dir = "$qmaildir""
+echo "           vpopmail dir = "$vpopmaildir""
+echo "        autorespond dir = "$autorespond_path""
+echo "              ezmlm idx = "$ezmlmidx""
+echo "              ezmlm dir = "$ezmlmdir""
+echo "        mysql for ezmlm = "$mysql""
+echo "           auth log dir = "$auth_logdir""
+echo "                   help = "$enable_help""
+echo "           modify quota = "$MODIFY_QUOTA""
+echo "        domain autofill = "$DOMAIN_AUTOFILL""
+echo "      catchall accounts = "$CATCHALL_ENABLED""
+echo "      trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
+echo "      modify spam check = "$MODIFY_SPAM""
 if test "$MODIFY_SPAM" = "yes"
 then
-echo "       spam command = "$spam_command""
+echo "           spam command = "$spam_command""
 fi
-echo "cracklib dictionary = "$cracklib""
+echo "    cracklib dictionary = "$cracklib""
 if test "$qmailautoresponder" != "no"
 then
-echo "      autoresponder = qmail autoresponder"
+echo "          autoresponder = qmail autoresponder"
 fi
+echo ""

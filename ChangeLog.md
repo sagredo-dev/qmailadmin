@@ -6,6 +6,9 @@ Roberto Puzzanghera
   - fixed a lot of -Wold-style-definition compilation warnings showed by gcc-15.2
   - user.c: added a warning in case of non existent control/defaultdelivery and
     'defaultdelivery' was enabled in vpopmail.
+  - auth log feature: added support for configurable auth logging failures
+    via --with-auth-log[=DIR] option (default path: ~vpopmail/log). Logging failures
+    now correctly occurs under the vpopmail user context, avoiding permission errors.
 
 ## 1.2.24
 Roberto Puzzanghera
