@@ -22,7 +22,9 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#ifdef ENABLE_AUTH_LOG
 #include <time.h>
+#endif
 #include <unistd.h>
 #include <pwd.h>
 #include <dirent.h>
@@ -117,7 +119,6 @@ uid_t Uid;
 gid_t Gid;
 char RealDir[156];
 char Lang[40];
-
 
 #ifdef ENABLE_AUTH_LOG
 static void log_auth(char *msg)
