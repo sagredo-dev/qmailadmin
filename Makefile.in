@@ -917,6 +917,10 @@ install-data-local:
 @ENABLE_AUTH_LOG_TRUE@	@echo "Setting owner to vpopmail:vchkpw and permissions to 750"
 @ENABLE_AUTH_LOG_TRUE@	-@chown vpopmail:vchkpw $(DESTDIR)$(auth_logdir) 2>/dev/null || true
 @ENABLE_AUTH_LOG_TRUE@	chmod 750 $(DESTDIR)$(auth_logdir)
+@ENABLE_AUTH_LOG_TRUE@	@echo "Creating empty log file: $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log"
+@ENABLE_AUTH_LOG_TRUE@	-@touch $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log
+@ENABLE_AUTH_LOG_TRUE@	-@chown vpopmail:vchkpw $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log 2>/dev/null || true
+@ENABLE_AUTH_LOG_TRUE@	chmod 640 $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

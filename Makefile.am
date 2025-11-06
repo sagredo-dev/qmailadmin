@@ -88,4 +88,8 @@ install-data-hook:
 	@echo "Setting owner to vpopmail:vchkpw and permissions to 750"
 	-@chown vpopmail:vchkpw $(DESTDIR)$(auth_logdir) 2>/dev/null || true
 	chmod 750 $(DESTDIR)$(auth_logdir)
+	@echo "Creating empty log file: $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log"
+	-@touch $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log
+	-@chown vpopmail:vchkpw $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log 2>/dev/null || true
+	chmod 640 $(DESTDIR)$(auth_logdir)/qmailadmin-auth.log
 endif
