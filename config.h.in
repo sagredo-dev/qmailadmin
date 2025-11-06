@@ -21,7 +21,7 @@
 /* "" */
 #undef DOMAIN_AUTOFILL
 
-/* Define if authentication logging is disabled */
+/* Enable authentication logging */
 #undef ENABLE_AUTH_LOG
 
 /* "" */

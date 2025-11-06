@@ -6317,10 +6317,6 @@ printf "%s\n" "#define ENABLE_AUTH_LOG 1" >>confdefs.h
 printf "%s\n" "#define AUTH_LOGDIR \"$auth_logdir\"" >>confdefs.h
 
 
-else
-
-printf "%s\n" "#define ENABLE_AUTH_LOG 0" >>confdefs.h
-
 fi
 
  if test "x$enable_auth_log" = "xyes"; then

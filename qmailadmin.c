@@ -126,7 +126,7 @@ static void log_auth(char *msg)
     struct tm tm;
     char time_buf[64];
     char *Qmadir = AUTH_LOGDIR;
-    char *logname = "qma-auth.log";
+    char *logname = "qmailadmin-auth.log";
     char Qmalog[MAX_BUFF];
     snprintf(Qmalog, sizeof(Qmalog), "%s/%s", Qmadir, logname);
 

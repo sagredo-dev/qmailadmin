@@ -567,11 +567,9 @@ AC_ARG_WITH([auth-log],
     [enable_auth_log=yes; auth_logdir="$vpopmaildir/log"])
 
 if test "x$enable_auth_log" = "xyes"; then
-    AC_DEFINE([ENABLE_AUTH_LOG], [1], [Define if authentication logging is enabled])
+    AC_DEFINE([ENABLE_AUTH_LOG], [1], [Enable authentication logging])
     AC_DEFINE_UNQUOTED([AUTH_LOGDIR], ["$auth_logdir"], [Directory for authentication logs])
     AC_SUBST([auth_logdir])
-else
-    AC_DEFINE([ENABLE_AUTH_LOG], [0], [Define if authentication logging is disabled])
 fi
 
 AM_CONDITIONAL([ENABLE_AUTH_LOG], [test "x$enable_auth_log" = "xyes"])
