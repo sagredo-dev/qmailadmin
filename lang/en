@@ -289,3 +289,4 @@
 400 Content-type: text/plain 
 401 Content-transfer-encoding: 7bit
 402 You enabled the 'defaultdelivery' feature in vpopmail but the control/defaultdelivery file is missing
+403 Unable to open auth log file. Refer to the web server log (stderr) for more info.

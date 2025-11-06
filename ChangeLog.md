@@ -1,5 +1,13 @@
 # ChangeLog
 
+## 1.2.26
+Roberto Puzzanghera
+
+  - configure program is now able to guess vpopmail version
+  - auth log feature: added support for configurable auth logging failures
+    via --with-auth-log[=DIR] option (default path: ~vpopmail/log). Logging failures
+    now correctly occurs under the vpopmail user context, avoiding permission errors.
+
 ## 1.2.25
 Roberto Puzzanghera
 

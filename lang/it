@@ -281,5 +281,6 @@
 313 l'indirizzo
 314 Quota non valida
 315 Utente cancellato. Impossibile impostare forward a '%s'.
-320 Password non accettata. Pu&ograve; essere facilmente indovinata sapendo il nome utente
-402 Hai abilitato 'defaultdelivery' in vpopmail, ma il file control/defaultdelivery non esiste
+320 Password non accettata. Pu&ograve; essere facilmente indovinata sapendo il nome utente.
+402 Hai abilitato 'defaultdelivery' in vpopmail, ma il file control/defaultdelivery non esiste.
+403 Impossibile aprire l'auth log. Controllare il log del web server log (stderr) per maggiori info.

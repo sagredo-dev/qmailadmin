@@ -16,13 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
-
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <dirent.h>
@@ -30,7 +30,7 @@
 #include <vpopmail.h>
 #include <vauth.h>
 #include <vlimits.h>
-#include "pwstr.h"
+#include <pwstr.h>
 
 /* undef some macros that get redefined in config.h below */
 #undef PACKAGE
@@ -59,8 +59,6 @@
 #include <crack.h>
 #endif
 /* end cracklib */
-
-char *Qmalog = "/var/log/qma-auth.log";
 
 char Username[MAX_BUFF];
 char Domain[MAX_BUFF];
@@ -120,33 +118,38 @@ gid_t Gid;
 char RealDir[156];
 char Lang[40];
 
-static void
-log_auth(char *msg)
+
+#ifdef ENABLE_AUTH_LOG
+static void log_auth(char *msg)
 {
-    FILE *fp = NULL;
-    if ((fp = fopen(Qmalog, "a")) == NULL) {
-        fprintf(stderr, "Unable to open file %s (privilege problems?)\n", Qmalog);
-        exit(-1);
-    }
-
-    const char *ip_addr = getenv("REMOTE_ADDR");
-    if (!ip_addr)
-        ip_addr = "127.0.0.1";
-
     time_t tv;
     struct tm tm;
     char time_buf[64];
+    char *Qmadir = AUTH_LOGDIR;
+    char *logname = "qmailadmin-auth.log";
+    char Qmalog[MAX_BUFF];
+    snprintf(Qmalog, sizeof(Qmalog), "%s/%s", Qmadir, logname);
 
     time(&tv);
     localtime_r(&tv, &tm);
     strftime(time_buf, sizeof(time_buf) - 2, "%Y/%m/%d %H:%M:%S", &tm);
 
-    fprintf(fp, "%s user:%s@%s ip:%s auth:%s\n", time_buf, Username, Domain, ip_addr, msg);
-
-    if (fclose(fp) != 0) {
+    FILE *fp = fopen(Qmalog, "a");
+    if (fp == NULL) {
+        fprintf(stderr, "[%s] Unable to open file %s (privilege problems?)\n", time_buf, Qmalog);
+        snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[403]);
+        show_login();
         exit(-1);
     }
+
+    const char *ip_addr = getenv("REMOTE_ADDR");
+    if (!ip_addr) ip_addr = "127.0.0.1";
+
+    fprintf(fp, "%s user:%s@%s ip:%s auth:%s\n", time_buf, Username, Domain, ip_addr, msg);
+
+    if (fclose(fp) != 0) exit(-1);
 }
+#endif
 
 void qmailadmin_suid (gid_t Gid, uid_t Uid)
 {
@@ -237,10 +240,12 @@ int main(int argc, char *argv[])
       /* username entered, but no password */
       snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[198]);
 
+#ifdef ENABLE_AUTH_LOG
       char log_buf[3 * MAX_BUFF];
       memset(log_buf, 0x0, sizeof(log_buf));
-      snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
+      snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Username, Domain);
       log_auth(log_buf);
+#endif
     } else if (*Username && *Password) {
       /* attempt to authenticate user */
       vget_assign (Domain, RealDir, sizeof(RealDir), &Uid, &Gid);
@@ -255,10 +260,12 @@ int main(int argc, char *argv[])
       if ( *Domain == '\0' ) {
         snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[198]);
 
+#ifdef ENABLE_AUTH_LOG
         char log_buf[3 * MAX_BUFF];
         memset(log_buf, 0x0, sizeof(log_buf));
-        snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
+        snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Username, Domain);
         log_auth(log_buf);
+#endif
       } else {
         chdir(RealDir);
         load_limits();
@@ -267,10 +274,12 @@ int main(int argc, char *argv[])
         if ( pw == NULL ) {
           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[198]);
 
+#ifdef ENABLE_AUTH_LOG
           char log_buf[3 * MAX_BUFF];
           memset(log_buf, 0x0, sizeof(log_buf));
-          snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
+          snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Username, Domain);
           log_auth(log_buf);
+#endif
         } else if (pw->pw_flags & NO_PASSWD_CHNG) {
           strcpy (StatusMessage, "You don't have permission to change your password.");
         } else if (strcmp (Password1, Password2) != 0) {
@@ -329,13 +338,15 @@ int main(int argc, char *argv[])
          load_limits();
 
          pw = vauth_user( Username, Domain, Password, "" );
-         if ( pw == NULL ) { 
+         if ( pw == NULL ) {
            snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[198]);
 
+#ifdef ENABLE_AUTH_LOG
            char log_buf[3 * MAX_BUFF];
            memset(log_buf, 0x0, sizeof(log_buf));
-           snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Newu, Domain);
+           snprintf(log_buf, sizeof(log_buf) - 2, "failed [%s@%s]", Username, Domain);
            log_auth(log_buf);
+#endif
 
            show_login();
            vclose();
@@ -593,7 +604,7 @@ void quickAction (char *username, int action)
    * in hopes that someday we'll remove the globals and pass parameters.
    */
 
-  /* first check for alias/forward, autorepsonder (or even mailing list) */
+  /* first check for alias/forward, autoresponder (or even mailing list) */
   aliasline = valias_select (username, Domain);
   if (aliasline != NULL) {
     /* Autoresponder/Mailing List detection algorithm:

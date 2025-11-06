@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([qmailadmin],[1.2.25])
+AC_INIT([qmailadmin],[1.2.26])
 AC_CONFIG_SRCDIR([qmailadmin.c])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
@@ -53,6 +53,10 @@ AC_CHECK_FUNCS([dup2 memset mkdir strcasecmp strchr strdup strncasecmp strrchr s
 CGIBINTARGETS=qmailadmin
 AC_SUBST(CGIBINTARGETS)
 
+dnl ===============================================================
+dnl  Check for vpopmail headers and version >= 5.6.6
+dnl ===============================================================
+
 vpopmaildir=""
 for f in ~vpopmail
 do
@@ -76,6 +80,42 @@ auth_incs=`cat $vpopmaildir/etc/inc_deps`
 AC_SUBST(auth_incs)
 auth_libs=`cat $vpopmaildir/etc/lib_deps`
 AC_SUBST(auth_libs)
+
+CPPFLAGS="$CPPFLAGS -I$vpopmaildir/include"
+LDFLAGS="$LDFLAGS -L$vpopmaildir/lib"
+
+AC_CHECK_HEADERS([vpopmail.h],
+    [have_vpopmail_h=yes],
+    [AC_MSG_ERROR([vpopmail.h not found in $vpopmaildir/include])])
+
+AC_MSG_CHECKING([for vpopmail version >= 5.6.6])
+
+AC_RUN_IFELSE(
+  [AC_LANG_PROGRAM(
+     [[#include <config.h>
+       #include <stdio.h>
+       #include <stdlib.h>
+       #include <string.h>]],
+     [[
+       const char *ver = VERSION;
+       int major=0, minor=0, patch=0;
+       if (sscanf(ver, "%d.%d.%d", &major, &minor, &patch) != 3) {
+         printf("no, failed in parsing vpopmail version\n");
+         return 1;
+       }
+       if (major < 5 || (major == 5 && minor < 6) || (major == 5 && minor == 6 && patch < 6)) {
+         printf("no, found %s\n", ver);
+         return 1;
+       }
+       printf("yes, found %s\n", ver);
+       return 0;
+     ]]
+  )],
+  [],
+  [AC_MSG_ERROR([vpopmail version is too old, need >= 5.6.6])]
+)
+
+dnl ===============================================================
 
 htmldir=""
 for f in /home/httpd/html /usr/local/apache/htdocs /usr/local/www/data /var/www/html
@@ -505,6 +545,37 @@ case $cracklib in
      ;;
 esac
 
+dnl ============================================================
+dnl  Authentication log option
+dnl ============================================================
+
+AC_ARG_WITH([auth-log],
+    [AS_HELP_STRING([--with-auth-log[=DIR]],
+                    [Enable authentication logging (default directory: ~vpopmail/log). Use --without-auth-log to disable.])],
+    [
+        if test "x$withval" = "xno"; then
+            enable_auth_log=no
+            auth_logdir="no"
+        elif test "x$withval" = "xyes"; then
+            enable_auth_log=yes
+            auth_logdir="$vpopmaildir/log"
+        else
+            enable_auth_log=yes
+            auth_logdir="$withval"
+        fi
+    ],
+    [enable_auth_log=yes; auth_logdir="$vpopmaildir/log"])
+
+if test "x$enable_auth_log" = "xyes"; then
+    AC_DEFINE([ENABLE_AUTH_LOG], [1], [Enable authentication logging])
+    AC_DEFINE_UNQUOTED([AUTH_LOGDIR], ["$auth_logdir"], [Directory for authentication logs])
+    AC_SUBST([auth_logdir])
+fi
+
+AM_CONDITIONAL([ENABLE_AUTH_LOG], [test "x$enable_auth_log" = "xyes"])
+
+dnl ============================================================
+
 HELP=no
 AC_ARG_ENABLE(help, [  --enable-help  Display help links on login page.],
     HELP="$enableval",)
@@ -546,32 +617,34 @@ AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 
 echo ""
-echo "          $PACKAGE_NAME $PACKAGE_VERSION"
-echo "             Current settings"
-echo "---------------------------------------------------------------"
-echo "        cgi-bin dir = "$cgibindir""
-echo "           html dir = "$htmldir""
-echo "          image dir = "$imagedir""
-echo "          image URL = "$imageurl""
-echo "       template dir = "$htmllibdir""
-echo "          qmail dir = "$qmaildir""
-echo "       vpopmail dir = "$vpopmaildir""
-echo "    autorespond dir = "$autorespond_path""
-echo "          ezmlm dir = "$ezmlmdir""
-echo "          ezmlm idx = "$ezmlmidx""
-echo "    mysql for ezmlm = "$mysql""
-echo "               help = "$enable_help""
-echo "       modify quota = "$MODIFY_QUOTA""
-echo "    domain autofill = "$DOMAIN_AUTOFILL""
-echo "  catchall accounts = "$CATCHALL_ENABLED""
-echo "  trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
-echo "  modify spam check = "$MODIFY_SPAM""
+echo "              $PACKAGE_NAME $PACKAGE_VERSION"
+echo "                 Current settings"
+echo "-------------------------------------------------------------------"
+echo "            cgi-bin dir = "$cgibindir""
+echo "               html dir = "$htmldir""
+echo "              image dir = "$imagedir""
+echo "              image URL = "$imageurl""
+echo "           template dir = "$htmllibdir""
+echo "              qmail dir = "$qmaildir""
+echo "           vpopmail dir = "$vpopmaildir""
+echo "        autorespond dir = "$autorespond_path""
+echo "              ezmlm idx = "$ezmlmidx""
+echo "              ezmlm dir = "$ezmlmdir""
+echo "        mysql for ezmlm = "$mysql""
+echo "           auth log dir = "$auth_logdir""
+echo "                   help = "$enable_help""
+echo "           modify quota = "$MODIFY_QUOTA""
+echo "        domain autofill = "$DOMAIN_AUTOFILL""
+echo "      catchall accounts = "$CATCHALL_ENABLED""
+echo "      trivial passwords = "$TRIVIAL_PASSWORD_ENABLED""
+echo "      modify spam check = "$MODIFY_SPAM""
 if test "$MODIFY_SPAM" = "yes"
 then
-echo "       spam command = "$spam_command""
+echo "           spam command = "$spam_command""
 fi
-echo "cracklib dictionary = "$cracklib""
+echo "    cracklib dictionary = "$cracklib""
 if test "$qmailautoresponder" != "no"
 then
-echo "      autoresponder = qmail autoresponder"
+echo "          autoresponder = qmail autoresponder"
 fi
+echo ""
