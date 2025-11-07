@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
           log_auth(log_buf);
 #endif
         } else if (pw->pw_flags & NO_PASSWD_CHNG) {
-          strcpy (StatusMessage, "You don't have permission to change your password.");
+          strcpy (StatusMessage, "%s", html_text[404]);
         } else if (strcmp (Password1, Password2) != 0) {
           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[200]);
         } else if (*Password1 == '\0') {
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
 /* cracklib patch */
 #ifdef CRACKLIB
 	} else if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
-	  sprintf (StatusMessage, "Bad password - %s\n", tmpstr);
+	  sprintf (StatusMessage, "%s - %s\n", html_text[405], tmpstr);
 #endif
 /* end cracklib */
         } else if ((ret_code = vpasswd (User, Domain, Password1, USE_POP)) != VA_SUCCESS) {

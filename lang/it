@@ -284,3 +284,5 @@
 320 Password non accettata. Pu&ograve; essere facilmente indovinata sapendo il nome utente.
 402 Hai abilitato 'defaultdelivery' in vpopmail, ma il file control/defaultdelivery non esiste.
 403 Impossibile aprire l'auth log. Controllare il log del web server log (stderr) per maggiori info.
+404 Non hai i permessi per poter cambiare la password. 
+405 Password non valida
