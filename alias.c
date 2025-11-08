@@ -517,6 +517,7 @@ void moddotqmailnow()
     }
     else if (dotqmail_del_line(ActionUser,LineData) ) {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[150], 1);
+      fprintf(stderr, "alias.c: %s %d\n", html_text[150], 1);
     } else {
       snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[151] );
     }
@@ -606,6 +607,7 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
   if (strcmp (dest, "#") == 0) {
     if (dotqmail_add_line(forwardname, "#")) {
        snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[150], 2);
+       fprintf(stderr, "alias.c: %s %d\n", html_text[150], 2);
        return(-1);
     }
     return 0;
@@ -635,6 +637,7 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
   if (dest2 != NULL) free(dest2);
   if (dotqmail_add_line(forwardname, TmpBuf2)) {
      snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[150], 2);
+     fprintf(stderr, "alias.c: %s %d\n", html_text[150], 2);
      return(-1);
   }
 

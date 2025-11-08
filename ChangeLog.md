@@ -3,10 +3,13 @@
 ## 1.2.26
 Roberto Puzzanghera
 
-  - configure program is now able to guess vpopmail version
+  Improved the handling of program exit because of wrong configuration.
+  This should avoid the unpleasant "blank screen" situation in some cases.
+  - configure program is now able to require minimum vpopmail version
   - auth log feature: added support for configurable auth logging failures
     via --with-auth-log[=DIR] option (default path: ~vpopmail/log). Logging failures
     now correctly occurs under the vpopmail user context, avoiding permission errors.
+  - added verbosity to the "File error" event.
 
 ## 1.2.25
 Roberto Puzzanghera
