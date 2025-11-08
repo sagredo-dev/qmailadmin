@@ -282,7 +282,7 @@ int main(int argc, char *argv[])
           log_auth(log_buf);
 #endif
         } else if (pw->pw_flags & NO_PASSWD_CHNG) {
-          strcpy (StatusMessage, "%s", html_text[404]);
+          snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[404]);
         } else if (strcmp (Password1, Password2) != 0) {
           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[200]);
         } else if (*Password1 == '\0') {

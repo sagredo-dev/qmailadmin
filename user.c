@@ -767,6 +767,7 @@ int makevacation (FILE *d, char *dir)
 
   if ( (f = fopen(fn, "w")) == NULL ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s %s\n", html_text[150], fn);
+    fprintf(stderr, "user.c: %s %s\n", html_text[150], fn);
     return 1;
   }
   fprintf(f, "From: %s@%s\n", ActionUser, Domain);
