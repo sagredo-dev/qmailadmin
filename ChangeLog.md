@@ -3,8 +3,8 @@
 ## 1.2.26
 Roberto Puzzanghera
 
-  Improved the handling of program exits because of wrong configuration.
-  This should avoid the "blank screen" situation.
+  Improved the handling of program exit because of wrong configuration.
+  This should avoid the unpleasant "blank screen" situation in some cases.
   - configure program is now able to require minimum vpopmail version
   - auth log feature: added support for configurable auth logging failures
     via --with-auth-log[=DIR] option (default path: ~vpopmail/log). Logging failures
