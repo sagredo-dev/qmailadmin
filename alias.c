@@ -636,8 +636,8 @@ int adddotqmail_shared(char *forwardname, char *dest, int create) {
   snprintf (TmpBuf2, sizeof(TmpBuf2), "&%s", dest);
   if (dest2 != NULL) free(dest2);
   if (dotqmail_add_line(forwardname, TmpBuf2)) {
-     snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[150], 2);
-     fprintf(stderr, "alias.c: %s %d\n", html_text[150], 2);
+     snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", html_text[150], 3);
+     fprintf(stderr, "alias.c: %s %d\n", html_text[150], 3);
      return(-1);
   }
 
