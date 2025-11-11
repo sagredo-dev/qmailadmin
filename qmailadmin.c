@@ -42,6 +42,7 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef QMAILDIR
+#undef EZMLMDIR
 #include "alias.h"
 #include "auth.h"
 #include "autorespond.h"

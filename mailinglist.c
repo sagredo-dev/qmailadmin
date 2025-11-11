@@ -41,6 +41,7 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef QMAILDIR
+#undef EZMLMDIR
 #include "cgi.h"
 #include "config.h"
 #include "limits.h"
