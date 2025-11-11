@@ -392,11 +392,11 @@ void delmailinglistnow()
 void ezmlm_setreplyto (char *filename, char *newtext)
 {
   FILE *headerfile, *temp;
-  char realfn[MAX_BUFF];
+  char realfn[MAX_BUFF+1000];
   char tempfn[MAX_BUFF+4];
   char buf[256];
 
-  snprintf (realfn, sizeof(realfn)+1000, "%s/%s/%s", RealDir, ActionUser, filename);
+  snprintf (realfn, sizeof(realfn), "%s/%s/%s", RealDir, ActionUser, filename);
   sprintf (tempfn, "%s.tmp", realfn);
 
   headerfile = fopen(realfn, "r");
