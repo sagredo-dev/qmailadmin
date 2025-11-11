@@ -59,6 +59,10 @@ int replyto;
 int dotnum;
 int checkopt[256];    /* used to display mailing list options */
 
+#ifdef ONCHANGE_SCRIPT
+char onchange_buf[MAX_BUFF];
+#endif
+
 #define REPLYTO_SENDER 1
 #define REPLYTO_LIST 2
 #define REPLYTO_ADDRESS 3
@@ -343,7 +347,7 @@ void delmailinglistnow()
  
 #ifdef ONCHANGE_SCRIPT
   snprintf ( onchange_buf , MAX_BUFF , "%s@%s" , ActionUser , Domain ) ;
-  call_onchange ( "delmailinglist" ) ;
+  call_onchange ( "delmailinglist", "", "", "" ) ;
 #endif
 
   /* make dotqmail name */
@@ -630,7 +634,7 @@ void addmailinglistnow()
 
 #ifdef ONCHANGE_SCRIPT
   snprintf ( onchange_buf , MAX_BUFF , "%s@%s" , ActionUser , Domain ) ;
-  call_onchange ( "addmailinglist" ) ;
+  call_onchange ( "addmailinglist", "", "", "" ) ;
 #endif
 
   snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H\n", html_text[187],
