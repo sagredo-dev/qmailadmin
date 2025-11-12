@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([qmailadmin],[1.2.26])
+AC_INIT([qmailadmin],[1.2.27])
 AC_CONFIG_SRCDIR([qmailadmin.c])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
@@ -549,9 +549,9 @@ dnl ============================================================
 dnl  Authentication log option
 dnl ============================================================
 
-AC_ARG_WITH([auth-log],
-    [AS_HELP_STRING([--with-auth-log[=DIR]],
-                    [Enable authentication logging (default directory: ~vpopmail/log). Use --without-auth-log to disable.])],
+AC_ARG_WITH([auth-logdir],
+    [AS_HELP_STRING([--with-auth-logdir[=DIR]],
+                    [Enable authentication logging (default directory: ~vpopmail/log). Use --without-auth-logdir to disable.])],
     [
         if test "x$withval" = "xno"; then
             enable_auth_log=no
