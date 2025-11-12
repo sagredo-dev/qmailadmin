@@ -26,9 +26,6 @@
 #include <pwd.h>
 #include <dirent.h>
 
-#ifndef VPOPMAIL_DEFS_H
-#define VPOPMAIL_DEFS_H
-#endif
 #include <vpopmail.h>
 #include <vpopmail_config.h>
 #include <vauth.h>
