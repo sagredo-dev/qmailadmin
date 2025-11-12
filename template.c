@@ -25,9 +25,16 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <dirent.h>
-#include "config.h"
-#define VPOPMAIL_PACKAGE PACKAGE
-#define VPOPMAIL_VERSION VERSION
+
+#ifndef VPOPMAIL_DEFS_H
+#define VPOPMAIL_DEFS_H
+#endif
+#include <vpopmail.h>
+#include <vpopmail_config.h>
+#include <vauth.h>
+static const char VPOPMAIL_PACKAGE[] = PACKAGE;
+static const char VPOPMAIL_VERSION[] = VERSION;
+
 /* undef some macros that get redefined in config.h below */
 #undef PACKAGE
 #undef VERSION
@@ -37,10 +44,7 @@
 #undef PACKAGE_VERSION
 #undef QMAILDIR
 #undef EZMLMDIR
-#include <vpopmail.h>
-#include <vpopmail_config.h>
-#include <vauth.h>
-
+#include "config.h"
 #include "alias.h"
 #include "autorespond.h"
 #include "cgi.h"
@@ -455,7 +459,7 @@ int send_template_now(char *filename)
             printf("<a href=\"https://www.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html\" target=\"_blank\">%s</a> %s ~ ",
               QA_PACKAGE, QA_VERSION);
             printf("<a href=\"https://www.sagredo.eu/en/qmail-notes-185/installing-and-configuring-vpopmail-81.html\" target=\"_blank\">%s</a> %s",
-              PACKAGE, VERSION);
+              VPOPMAIL_PACKAGE, VPOPMAIL_VERSION);
             break;
 
           /* display the main menu */
