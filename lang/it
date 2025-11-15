@@ -8,7 +8,7 @@
 007 Aggiungi Forward:
 008 Indirizzo Email Forward:
 009 Casella locale:
-010 L'indirizzo destinatario dell'inoltro deve essere indicato nella forma <b>casella@dominio.it</b>.  <br>Il nome locale deve essere indicato nella forma: <i>casella</i> <br><b> Esempio: </b> <br>Forward: <i>casella@dominio.it</i>. Nome locale: <i>pluto</i> <br>In questo modo tutto cio' che sara' inviato alla casella <i>pluto</i> del vostro dominio sara' inoltrato a <i>casella@dominio.it</i>
+010 L'indirizzo destinatario dell'inoltro deve essere indicato nella forma <b>casella@dominio.it</b>.  <br>Il nome locale deve essere indicato nella forma: <i>casella</i> <br><b> Esempio: </b> <br>Forward: <i>casella@dominio.it</i>. Nome locale: <i>pluto</i> <br>In questo modo tutto cio' che sar&agrave; inviato alla casella <i>pluto</i> del vostro dominio sar&agrave; inoltrato a <i>casella@dominio.it</i>
 011 Aggiungi moderatore della lista
 012 Aggiungi moderatore alla Lista
 013 Indirizzo Email:
@@ -19,7 +19,7 @@
 018 Abilita archiviazione di tutti i messaggi
 039 Rispondi a richieste amministrative e consenti l'invio dell'archivio.
 053 Abilita il supporto SQL
-054 Indirizzo Sistema
+054 Indirizzo Server
 055 Porta
 056 Utente
 057 Password 
@@ -29,9 +29,9 @@
 061 Caselle postali
 062 Messaggi inviati ad indirizzi non esistenti : raccolti dalla casella pred.
 063 Nome completo
-064 Modifica <BR>Casella
-065 Cancella <BR>Casella
-066 Casella<BR>Predefinita
+064 Modifica Casella
+065 Cancella Casella
+066 Casella Predefinita
 067 Crea casella
 068 Alias
 069 Alias
@@ -48,12 +48,12 @@
 080 Liste di Distribuzione
 081 Lista
 082 Cancella
-083 Aggiungi<BR>Iscritto
-084 Cancella<BR>Iscritto
-085 Mostra<BR>Iscritti
-086 Aggiungi<BR>Moderatore
-087 Cancella<BR>Moderatore
-088 Mostra<BR>Moderatori
+083 Aggiungi Iscritto
+084 Cancella Iscritto
+085 Mostra Iscritti
+086 Aggiungi Moderatore
+087 Cancella Moderatore
+088 Mostra Moderatori
 089 Nuova Lista di distribuzione
 090 Aggiungi Casella
 091 Password (ripeti):
@@ -137,7 +137,7 @@
 169 Cancellazione ridirezione/forward per la casella non riuscita
 170 Cancellazione ridirezione/forward per la casella eseguita con successo
 171 Errore: impossibile cambiare directory
-172 Non e' possibile accedere piu' volte contemporaneamente con l'account Postmaster. Qualcuno e' gia' connesso : riprovare piu' tardi.
+172 Non &egrave; possibile accedere piu' volte contemporaneamente con l'account Postmaster. Qualcuno &egrave; gia' connesso : riprovare piu' tardi.
 173 Tempo scaduto, si prega di rieseguire la connessione
 174 Nome autorisponditore non valido
 175 Nome gia' in uso
@@ -188,7 +188,7 @@
 220 Indirizzo Moderatori
 221 Gli iscritti alla lista
 222 Indirizzo degli Iscritti
-223 Non e' stato possibile trovare l'utente
+223 Non &egrave; stato possibile trovare l'utente
 224 Premi qui per modificare
 225 Modifica la lista di distribuzione
 226 Lista di distribuzione modificata con successo
@@ -202,15 +202,15 @@
 234 Per cortesia digitare la parola d'ordine 
 235 Cancella messaggi per i destinatari inesistenti
 236 Messaggi a destinatari inesistenti: cancellati
-237 Aggiungi<br>Iscritto Digest
-238 Cancella<br>Iscritto Digest
-239 Mostra<br>Digest Subscribers
+237 Aggiungi Iscritto Digest
+238 Cancella Iscritto Digest
+239 Mostra Digest Subscribers
 240 Indirizzo Email aggiunto com digest subscriber alla mailing list
 241 Aggiungi Digest Subscriber alla mailing list 
 242 rimosso dalla digest mailing list 
 243 Cancella digest subscriber dalla mailing list
 244 Digest Subscribers Totali:
-245 Cancella<br>Digest Subscriber
+245 Cancella Digest Subscriber
 246 Indirizzi Digest Subscriber
 247 Elenca Digest Subscribers
 248 Eleco degli indirizzi email digest nella mailing list
@@ -253,11 +253,11 @@
 285 Richiedi conferma con un reply al messaggio spedito all'indirizzo di sottoscrizione.
 286 Richiedi l'approvazione di un moderatore.
 287 Richiesta di cancellazione dalla lista:
-288 Attenzione: se non richiedi la conferma del mittente, sara' possibile forzare la sottoscrizione e cancellazione di altri utenti senza la loro autorizzazione.
+288 Attenzione: se non richiedi la conferma del mittente, sar&agrave; possibile forzare la sottoscrizione e cancellazione di altri utenti senza la loro autorizzazione.
 289 Archivio Messaggi
 290 Archivio messaggi lista.
 291 Indice per accesso da web via ezmlm-cgi.
-292 Richiesta Archivio e'
+292 Richiesta Archivio &egrave;
 293 aperto a tutti
 294 limitato agli iscritti
 295 limitato ai moderatori
