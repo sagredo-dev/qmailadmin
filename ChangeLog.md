@@ -2,6 +2,10 @@
 
 ## 1.2.26
 Roberto Puzzanghera
+  Solved compilation break on mailinglist.c when onchange is enabled in vpopmail.
+
+## 1.2.26
+Roberto Puzzanghera
 
   Improved the handling of program exit because of wrong configuration.
   This should avoid the unpleasant "blank screen" situation in some cases.

@@ -28,7 +28,6 @@
 #include <dirent.h>
 #include <vpopmail.h>
 #include <vauth.h>
-#include "autorespond.h"
 /* undef some macros that get redefined in config.h below */
 #undef PACKAGE
 #undef VERSION
@@ -37,6 +36,8 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef QMAILDIR
+#undef EZMLMDIR
+#include "autorespond.h"
 #include "config.h"
 #include "limits.h"
 #include "printh.h"

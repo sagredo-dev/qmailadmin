@@ -41,6 +41,7 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef QMAILDIR
+#undef EZMLMDIR
 #include "cgi.h"
 #include "config.h"
 #include "limits.h"
@@ -57,6 +58,10 @@ char replyto_addr[256];
 int replyto;
 int dotnum;
 int checkopt[256];    /* used to display mailing list options */
+
+#ifdef ONCHANGE_SCRIPT
+char onchange_buf[MAX_BUFF];
+#endif
 
 #define REPLYTO_SENDER 1
 #define REPLYTO_LIST 2
@@ -342,7 +347,7 @@ void delmailinglistnow()
  
 #ifdef ONCHANGE_SCRIPT
   snprintf ( onchange_buf , MAX_BUFF , "%s@%s" , ActionUser , Domain ) ;
-  call_onchange ( "delmailinglist" ) ;
+  call_onchange ( "delmailinglist", "", "", "" ) ;
 #endif
 
   /* make dotqmail name */
@@ -391,11 +396,11 @@ void delmailinglistnow()
 void ezmlm_setreplyto (char *filename, char *newtext)
 {
   FILE *headerfile, *temp;
-  char realfn[MAX_BUFF];
+  char realfn[MAX_BUFF+1000];
   char tempfn[MAX_BUFF+4];
   char buf[256];
 
-  snprintf (realfn, sizeof(realfn)+1000, "%s/%s/%s", RealDir, ActionUser, filename);
+  snprintf (realfn, sizeof(realfn), "%s/%s/%s", RealDir, ActionUser, filename);
   sprintf (tempfn, "%s.tmp", realfn);
 
   headerfile = fopen(realfn, "r");
@@ -629,7 +634,7 @@ void addmailinglistnow()
 
 #ifdef ONCHANGE_SCRIPT
   snprintf ( onchange_buf , MAX_BUFF , "%s@%s" , ActionUser , Domain ) ;
-  call_onchange ( "addmailinglist" ) ;
+  call_onchange ( "addmailinglist", "", "", "" ) ;
 #endif
 
   snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H\n", html_text[187],

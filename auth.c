@@ -25,7 +25,8 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <dirent.h>
-#include "config.h"
+#include <vpopmail.h>
+#include <vauth.h>
 /* undef some macros that get redefined below */
 #undef PACKAGE
 #undef VERSION
@@ -34,10 +35,10 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef QMAILDIR
-#include <vpopmail.h>
+#undef EZMLMDIR
+#include "config.h"
 #include "qmailadmin.h"
 #include "qmailadminx.h"
-#include <vauth.h>
 #include "cgi.h"
 #include "show.h"
 #include "util.h"

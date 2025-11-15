@@ -32,6 +32,7 @@
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef QMAILDIR
+#undef EZMLMDIR
 #include "config.h"
 #include "dotqmail.h"
 #include "qmailadmin.h"
