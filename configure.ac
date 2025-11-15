@@ -576,24 +576,6 @@ AM_CONDITIONAL([ENABLE_AUTH_LOG], [test "x$enable_auth_log" = "xyes"])
 
 dnl ============================================================
 
-HELP=no
-AC_ARG_ENABLE(help, [  --enable-help  Display help links on login page.],
-    HELP="$enableval",)
-
-case $HELP in
-1*|y*|Y*)
-        enable_help="yes"
-        AC_SUBST(enable_help)
-        AC_DEFINE_UNQUOTED(HELP,1,"")
-        echo "checking whether to show help pages... yes"
-        ;;
-*)
-        enable_help="no"
-        echo "checking whether to show help pages... no"
-        ;;
-esac
-
-
 EZMLMIDX=no
 if test -f $ezmlmdir/ezmlm-moderate
 then
@@ -632,7 +614,6 @@ echo "              ezmlm idx = "$ezmlmidx""
 echo "              ezmlm dir = "$ezmlmdir""
 echo "        mysql for ezmlm = "$mysql""
 echo "           auth log dir = "$auth_logdir""
-echo "                   help = "$enable_help""
 echo "           modify quota = "$MODIFY_QUOTA""
 echo "        domain autofill = "$DOMAIN_AUTOFILL""
 echo "      catchall accounts = "$CATCHALL_ENABLED""

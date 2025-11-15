@@ -276,7 +276,6 @@ datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
-enable_help = @enable_help@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
