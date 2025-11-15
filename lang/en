@@ -29,9 +29,9 @@
 061 Email Accounts
 062 CatchAll:
 063 Comment
-064 Modify<br>User
-065 Delete<br>Account
-066 CatchAll<br>Account
+064 Modify User
+065 Delete Account
+066 CatchAll Account
 067 Create Email Account
 068 Alias Accounts
 069 Alias
@@ -48,12 +48,12 @@
 080 Mailing Lists
 081 List
 082 Error opening .qmail-default
-083 Add<br>Subscriber
-084 Delete<br>Subscriber
-085 Show<br>Subscribers
-086 Add<br>Moderator
-087 Delete<br>Moderator
-088 Show<br>Moderators
+083 Add Subscriber
+084 Delete Subscriber
+085 Show Subscribers
+086 Add Moderator
+087 Delete Moderator
+088 Show Moderators
 089 New mailing list
 090 Add Email account
 091 Password (again):
@@ -202,15 +202,15 @@
 234 Please enter a password
 235 Set catchall email deleted 
 236 CatchAll: Deleted
-237 Add<br>Digest Subscriber
-238 Delete<br>Digest Subscriber
-239 Show<br>Digest Subscribers
+237 Add Digest Subscriber
+238 Delete Digest Subscriber
+239 Show Digest Subscribers
 240 added as a digest subscriber to mailing list
 241 Add Digest Subscriber to mailing list 
 242 removed from digest mailing list 
 243 Delete digest subscriber from mailing list
 244 Total Digest Subscribers:
-245 Delete<br>Digest Subscriber
+245 Delete Digest Subscriber
 246 Digest Subscriber Address
 247 List Digest Subscribers
 248 List of digest email addresses on mailing list
