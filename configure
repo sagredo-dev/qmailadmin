@@ -650,7 +650,6 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-enable_help
 ENABLE_AUTH_LOG_FALSE
 ENABLE_AUTH_LOG_TRUE
 auth_logdir
@@ -797,7 +796,6 @@ enable_modify_spam
 enable_spam_command
 enable_cracklib
 with_auth_logdir
-enable_help
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1468,7 +1466,6 @@ Optional Features:
   --enable-modify-spam  Allow users to enable/disable spam checking.
   --enable-spam-command=CMD     Remember to use '|preline' at the beginning, |preline /usr/local/bin/maildrop /etc/mailfilter.
   --enable-cracklib=DIR      Path to cracklib dictionary directory.
-  --enable-help  Display help links on login page.
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -6330,30 +6327,6 @@ fi
 
 
 
-HELP=no
-# Check whether --enable-help was given.
-if test ${enable_help+y}
-then :
-  enableval=$enable_help; HELP="$enableval"
-fi
-
-
-case $HELP in
-1*|y*|Y*)
-        enable_help="yes"
-
-
-printf "%s\n" "#define HELP 1" >>confdefs.h
-
-        echo "checking whether to show help pages... yes"
-        ;;
-*)
-        enable_help="no"
-        echo "checking whether to show help pages... no"
-        ;;
-esac
-
-
 EZMLMIDX=no
 if test -f $ezmlmdir/ezmlm-moderate
 then
@@ -7850,7 +7823,6 @@ echo "              ezmlm idx = "$ezmlmidx""
 echo "              ezmlm dir = "$ezmlmdir""
 echo "        mysql for ezmlm = "$mysql""
 echo "           auth log dir = "$auth_logdir""
-echo "                   help = "$enable_help""
 echo "           modify quota = "$MODIFY_QUOTA""
 echo "        domain autofill = "$DOMAIN_AUTOFILL""
 echo "      catchall accounts = "$CATCHALL_ENABLED""
