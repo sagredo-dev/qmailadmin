@@ -1381,7 +1381,7 @@ void show_current_list_values() {
   }
 #ifdef ENABLE_MYSQL
   printf ("<h4>%s</h4>\n<p>\n", html_text[99]);
-  printf ("<input type=checkbox name=\"sqlsupport\" value=\"-6\"%s> %s",
+  printf ("<input type=\"checkbox\" name=\"sqlsupport\" value=\"-6\"%s> %s\n</p>",
     checked ? " checked" : "", html_text[53]);
 
   /* parse dir/sql file for SQL settings */
@@ -1392,14 +1392,14 @@ void show_current_list_values() {
 #endif
 
   /* get hostname */
-  strcpy(checked1, "localhost");
+  strcpy(checked1, "mysql:localhost");
   if(usesql == 1 && sqlfileok == 1) {
-    strncpy(TmpBuf3, TmpBuf1, 1);       
-    if((strstr(TmpBuf3, ":")) == NULL) { 
+    strncpy(TmpBuf3, TmpBuf1, 1);
+    if((strstr(TmpBuf3, ":")) == NULL) {
       for(i=0,j=0;TmpBuf1[i]!=':'&&TmpBuf1[i]!='\0';++j,++i) checked1[j] = TmpBuf1[i];
-      checked1[j] = '\0'; 
-    }       
-  }       
+      checked1[j] = '\0';
+    }
+  }
 
 #ifdef ENABLE_MYSQL
   printf ("<tr>\n");
@@ -1458,7 +1458,7 @@ void show_current_list_values() {
 #ifdef ENABLE_MYSQL
   printf ("<td align=\"right\">%s:\n", html_text[57]);
   printf ("</td><td>\n");
-  printh ("<input type=\"text\" name=\"sql4\" value=\"%H\"></td>\n", checked1);
+  printh ("<input type=\"password\" name=\"sql4\" value=\"%H\"></td>\n", checked1);
   printf ("</tr>\n");
 #else
   printh ("<input type=\"hidden\" name=\"sql4\" value=\"%H\">\n", checked1);
@@ -1475,7 +1475,7 @@ void show_current_list_values() {
   }       
 #ifdef ENABLE_MYSQL
   printf ("<tr>\n");
-  printf ("<td align=\right\">%s:\n", html_text[58]);
+  printf ("<td align=\"right\">%s:\n", html_text[58]);
   printf ("</td><td>\n");
   printh ("<input type=\"text\" name=\"sql5\" value=\"%H\"></td>\n", checked1);
 #else
