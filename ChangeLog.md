@@ -5,7 +5,7 @@ Roberto Puzzanghera
   - Solved compilation break on mailinglist.c when onchange is enabled in vpopmail.
   - mailinglist.c: if mysql support is enabled mysql:localhost is the default host
   - dropped unusued --enable-help feature in configure
-  - dropped a lot of <br> tags in lang files. Fixed accents in italian language
+  - dropped a lot of break tags in lang files. Fixed accents in italian language
   - --with-auth-log becomes --with-auth-logdir
   - dropped VPOPMAIL_DEFS_H def in template.c
   - revised the definition of the PACKAGE and VERSION macros in several .c files
