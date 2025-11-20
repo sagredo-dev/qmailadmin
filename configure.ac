@@ -54,7 +54,7 @@ CGIBINTARGETS=qmailadmin
 AC_SUBST(CGIBINTARGETS)
 
 dnl ===============================================================
-dnl  Check for vpopmail headers and version >= 5.6.6
+dnl  Check for vpopmail headers and version >= 5.6.11
 dnl ===============================================================
 
 vpopmaildir=""
@@ -88,7 +88,7 @@ AC_CHECK_HEADERS([vpopmail.h],
     [have_vpopmail_h=yes],
     [AC_MSG_ERROR([vpopmail.h not found in $vpopmaildir/include])])
 
-AC_MSG_CHECKING([for vpopmail version >= 5.6.6])
+AC_MSG_CHECKING([for vpopmail version >= 5.6.11])
 
 AC_RUN_IFELSE(
   [AC_LANG_PROGRAM(
@@ -103,7 +103,7 @@ AC_RUN_IFELSE(
          printf("no, failed in parsing vpopmail version\n");
          return 1;
        }
-       if (major < 5 || (major == 5 && minor < 6) || (major == 5 && minor == 6 && patch < 6)) {
+       if (major < 5 || (major == 5 && minor < 6) || (major == 5 && minor == 6 && patch < 11)) {
          printf("no, found %s\n", ver);
          return 1;
        }
@@ -112,7 +112,7 @@ AC_RUN_IFELSE(
      ]]
   )],
   [],
-  [AC_MSG_ERROR([vpopmail version is too old, need >= 5.6.6])]
+  [AC_MSG_ERROR([vpopmail version is too old, need >= 5.6.11])]
 )
 
 dnl ===============================================================
