@@ -6,10 +6,6 @@ EXTRA_DIST=BUGS FAQ TRANSLATORS README.hooks html lang images contrib
 htmllibdir=@htmllibdir@
 htmldir=@htmldir@
 imagedir=@imagedir@
-QA_PACKAGE=@QA_PACKAGE@
-QA_VERSION=@QA_VERSION@
-PACKAGE=@QA_PACKAGE@
-VERSION=@QA_VERSION@
 
 #
 # Install qmailadmin setuid to @vpopuser@
