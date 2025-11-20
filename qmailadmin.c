@@ -33,6 +33,7 @@
 #include <vauth.h>
 #include <vlimits.h>
 #include <pwstr.h>
+#include "vutil.h"
 
 /* undef some macros that get redefined in config.h below */
 #undef PACKAGE
@@ -591,12 +592,7 @@ void del_id_files( char *dirname )
 
 void quickAction (char *username, int action)
 {
-  /* This feature sponsored by PinkRoccade Public Sector, Sept 2004 */
-
-  struct stat fileinfo;
-  char dotqmailfn[MAX_BUFF];
-  char *space, *ar, *ez;
-  char *aliasline;
+  char path[MAX_BUFF];
 
   /* Note that all of the functions called from quickAction() assume
    * that the username to modify is in a global called "ActionUser"
@@ -606,31 +602,10 @@ void quickAction (char *username, int action)
    * in hopes that someday we'll remove the globals and pass parameters.
    */
 
-  /* first check for alias/forward, autoresponder (or even mailing list) */
-  aliasline = valias_select (username, Domain);
-  if (aliasline != NULL) {
-    /* Autoresponder/Mailing List detection algorithm:
-     * We're looking for either '/autorespond ' or '/ezmlm-reject ' to
-     * appear in the first line, before a space appears
-     */
-    space = strstr (aliasline, " ");
-    ar = strstr (aliasline, "/autorespond ");
-    ez = strstr (aliasline, "/ezmlm-reject ");
-    if (ar && space && (ar < space)) {
-      /* autorepsonder */
-      if (action == ACTION_MODIFY) modautorespond();
-      else if (action == ACTION_DELETE) delautorespond();
-    } else if (ez && space && (ez < space)) {
-      /* mailing list (cdb-backend only) */
-      if (action == ACTION_MODIFY) modmailinglist();
-      else if (action == ACTION_DELETE) delmailinglist();
-    } else {
-      /* it's just a forward/alias of some sort */
-      if (action == ACTION_MODIFY) moddotqmail();
-      else if (action == ACTION_DELETE) deldotqmail();
-    }
-  } else if (vauth_getpw (username, Domain)) {
-    /* POP/IMAP account */
+  /*
+    See if the specified address is a POP account
+   */
+  if (isExistingUser(username, Domain)) {
     if (action == ACTION_MODIFY) moduser();
     else if (action == ACTION_DELETE) {
       // don't allow deletion of postmaster account
@@ -640,18 +615,41 @@ void quickAction (char *username, int action)
         vclose();
       } else deluser();
     }
-  } else {
-    /* check for mailing list on SQL backend (not in valias_select) */
-    snprintf (dotqmailfn, sizeof(dotqmailfn), ".qmail-%s", username);
-    str_replace (dotqmailfn+7, '.', ':');
-    if (stat (dotqmailfn, &fileinfo) == 0) {
-      /* mailing list (MySQL backend) */
+  }
+  else {
+    /* get the domain path */
+    snprintf(path, MAX_BUFF, "%s", vget_assign(Domain, NULL, 0, NULL, NULL));
+
+   /*
+    *  See if the specified address is an alias (dot-qmail) or
+    *  a SQL valias. This is called 'forward' in qmailadmin.
+    */
+    if (isExistingAlias (path, username, Domain)) {
+      if (action == ACTION_MODIFY) moddotqmail();
+      else if (action == ACTION_DELETE) deldotqmail();
+    }
+
+   /*
+    *  See if the specified address is a mailing list
+    *  (both dot-qmail and SQL)
+    */
+    else if (isValidMailList(path, username)) {
       if (action == ACTION_MODIFY) modmailinglist();
       else if (action == ACTION_DELETE) delmailinglist();
-    } else {
-      /* user does not exist */
-      snprinth (StatusMessage, sizeof(StatusMessage), "%s (%H@%H)", 
-        html_text[153], username, Domain);
+    }
+
+   /*
+    *  See if the specified address is an autoresponder (robot).
+    *  This function is used by qmailadmin.
+    */
+    else if (isExistingRobot(path, username)) {
+      if (action == ACTION_MODIFY) modautorespond();
+      else if (action == ACTION_DELETE) delautorespond();
+    }
+
+    /* user does not exist */
+    else {
+      snprinth (StatusMessage, sizeof(StatusMessage), "%s (%H@%H)", html_text[153], username, Domain);
       show_menu(Username, Domain, Mytime);
       vclose();
     }

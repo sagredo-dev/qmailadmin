@@ -21,7 +21,7 @@ int sort_add_entry (char *, char);
 char *sort_get_entry (int);
 void sort_cleanup();
 void sort_dosort();
-void str_replace (char *, char, char);
+void str_replace2 (char *, char, char);
 
 void qmail_button(char *modu, char *command, char *user, char *dom, time_t mytime, char *png);
 

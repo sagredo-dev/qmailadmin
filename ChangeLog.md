@@ -9,6 +9,12 @@ Roberto Puzzanghera
   - --with-auth-log becomes --with-auth-logdir
   - dropped VPOPMAIL_DEFS_H def in template.c
   - revised the definition of the PACKAGE and VERSION macros in several .c files
+  - function file_exists() on util.c renamed to file_exists2() because it's already
+    defined in vpopmail.
+  - function str_replace() on util.c renamed to str_replace2() because it's already
+    defined in vpopmail.
+  - fixed quick search button functionality (wasn't working well)
+  - qmailadmin now requires vpopmail-5.6.11
 
 ## 1.2.26
 Roberto Puzzanghera

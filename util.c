@@ -122,7 +122,7 @@ void sort_dosort()
   qsort (sort_list, sort_entry, sizeof(char *), sort_compare);
 }
 
-void str_replace (char *s, char orig, char repl)
+void str_replace2 (char *s, char orig, char repl)
 {
   while (*s) {
     if (*s == orig) { *s = repl; }

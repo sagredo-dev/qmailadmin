@@ -167,7 +167,7 @@ void show_mailing_list_line(char *user, char* dom, time_t mytime, char *dir)
   for (i = 0; (addr = sort_get_entry(i)); ++i) {
     sprintf (testfn, ".qmail-%s-digest-owner", addr);
     /* convert ':' in addr to '.' */
-    str_replace (addr, ':', '.');
+    str_replace2 (addr, ':', '.');
 
     printf ("<tr>");
     qmail_button(addr, "delmailinglist", user, dom, mytime, "delete_forever");
@@ -274,7 +274,7 @@ void show_mailing_list_line2(char *user, char *dom, time_t mytime, char *dir)
   for (i = 0; i < listcount; ++i)
   {
     addr = sort_get_entry(i);
-    str_replace (addr, ':', '.');
+    str_replace2 (addr, ':', '.');
     printh ("<li><input name=\"subscribe%d\" type=\"checkbox\" value=\"%H\"> ", i, addr);
     printh ("%H@%H</li>", addr, Domain);
   }
@@ -953,7 +953,7 @@ void modmailinglist()
 
   /* get the current listowner and copy it to Alias */
   strcpy (dotqmail_name, ActionUser);
-  str_replace (dotqmail_name, '.', ':');
+  str_replace2 (dotqmail_name, '.', ':');
   sprintf(TmpBuf, ".qmail-%s-owner", dotqmail_name);
   if((fs=fopen(TmpBuf, "r"))!=NULL) {
     while(fgets(TmpBuf2, sizeof(TmpBuf2), fs)) {
@@ -1034,7 +1034,7 @@ void build_option_str (char *type, char *param, char *options, char *description
     type, param, options, selected ? " checked=\"checked\"" : "", description);
 }
 
-int file_exists (char *filename)
+int file_exists2 (char *filename)
 {
   FILE *fs;
   if( (fs=fopen(filename, "r")) !=NULL ) {
@@ -1088,60 +1088,60 @@ void set_options() {
 
   // -s: Subscription moderation. touching dir/modsub
   sprintf(TmpBuf, "%s/modsub", ActionUser);
-  checkopt['s'] = file_exists(TmpBuf);
+  checkopt['s'] = file_exists2(TmpBuf);
   // -h: Help  subscription. Don't require confirmation. Not recommented!
   sprintf(TmpBuf, "%s/nosubconfirm", ActionUser);
-  checkopt['h'] = file_exists(TmpBuf);
+  checkopt['h'] = file_exists2(TmpBuf);
   // -j Jump off. Unsubscribe  does not require confirmation.
   sprintf(TmpBuf, "%s/nounsubconfirm", ActionUser);
-  checkopt['j'] = file_exists(TmpBuf);
+  checkopt['j'] = file_exists2(TmpBuf);
 
   // -m: Message  moderation. touch dir/modpost
   sprintf(TmpBuf, "%s/modpost", ActionUser);   // valid for newer ezmlm-versions
-  checkopt['m'] = file_exists(TmpBuf);
+  checkopt['m'] = file_exists2(TmpBuf);
   // -o: Reject others than; applicable to message moderated lists only
   sprintf(TmpBuf, "%s/modpostonly", ActionUser);
-  checkopt['o'] = file_exists(TmpBuf);
+  checkopt['o'] = file_exists2(TmpBuf);
   // -u: User posts only. subscribers, digest-subscribers and dir/allow
   sprintf(TmpBuf, "%s/subpostonly", ActionUser);
-  checkopt['u'] = file_exists(TmpBuf);
+  checkopt['u'] = file_exists2(TmpBuf);
 
   // -f: Subject Prefix. outgoing subject will be pre-fixed with the list name
   sprintf(TmpBuf, "%s/prefix", ActionUser);
-  checkopt['f'] = file_exists(TmpBuf);
+  checkopt['f'] = file_exists2(TmpBuf);
   // -t: Message Trailer. create dir/text/trailer
   sprintf(TmpBuf, "%s/addtrailer", ActionUser);
-  checkopt['t'] = file_exists(TmpBuf);
+  checkopt['t'] = file_exists2(TmpBuf);
 
   // -a: Archived: touch dir/archived and dir/indexed
   sprintf(TmpBuf, "%s/archived", ActionUser);
-  checkopt['a'] = file_exists(TmpBuf);
+  checkopt['a'] = file_exists2(TmpBuf);
   // -i: indexed for WWW archive access
   sprintf(TmpBuf, "%s/threaded", ActionUser);
-  checkopt['i'] = file_exists(TmpBuf);
+  checkopt['i'] = file_exists2(TmpBuf);
   // -p: Public archive. touch dir/public
   sprintf(TmpBuf, "%s/public", ActionUser);
-  checkopt['p'] = file_exists(TmpBuf);
+  checkopt['p'] = file_exists2(TmpBuf);
   // -g: Guard archive. Access requests from unrecognized SENDERs will be rejected.
   sprintf(TmpBuf, "%s/subgetonly", ActionUser);
-  checkopt['g'] = file_exists(TmpBuf);
+  checkopt['g'] = file_exists2(TmpBuf);
   // -b: Block archive. Only moderators are allowed to access the archive.
   sprintf(TmpBuf, "%s/modgetonly", ActionUser);
-  checkopt['b'] = file_exists(TmpBuf);
+  checkopt['b'] = file_exists2(TmpBuf);
 
   // -d: Digest
   sprintf(TmpBuf, "%s/digested", ActionUser);
-  checkopt['d'] = file_exists(TmpBuf);
+  checkopt['d'] = file_exists2(TmpBuf);
 
   // -r: Remote admin. touching dir/remote
   sprintf(TmpBuf, "%s/remote", ActionUser);
-  checkopt['r'] = file_exists(TmpBuf);
+  checkopt['r'] = file_exists2(TmpBuf);
   // -l List subscribers. administrators can request a subscriber
   sprintf(TmpBuf, "%s/modcanlist", ActionUser);
-  checkopt['l'] = file_exists(TmpBuf);
+  checkopt['l'] = file_exists2(TmpBuf);
   // -n New text file. administrators may edit texts
   sprintf(TmpBuf, "%s/modcanedit", ActionUser);
-  checkopt['n'] = file_exists(TmpBuf);
+  checkopt['n'] = file_exists2(TmpBuf);
 
   // ------ end of newer configuration reads
 
@@ -1192,7 +1192,7 @@ void set_options() {
 
   // -t: Message Trailer. create dir/text/trailer
   sprintf(TmpBuf, "%s/text/trailer", ActionUser);
-  if (file_exists(TmpBuf)) {
+  if (file_exists2(TmpBuf)) {
     checkopt['t'] = 1;
   }
   // ------ end of read in old ezmlm's values
@@ -1275,7 +1275,7 @@ void show_current_list_values() {
     
   if (*dotqmail_name) { /* modifying an existing list */
     snprinth (listname, sizeof(listname), "%H", dotqmail_name);
-    str_replace (listname, ':', '.');
+    str_replace2 (listname, ':', '.');
   } else {
     sprintf (listname, "<i>%s</i>", html_text[261]);
   }
