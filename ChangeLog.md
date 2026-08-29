@@ -3,7 +3,7 @@
 ## 1.2.28
 Roberto Puzzanghera
   - Bug fix: avoided to add translations from 400 to 450, as they are reserved
-    strings for autoresponder's headers.
+    strings for autoresponder's headers. (tx to ueli for spotting the bug)
 
 ## 1.2.27
 Roberto Puzzanghera
