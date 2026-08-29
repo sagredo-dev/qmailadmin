@@ -283,5 +283,5 @@
 315 Benutzer gelöscht. Kann keine Weiterleitung an '%s' erstellen.
 316 Passwort ändern
 317 Der Postmaster-Account kann nicht gelöscht werden.
-402 Sie haben 'defaultdelivery' in vpopmail aktiviert, aber die Datei 'control/defaultdelivery' existiert nicht.
-403 Die Authentifizierungsprotokolldatei konnte nicht geÃ¶ffnet werden. Weitere Informationen finden Sie im Webserver-Protokoll (stderr).
+321 Sie haben 'defaultdelivery' in vpopmail aktiviert, aber die Datei 'control/defaultdelivery' existiert nicht.
+322 Die Authentifizierungsprotokolldatei konnte nicht geÃ¶ffnet werden. Weitere Informationen finden Sie im Webserver-Protokoll (stderr).

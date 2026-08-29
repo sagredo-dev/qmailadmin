@@ -286,9 +286,10 @@
 318 setgid() failed, unable to continue
 319 setuid() failed, unable to continue
 320 Invalid password: it can be easily guessed from the username
+321 You enabled the 'defaultdelivery' feature in vpopmail but the control/defaultdelivery file is missing
+322 Unable to open auth log file. Refer to the web server log (stderr) for more info.
+323 You don't have permission to change your password.
+324 Bad password
+399 400 to 450 are headers for the autoresponder
 400 Content-type: text/plain 
 401 Content-transfer-encoding: 7bit
-402 You enabled the 'defaultdelivery' feature in vpopmail but the control/defaultdelivery file is missing
-403 Unable to open auth log file. Refer to the web server log (stderr) for more info.
-404 You don't have permission to change your password.
-405 Bad password

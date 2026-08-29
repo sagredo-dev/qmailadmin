@@ -281,5 +281,5 @@
 313 la direcci髇
 314 Quota incorrecta
 315 Usuario borrado.  No se puede reenviar a '%s'.
-402 Habilito' 'defaultdelivery' en vpopmail, pero el archivo control/defaultdelivery no existe.
-403 No se pudo abrir el archivo de registro de autenticaci贸n. Consulte el registro del servidor web (stderr) para obtener m谩s informaci贸n.
+321 Habilito' 'defaultdelivery' en vpopmail, pero el archivo control/defaultdelivery no existe.
+322 No se pudo abrir el archivo de registro de autenticaci贸n. Consulte el registro del servidor web (stderr) para obtener m谩s informaci贸n.

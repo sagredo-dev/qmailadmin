@@ -282,7 +282,10 @@
 314 Quota non valida
 315 Utente cancellato. Impossibile impostare forward a '%s'.
 320 Password non accettata. Pu&ograve; essere facilmente indovinata sapendo il nome utente.
-402 Hai abilitato 'defaultdelivery' in vpopmail, ma il file control/defaultdelivery non esiste.
-403 Impossibile aprire l'auth log. Controllare il log del web server log (stderr) per maggiori info.
-404 Non hai i permessi per poter cambiare la password. 
-405 Password non valida
+321 Hai abilitato 'defaultdelivery' in vpopmail, ma il file control/defaultdelivery non esiste.
+322 Impossibile aprire l'auth log. Controllare il log del web server log (stderr) per maggiori info.
+323 Non hai i permessi per poter cambiare la password. 
+324 Password non valida
+399 Quelli da 400 a 450 sono headers per l'autoresponder
+400 Content-Type: text/plain; charset=UTF-8
+401 Content-Transfer-Encoding: 8bit
