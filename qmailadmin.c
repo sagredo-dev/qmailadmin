@@ -140,7 +140,7 @@ static void log_auth(char *msg)
     FILE *fp = fopen(Qmalog, "a");
     if (fp == NULL) {
         fprintf(stderr, "[%s] Unable to open file %s (privilege problems?)\n", time_buf, Qmalog);
-        snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[403]);
+        snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[322]);
         show_login();
         exit(-1);
     }
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
           log_auth(log_buf);
 #endif
         } else if (pw->pw_flags & NO_PASSWD_CHNG) {
-          snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[404]);
+          snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[323]);
         } else if (strcmp (Password1, Password2) != 0) {
           snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[200]);
         } else if (*Password1 == '\0') {
@@ -296,7 +296,7 @@ int main(int argc, char *argv[])
 /* cracklib patch */
 #ifdef CRACKLIB
 	} else if ((tmpstr = FascistCheck(Password1, CRACKLIB)) != NULL ) {
-	  sprintf (StatusMessage, "%s - %s\n", html_text[405], tmpstr);
+	  sprintf (StatusMessage, "%s - %s\n", html_text[324], tmpstr);
 #endif
 /* end cracklib */
         } else if ((ret_code = vpasswd (User, Domain, Password1, USE_POP)) != VA_SUCCESS) {

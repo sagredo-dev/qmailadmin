@@ -973,7 +973,7 @@ void modusergo()
   snprintf(file_buf, sizeof(file_buf), "%s/control/defaultdelivery", QMAILDIR);
   file = fopen(file_buf, "r");
   if( file == NULL ) {
-    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[402]);
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[321]);
     send_template( "mod_user.html" );
     vclose();
     exit(0);
