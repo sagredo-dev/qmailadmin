@@ -734,11 +734,15 @@ char* dotqmail_alias_command(char* line)
     else { snprinth (user, sizeof(user), "%H", s+1); }
 
     return (user);
-        
+
   /* if it's an email address then display the forward */
   } else if ( !check_email_addr( (command+1) ) ){
     if (*command == '&' ) return (&command[1]);
     else return (command);
+
+  /* if it's the defaultdelivery setting */
+  } else if ( command[0] == ':' ) {
+      return(command);
 
   /* if it is a program then */
   } else if ( command[0] == '|' ) {
