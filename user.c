@@ -955,7 +955,7 @@ void modusergo()
   R. Puzzanghera 06/02/2024
   defaultdelivery patch
 
-  If DEFAULT_DELIVERY is defined in vpopmail, do not allow installations
+  Do not allow installations
   of any delivery agent in user's .qmail if it already contains a copy of
   control/defaultdelivery. In fact, when an unknown (for qmailadmin)
   delivery agent is already defined there, and qmailadmin adds another one,
@@ -964,7 +964,6 @@ void modusergo()
   can create their out of office message by means of a plugin installed
   in their webmail.
  **************************************************************************/
-#ifdef DEFAULT_DELIVERY
   FILE *file;
   int found = 0;
   char ln[MAX_BUFF], file_buf[MAX_BUFF];
@@ -983,7 +982,6 @@ void modusergo()
     fgets(ln, sizeof(ln), file);
   }
   fclose(file);
-#endif
 /* end patch */
 
   /* Scan through old .qmail and write out any unrecognized program delivery
@@ -1007,9 +1005,7 @@ void modusergo()
         fprintf (fs, "%s\n", dotqmailline);
         emptydotqmail = 0;
 /* defaultdelivery patch */
-#ifdef DEFAULT_DELIVERY
         if ( !found && strcmp(ln,dotqmailline) != 0 ) found = 1;
-#endif
 /* end patch */
       }
       dotqmailline = strtok (NULL, "\n");
@@ -1075,16 +1071,9 @@ void modusergo()
     }
 
 /* defaultdelivery patch */
-#ifdef DEFAULT_DELIVERY
     else if ( !found ) {
       fprintf (fs, "%s/" MAILDIR "/\n", vpw->pw_dir);
     }
-#else
-    else {
-      fprintf (fs, "%s/" MAILDIR "/\n", vpw->pw_dir);
-      /* this isn't enough to consider the .qmail file non-empty */
-    }
-#endif
 /* end patch */
   }
 
