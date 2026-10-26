@@ -9,26 +9,25 @@ Requirements:
 - A web server (Apache, Zeus)
     http://www.apache.org/
 
-- Qmail 1.03 
+- Qmail
     http://cr.yp.to/qmail.html 
-    http://www.qmail.org/
+    https://notes.sagredo.eu/en/qmail-notes-185/upgrading-qmail-82.html
 
 - vpopmail (a virtual domain addon for qmail) 
-    http://www.inter7.com/vpopmail/
+    https://notes.sagredo.eu/en/qmail-notes-185/installing-and-configuring-vpopmail-81.html
 
 - ezmlm installed in /usr/local/bin/ezmlm 
-    http://cr.yp.to/ezmlm.html
-    http://www.ezmlm.org/
+    https://notes.sagredo.eu/en/qmail-notes-185/ezmlm-idx-96.html
 
 - autorespond installed in /usr/local/bin/autorespond 
-    http://www.inter7.com/qmailadmin look for autoresponder link
+    https://notes.sagredo.eu/en/qmail-notes-185/autorespond-24.html
 
 Updates?
 ~~~~~~~~
  Latest version is available at:
 
- http://sourceforge.net/projects/qmailadmin/
+    https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html
 
- Please refer your suggestions/bug reports to info@inter7.com
+ Please refer your suggestions/bug reports to https://notes.sagredo.eu/en/qmail-notes-185/qmailadmin-23.html
 
 
