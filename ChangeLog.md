@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 1.2.29-dev
+Roberto Puzzanghera
+  - alias.c can now display the :default option
+
 ## 1.2.28
 Roberto Puzzanghera
   - Bug fix: avoided to add translations from 400 to 450, as they are reserved
