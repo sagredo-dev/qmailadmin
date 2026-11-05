@@ -81,12 +81,11 @@ td input[type="radio"] {
 }
 
 
-/* It had no padding whatsoever so it looked terrible. This is for
-   error messages like wrong password and expired session. */
+/* Padding for error messages like wrong password and expired session. */
 h3.bg-danger, h4.bg-danger {
     padding: 8px 12px;
 }
-/* Some error message headings are always shown, just empty. That
+/* Some error message headings are always shown, just empty, without this. That
    means that, because of the above padding, we get a thick red line
    at the top of some pages, for no reason. So, make sure we don't
    have padding when the error heading is empty. Barf. */
@@ -95,20 +94,15 @@ h4.bg-danger:empty {
 }
 
 
-/* There is way too much space under the heading "Add Email
-   account". As it seems to be the only time a div has both the
-   form-group and mt classes, remove the top margin for that specific
-   combination. */
+/* Reduce the space under the heading "Add Email account".
+   As it seems to be the only time a div has both the form-group and mt classes,
+   remove the top margin for that specific combination. */
 .form-group.mt {
     margin-top: 0;
 }
 
-/* Again in the create new email account, in the list of mailing lists
-   the new user can be subscribed to, I find it extremely ugly that
-   there is the bullet, and then the checkbox. So, let's remove the
-   bullet. As it *seems* to be the only list besides an h4 (gosh,
-   these things really should have more/better classes), target this
-   case like that. */
+/* In the create new email account, in the list of mailing lists
+   the new user can be subscribed to, remove the bullet before the checkbox. */
 h4 ~ ul {
     padding-left: 20px;
 }
