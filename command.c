@@ -291,8 +291,7 @@ void process_commands()
     delautorespondnow();
 
   } else if (strcmp(TmpBuf2, "logout") == 0 ) {
-    sprintf(TmpBuf, "%s/%s/" MAILDIR, RealDir, Username );
-    del_id_files(TmpBuf);
+    /* main() has ended the session */
     show_login();
 
   } else if (strcmp(TmpBuf2, "showcounts") == 0 ) {

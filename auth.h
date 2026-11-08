@@ -2,7 +2,17 @@
  * $Id: auth.h,v 1.1.2.1 2004-11-20 01:10:41 tomcollins Exp $
  */
 
-void auth_system (const char *ip_addr, struct vqpasswd *pw);
-void auth_user_domain (const char *ip_addr, struct vqpasswd *pw);
+/* name of the session cookie; the __Host- prefix requires https */
+#define SESSION_COOKIE "__Host-qmailadmin"
+
+extern char SessionToken[];
+
+int session_https(void);
+const char *session_cookie(void);
+int session_create(const struct vqpasswd *pw, const char *ip_addr,
+                   const char *returntext, const char *returnhttp);
+int session_check(const struct vqpasswd *pw, const char *ip_addr);
+void session_destroy(const struct vqpasswd *pw);
+char *session_value(const struct vqpasswd *pw, const char *key);
 void set_admin_type();
 

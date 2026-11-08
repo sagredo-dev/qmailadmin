@@ -52,6 +52,7 @@ static const char VPOPMAIL_VERSION[] = VERSION;
 #include "qmailadmin.h"
 #include "qmailadminx.h"
 #include "template.h"
+#include "auth.h"
 #include "user.h"
 #include "util.h"
 #include "storage.h"
@@ -136,7 +137,7 @@ int send_template_now(char *filename)
         switch (inchar) {
           /* send stock (user, dom, time) cgi parameters */
           case '&':
-            printh ("user=%C&dom=%C&time=%d&", Username, Domain, Mytime);
+            printh ("user=%C&dom=%C&tok=%C&", Username, Domain, SessionToken);
             break;
 
           case '~':
@@ -808,31 +809,14 @@ void get_calling_host() {
 }
 
 char *get_session_val(char *session_var) {
-   /* returns the value of session_var, first checking the .qw file for saved */
-   /* value, or the TmpCGI if it's not yet been saved                         */
+   /* value of session_var saved at login in the session file, or the value
+    * in TmpCGI if there is no session yet (login page) */
    static char value[MAX_BUFF];
-   char dir[MAX_BUFF];
-   char *retval;
-   FILE *fs_qw;
    struct vqpasswd *vpw;
-   memset(value, 0, sizeof(value));
-   memset(dir, 0, sizeof(dir));
-   retval = "";
-   if ( (vpw = vauth_getpw(Username, Domain)) != NULL ) {
-      sprintf(dir, "%s/" MAILDIR "/%u.qw", vpw->pw_dir, (unsigned int) Mytime);
-      fs_qw = fopen(dir, "r");
-      if ( fs_qw != NULL ) {
-         memset(TmpBuf, 0, sizeof(TmpBuf));
-         if ( fgets(TmpBuf, sizeof(TmpBuf), fs_qw) != NULL ) {
-            if(GetValue(TmpBuf, value, session_var, sizeof(value))==0)
-               retval=value;
-         }
-         fclose(fs_qw);
-      }
-   }
-   else if (TmpCGI) {
-      if (GetValue(TmpCGI, value, session_var, sizeof(value))==0)
-         retval=value;
-   }
-   return(retval);
+
+   if ( (vpw = vauth_getpw(Username, Domain)) != NULL && SessionToken[0] != '\0' )
+      return session_value(vpw, session_var);
+   if (TmpCGI && GetValue(TmpCGI, value, session_var, sizeof(value)) == 0)
+      return value;
+   return "";
 }
