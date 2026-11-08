@@ -233,8 +233,8 @@ pi=getenv("PATH_INFO");
     }
     if ( session != 0 ) {
       send_headers();
-      snprintf (StatusMessage, sizeof(StatusMessage), "%s\n",
-        html_text[session == -2 ? 173 : 172]);
+      /* 173 "login expired, please log in again"; 172 blamed another login */
+      snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[173]);
       show_login();
       vclose();
       exit(0);
