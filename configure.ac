@@ -551,20 +551,20 @@ dnl ============================================================
 
 AC_ARG_WITH([auth-logdir],
     [AS_HELP_STRING([--with-auth-logdir[=DIR]],
-                    [Enable authentication logging (default directory: ~vpopmail/log). Use --without-auth-logdir to disable.])],
+                    [Enable authentication logging (default directory: /var/log/vpopmail). Use --without-auth-logdir to disable.])],
     [
         if test "x$withval" = "xno"; then
             enable_auth_log=no
             auth_logdir="no"
         elif test "x$withval" = "xyes"; then
             enable_auth_log=yes
-            auth_logdir="$vpopmaildir/log"
+            auth_logdir="/var/log/vpopmail"
         else
             enable_auth_log=yes
             auth_logdir="$withval"
         fi
     ],
-    [enable_auth_log=yes; auth_logdir="$vpopmaildir/log"])
+    [enable_auth_log=yes; auth_logdir="/var/log/vpopmail"])
 
 if test "x$enable_auth_log" = "xyes"; then
     AC_DEFINE([ENABLE_AUTH_LOG], [1], [Enable authentication logging])
