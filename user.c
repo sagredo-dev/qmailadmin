@@ -957,31 +957,20 @@ void modusergo()
 
   Do not allow installations
   of any delivery agent in user's .qmail if it already contains a copy of
-  control/defaultdelivery. In fact, when an unknown (for qmailadmin)
+  the default delivery (vpopmail's etc/vdefaultdelivery, formerly
+  control/defaultdelivery). In fact, when an unknown (for qmailadmin)
   delivery agent is already defined there, and qmailadmin adds another one,
   users will get two messages for each delivery in their mailbox.
   Of course in this case the autoresponder is out of question, but users
   can create their out of office message by means of a plugin installed
   in their webmail.
- **************************************************************************/
-  FILE *file;
-  int found = 0;
-  char ln[MAX_BUFF], file_buf[MAX_BUFF];
 
-  // open control/defaultdelivery
-  snprintf(file_buf, sizeof(file_buf), "%s/control/defaultdelivery", QMAILDIR);
-  file = fopen(file_buf, "r");
-  if( file == NULL ) {
-    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[321]);
-    send_template( "mod_user.html" );
-    vclose();
-    exit(0);
-  }
-  else {
-    // write out on ln the 1st line
-    fgets(ln, sizeof(ln), file);
-  }
-  fclose(file);
+  Any program delivery line kept from the old .qmail delivers the message,
+  so found is set for each of them, whatever the default delivery file
+  says. The file is not read here: that would fail after the .qmail was
+  truncated above, leaving the user with an empty .qmail.
+ **************************************************************************/
+  int found = 0;
 /* end patch */
 
   /* Scan through old .qmail and write out any unrecognized program delivery
@@ -1005,7 +994,7 @@ void modusergo()
         fprintf (fs, "%s\n", dotqmailline);
         emptydotqmail = 0;
 /* defaultdelivery patch */
-        if ( !found && strcmp(ln,dotqmailline) != 0 ) found = 1;
+        found = 1;
 /* end patch */
       }
       dotqmailline = strtok (NULL, "\n");
