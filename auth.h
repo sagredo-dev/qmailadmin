@@ -2,8 +2,9 @@
  * $Id: auth.h,v 1.1.2.1 2004-11-20 01:10:41 tomcollins Exp $
  */
 
-/* name of the session cookie; the __Host- prefix requires https */
-#define SESSION_COOKIE "__Host-qmailadmin"
+/* name of the session cookies, followed by the session handle; the __Host-
+ * prefix requires https */
+#define SESSION_COOKIE "__Host-qmailadmin-"
 
 extern char SessionToken[];
 

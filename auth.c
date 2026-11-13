@@ -56,16 +56,19 @@
  *
  * A login creates a session: a random handle (128 bits), a random secret
  * (256 bits) and a separate random request token (128 bits). The handle and
- * the secret are sent only as a cookie:
+ * the secret are sent only as a cookie, one per session:
  *
- *   __Host-qmailadmin=<handle>.<secret>; Path=/; Secure; HttpOnly; SameSite=Strict
+ *   __Host-qmailadmin-<handle>=<secret>; Path=/; Max-Age=7200; Secure;
+ *   HttpOnly; SameSite=Strict
  *
  * The __Host- prefix makes the browser refuse the cookie unless it is Secure,
  * has Path=/ and no Domain, so it cannot be set or overwritten by another
  * host or over plain http. The request token goes into every link and form
  * (##& in the templates, cgiurl()) as tok=, and every /com/ request must
  * carry both: the cookie identifies the browser, the token shows that the
- * request comes from a page qmailadmin generated (CSRF).
+ * request comes from a page qmailadmin generated (CSRF). The token also
+ * picks the session among the cookies a browser sends, so tabs of one
+ * browser can be logged in to the same or to different accounts.
  *
  * Each session is a file in the account's directory,
  * <pw_dir>/qmailadmin-session.<handle>.qw (mode 0600), holding the secret,
@@ -165,33 +168,32 @@ static const char *session_file_handle(const char *name)
   return is_lower_hex(handle, hlen) ? handle : NULL;
 }
 
-/* Read the handle and the secret from the Cookie header into SessionHandle
- * and id. Returns 0, or -1 when there is no valid session cookie.
+/* Read the next session cookie from the Cookie header, starting at *pos
+ * (NULL: the first), into SessionHandle and id. Returns 0, or -1 when there
+ * is none left. Cookies with another name or a malformed value are skipped.
  */
-static int cookie_session(char *id)
+static int cookie_session(const char **pos, char *id)
 {
-  const char *p = getenv("HTTP_COOKIE");
-  const size_t namelen = strlen(SESSION_COOKIE "=");
+  const char *p = (*pos != NULL) ? *pos : getenv("HTTP_COOKIE");
+  const size_t namelen = strlen(SESSION_COOKIE);
   const size_t hlen = 2 * SESSION_HANDLE_BYTES, idlen = 2 * SESSION_ID_BYTES;
-  size_t len;
 
   while (p != NULL && *p != '\0') {
     while (*p == ' ' || *p == ';') p++;
-    if (strncmp(p, SESSION_COOKIE "=", namelen) == 0) {
-      p += namelen;
-      len = strcspn(p, "; ");
-      if (len != hlen + 1 + idlen || p[hlen] != '.') return -1;
-      memcpy(SessionHandle, p, hlen);
+    if (strcspn(p, "; ") == namelen + hlen + 1 + idlen &&
+        strncmp(p, SESSION_COOKIE, namelen) == 0 && p[namelen + hlen] == '=') {
+      memcpy(SessionHandle, p + namelen, hlen);
       SessionHandle[hlen] = '\0';
-      memcpy(id, p + hlen + 1, idlen);
+      memcpy(id, p + namelen + hlen + 1, idlen);
       id[idlen] = '\0';
+      *pos = p + namelen + hlen + 1 + idlen;
       if (is_lower_hex(SessionHandle, hlen) && is_lower_hex(id, idlen))
         return 0;
       SessionHandle[0] = '\0';
-      return -1;
     }
     p = strchr(p, ';');
   }
+  *pos = NULL;
   return -1;
 }
 
@@ -288,8 +290,8 @@ int session_create(const struct vqpasswd *pw, const char *ip_addr,
   }
 
   snprintf(session_cookie_header, sizeof(session_cookie_header),
-           "Set-Cookie: " SESSION_COOKIE "=%s.%s; Path=/; Secure; HttpOnly; "
-           "SameSite=Strict\n", SessionHandle, id);
+           "Set-Cookie: " SESSION_COOKIE "%s=%s; Path=/; Max-Age=%d; Secure; "
+           "HttpOnly; SameSite=Strict\n", SessionHandle, id, SESSION_MAX_AGE);
   memset(id, 0, sizeof(id));
   memset(line, 0, sizeof(line));
   return 0;
@@ -300,14 +302,15 @@ void session_destroy(const struct vqpasswd *pw)
 {
   char path[MAX_BUFF];
 
-  if (pw != NULL && SessionHandle[0] != '\0' &&
+  if (SessionHandle[0] == '\0') return;
+  if (pw != NULL &&
       session_path(path, sizeof(path), pw->pw_dir, SessionHandle) == 0)
     unlink(path);
+  snprintf(session_cookie_header, sizeof(session_cookie_header),
+           "Set-Cookie: " SESSION_COOKIE "%s=; Path=/; Max-Age=0; Secure; "
+           "HttpOnly; SameSite=Strict\n", SessionHandle);
   SessionHandle[0] = '\0';
   memset(SessionToken, 0, sizeof(SessionToken));
-  snprintf(session_cookie_header, sizeof(session_cookie_header),
-           "Set-Cookie: " SESSION_COOKIE "=; Path=/; Secure; HttpOnly; "
-           "SameSite=Strict; Max-Age=0\n");
 }
 
 /* End the sessions of user@domain after a password change, except the
@@ -326,8 +329,9 @@ void session_end_others(const char *user, const char *domain)
   session_remove(dir, 1, own ? SessionHandle : NULL);
 }
 
-/* Check the session of pw for this request: cookie, request token (tok= in
- * TmpCGI), client address (with IPAUTH) and age. Returns 0 when valid,
+/* Check the session of pw for this request: the request token (tok= in
+ * TmpCGI) picks the session among the cookies, then its secret, the client
+ * address (with IPAUTH) and its age are checked. Returns 0 when valid,
  * -1 when invalid and -2 when expired.
  */
 int session_check(const struct vqpasswd *pw, const char *ip_addr)
@@ -338,23 +342,36 @@ int session_check(const struct vqpasswd *pw, const char *ip_addr)
   char tok[2 * SESSION_TOK_BYTES + 2];
   struct stat st;
   time_t now, created;
+  const char *pos = NULL;
   int fd, ok;
 
-  if (pw == NULL || cookie_session(id) != 0) return -1;
-  if (GetValue(TmpCGI, tok, "tok=", sizeof(tok)) != 0) return -1;
-  if ((fd = session_read(pw, line, sizeof(line), &st)) < 0) return -1;
+  if (pw == NULL) return -1;
+  if (GetValue(TmpCGI, tok, "tok=", sizeof(tok)) != 0 ||
+      !is_lower_hex(tok, 2 * SESSION_TOK_BYTES)) return -1;
+  /* the session of this account whose token the request carries */
+  for (;;) {
+    if (cookie_session(&pos, id) != 0) {
+      SessionHandle[0] = '\0';
+      memset(id, 0, sizeof(id));
+      return -1;
+    }
+    if ((fd = session_read(pw, line, sizeof(line), &st)) < 0) continue;
+    GetValue(line, value, "tok=", sizeof(value));
+    if (is_lower_hex(value, 2 * SESSION_TOK_BYTES) && secret_equal(tok, value))
+      break;
+    close(fd);
+  }
+  strcpy(SessionToken, value);
 
   GetValue(line, value, "sid=", sizeof(value));
   ok = is_lower_hex(value, 2 * SESSION_ID_BYTES) && secret_equal(id, value);
-  GetValue(line, value, "tok=", sizeof(value));
-  ok = ok && is_lower_hex(value, 2 * SESSION_TOK_BYTES) &&
-       secret_equal(tok, value);
   memset(id, 0, sizeof(id));
   if (!ok) {
     close(fd);
+    SessionHandle[0] = '\0';
+    memset(SessionToken, 0, sizeof(SessionToken));
     return -1;
   }
-  strcpy(SessionToken, value);
 
 #ifdef IPAUTH
   GetValue(line, value, "ip_addr=", sizeof(value));
