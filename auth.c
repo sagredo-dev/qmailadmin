@@ -54,10 +54,11 @@
 /*
  * Sessions
  *
- * A login creates a random session id (256 bits) and a separate random
- * request token (128 bits). The id is sent only as a cookie:
+ * A login creates a session: a random handle (128 bits), a random secret
+ * (256 bits) and a separate random request token (128 bits). The handle and
+ * the secret are sent only as a cookie:
  *
- *   __Host-qmailadmin=<id>; Path=/; Secure; HttpOnly; SameSite=Strict
+ *   __Host-qmailadmin=<handle>.<secret>; Path=/; Secure; HttpOnly; SameSite=Strict
  *
  * The __Host- prefix makes the browser refuse the cookie unless it is Secure,
  * has Path=/ and no Domain, so it cannot be set or overwritten by another
@@ -66,17 +67,26 @@
  * carry both: the cookie identifies the browser, the token shows that the
  * request comes from a page qmailadmin generated (CSRF).
  *
- * Both are stored in <user's Maildir>/qmailadmin-session.qw (mode 0600,
- * replaced at every login, removed at logout). A session ends 2 hours after
- * login or after 30 minutes without a request.
+ * Each session is a file in the account's directory,
+ * <pw_dir>/qmailadmin-session.<handle>.qw (mode 0600), holding the secret,
+ * the token and the login time. An account can have several sessions at
+ * once. A session ends 2 hours after login, after 30 minutes without a
+ * request, at logout, or when the account's password is changed (the session
+ * that changed it stays). A login removes the account's session files that
+ * have been idle for longer than that, and the .qw files older versions kept
+ * in the Maildir.
  */
 
+#define SESSION_HANDLE_BYTES 16
 #define SESSION_ID_BYTES  32
 #define SESSION_TOK_BYTES 16
 #define SESSION_MAX_AGE   7200
 #define SESSION_IDLE      1800
+#define SESSION_PREFIX    "qmailadmin-session."
+#define SESSION_SUFFIX    ".qw"
 
 char SessionToken[2 * SESSION_TOK_BYTES + 1];
+static char SessionHandle[2 * SESSION_HANDLE_BYTES + 1];
 static char session_cookie_header[256];
 
 int session_https(void)
@@ -133,17 +143,36 @@ static int is_lower_hex(const char *s, size_t len)
   return strlen(s) == len && strspn(s, "0123456789abcdef") == len;
 }
 
-static void session_path(char *path, size_t size, const struct vqpasswd *pw)
+/* path of the session file with this handle */
+static int session_path(char *path, size_t size, const char *dir,
+                        const char *handle)
 {
-  snprintf(path, size, "%s/" MAILDIR "/qmailadmin-session.qw", pw->pw_dir);
+  return snprintf(path, size, "%s/" SESSION_PREFIX "%s" SESSION_SUFFIX, dir,
+                  handle) < (int)size ? 0 : -1;
 }
 
-/* the session id from the Cookie header, or NULL */
-static const char *cookie_session_id(void)
+/* the handle of a session file name, or NULL */
+static const char *session_file_handle(const char *name)
 {
-  static char id[2 * SESSION_ID_BYTES + 1];
+  static char handle[2 * SESSION_HANDLE_BYTES + 1];
+  const size_t plen = strlen(SESSION_PREFIX), hlen = sizeof(handle) - 1;
+
+  if (strncmp(name, SESSION_PREFIX, plen) != 0 ||
+      strlen(name) != plen + hlen + strlen(SESSION_SUFFIX) ||
+      strcmp(name + plen + hlen, SESSION_SUFFIX) != 0) return NULL;
+  memcpy(handle, name + plen, hlen);
+  handle[hlen] = '\0';
+  return is_lower_hex(handle, hlen) ? handle : NULL;
+}
+
+/* Read the handle and the secret from the Cookie header into SessionHandle
+ * and id. Returns 0, or -1 when there is no valid session cookie.
+ */
+static int cookie_session(char *id)
+{
   const char *p = getenv("HTTP_COOKIE");
   const size_t namelen = strlen(SESSION_COOKIE "=");
+  const size_t hlen = 2 * SESSION_HANDLE_BYTES, idlen = 2 * SESSION_ID_BYTES;
   size_t len;
 
   while (p != NULL && *p != '\0') {
@@ -151,19 +180,24 @@ static const char *cookie_session_id(void)
     if (strncmp(p, SESSION_COOKIE "=", namelen) == 0) {
       p += namelen;
       len = strcspn(p, "; ");
-      if (len != sizeof(id) - 1) return NULL;
-      memcpy(id, p, len);
-      id[len] = '\0';
-      return is_lower_hex(id, len) ? id : NULL;
+      if (len != hlen + 1 + idlen || p[hlen] != '.') return -1;
+      memcpy(SessionHandle, p, hlen);
+      SessionHandle[hlen] = '\0';
+      memcpy(id, p + hlen + 1, idlen);
+      id[idlen] = '\0';
+      if (is_lower_hex(SessionHandle, hlen) && is_lower_hex(id, idlen))
+        return 0;
+      SessionHandle[0] = '\0';
+      return -1;
     }
     p = strchr(p, ';');
   }
-  return NULL;
+  return -1;
 }
 
-/* Read the session file of pw into buf (first line). Returns an open
- * descriptor, so the caller can update the file time, or -1. Refuses
- * symlinks and anything but a regular file.
+/* Read the file of the current session (SessionHandle) of pw into buf (first
+ * line). Returns an open descriptor, so the caller can update the file time,
+ * or -1. Refuses symlinks and anything but a regular file.
  */
 static int session_read(const struct vqpasswd *pw, char *buf, size_t size,
                         struct stat *st)
@@ -172,7 +206,9 @@ static int session_read(const struct vqpasswd *pw, char *buf, size_t size,
   ssize_t r;
   int fd;
 
-  session_path(path, sizeof(path), pw);
+  if (SessionHandle[0] == '\0' ||
+      session_path(path, sizeof(path), pw->pw_dir, SessionHandle) != 0)
+    return -1;
   if ((fd = open(path, O_RDONLY | O_NOFOLLOW | O_CLOEXEC)) < 0) return -1;
   if (fstat(fd, st) < 0 || !S_ISREG(st->st_mode) || st->st_size <= 0 ||
       (size_t)st->st_size >= size) {
@@ -188,27 +224,53 @@ static int session_read(const struct vqpasswd *pw, char *buf, size_t size,
   return fd;
 }
 
-/* Start a new session for pw: replaces any earlier session of this user and
- * prepares the Set-Cookie header. Returns 0 on success.
+/* Remove session files in dir: all of them (all != 0) or those idle for
+ * longer than SESSION_IDLE, except the one with handle keep (may be NULL).
+ */
+static void session_remove(const char *dir, int all, const char *keep)
+{
+  char path[MAX_BUFF];
+  const char *handle;
+  struct dirent *de;
+  struct stat st;
+  time_t now = time(NULL);
+  DIR *d;
+
+  if ((d = opendir(dir)) == NULL) return;
+  while ((de = readdir(d)) != NULL) {
+    if ((handle = session_file_handle(de->d_name)) == NULL) continue;
+    if (keep != NULL && strcmp(handle, keep) == 0) continue;
+    if (session_path(path, sizeof(path), dir, handle) != 0) continue;
+    if (!all && lstat(path, &st) == 0 && S_ISREG(st.st_mode) &&
+        now - st.st_mtime <= SESSION_IDLE) continue;
+    unlink(path);
+  }
+  closedir(d);
+}
+
+/* Start a new session for pw and prepare the Set-Cookie header. Other
+ * sessions of the account stay. Returns 0 on success.
  */
 int session_create(const struct vqpasswd *pw, const char *ip_addr,
                    const char *returntext, const char *returnhttp)
 {
   char id[2 * SESSION_ID_BYTES + 1];
-  char path[MAX_BUFF], tmppath[MAX_BUFF];
+  char path[MAX_BUFF];
   char line[MAX_BIG_BUFF];
   size_t len;
   int fd;
 
-  if (random_hex(id, SESSION_ID_BYTES) != 0 ||
+  if (random_hex(SessionHandle, SESSION_HANDLE_BYTES) != 0 ||
+      random_hex(id, SESSION_ID_BYTES) != 0 ||
       random_hex(SessionToken, SESSION_TOK_BYTES) != 0) return -1;
 
-  /* removes earlier sessions (and the files of older qmailadmin versions) */
+  /* expired sessions of this account, and the files of older qmailadmin
+   * versions in the Maildir */
+  session_remove(pw->pw_dir, 0, NULL);
   snprintf(path, sizeof(path), "%s/" MAILDIR, pw->pw_dir);
   del_id_files(path);
 
-  session_path(path, sizeof(path), pw);
-  if (snprintf(tmppath, sizeof(tmppath), "%s.tmp", path) >= (int)sizeof(tmppath))
+  if (session_path(path, sizeof(path), pw->pw_dir, SessionHandle) != 0)
     return -1;
   snprinth(line, sizeof(line),
            "sid=%s&tok=%s&created=%lu&ip_addr=%C&returntext=%C&returnhttp=%C\n",
@@ -217,39 +279,51 @@ int session_create(const struct vqpasswd *pw, const char *ip_addr,
   len = strlen(line);
   if (len == 0 || line[len - 1] != '\n') return -1;  /* truncated */
 
-  unlink(tmppath);
-  fd = open(tmppath, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
+  /* a new name, so no other login or request can see it half written */
+  fd = open(path, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0600);
   if (fd < 0) return -1;
-  if (write(fd, line, len) != (ssize_t)len) {
-    close(fd);
-    unlink(tmppath);
-    return -1;
-  }
-  if (close(fd) != 0 || rename(tmppath, path) != 0) {
-    unlink(tmppath);
+  if (write(fd, line, len) != (ssize_t)len || close(fd) != 0) {
+    unlink(path);
     return -1;
   }
 
   snprintf(session_cookie_header, sizeof(session_cookie_header),
-           "Set-Cookie: " SESSION_COOKIE "=%s; Path=/; Secure; HttpOnly; "
-           "SameSite=Strict\n", id);
+           "Set-Cookie: " SESSION_COOKIE "=%s.%s; Path=/; Secure; HttpOnly; "
+           "SameSite=Strict\n", SessionHandle, id);
   memset(id, 0, sizeof(id));
+  memset(line, 0, sizeof(line));
   return 0;
 }
 
-/* End the session of pw and expire the cookie. */
+/* End the current session of pw and expire the cookie. */
 void session_destroy(const struct vqpasswd *pw)
 {
   char path[MAX_BUFF];
 
-  if (pw != NULL) {
-    session_path(path, sizeof(path), pw);
+  if (pw != NULL && SessionHandle[0] != '\0' &&
+      session_path(path, sizeof(path), pw->pw_dir, SessionHandle) == 0)
     unlink(path);
-  }
+  SessionHandle[0] = '\0';
   memset(SessionToken, 0, sizeof(SessionToken));
   snprintf(session_cookie_header, sizeof(session_cookie_header),
            "Set-Cookie: " SESSION_COOKIE "=; Path=/; Secure; HttpOnly; "
            "SameSite=Strict; Max-Age=0\n");
+}
+
+/* End the sessions of user@domain after a password change, except the
+ * current session when it belongs to that account.
+ */
+void session_end_others(const char *user, const char *domain)
+{
+  struct vqpasswd *pw;
+  char dir[MAX_BUFF];
+  int own;
+
+  if ((pw = vauth_getpw((char *)user, (char *)domain)) == NULL) return;
+  snprintf(dir, sizeof(dir), "%s", pw->pw_dir);
+  own = SessionHandle[0] != '\0' && strcmp(user, Username) == 0 &&
+        strcmp(domain, Domain) == 0;
+  session_remove(dir, 1, own ? SessionHandle : NULL);
 }
 
 /* Check the session of pw for this request: cookie, request token (tok= in
@@ -260,13 +334,13 @@ int session_check(const struct vqpasswd *pw, const char *ip_addr)
 {
   char line[MAX_BIG_BUFF];
   char value[MAX_BUFF];
+  char id[2 * SESSION_ID_BYTES + 1];
   char tok[2 * SESSION_TOK_BYTES + 2];
-  const char *id;
   struct stat st;
   time_t now, created;
   int fd, ok;
 
-  if (pw == NULL || (id = cookie_session_id()) == NULL) return -1;
+  if (pw == NULL || cookie_session(id) != 0) return -1;
   if (GetValue(TmpCGI, tok, "tok=", sizeof(tok)) != 0) return -1;
   if ((fd = session_read(pw, line, sizeof(line), &st)) < 0) return -1;
 
@@ -275,6 +349,7 @@ int session_check(const struct vqpasswd *pw, const char *ip_addr)
   GetValue(line, value, "tok=", sizeof(value));
   ok = ok && is_lower_hex(value, 2 * SESSION_TOK_BYTES) &&
        secret_equal(tok, value);
+  memset(id, 0, sizeof(id));
   if (!ok) {
     close(fd);
     return -1;
@@ -305,7 +380,8 @@ int session_check(const struct vqpasswd *pw, const char *ip_addr)
   return 0;
 }
 
-/* Value of key ("returntext=", ...) saved in the session of pw, or "" */
+/* Value of key ("returntext=", ...) saved in the current session of pw,
+ * or "" */
 char *session_value(const struct vqpasswd *pw, const char *key)
 {
   static char value[MAX_BUFF];

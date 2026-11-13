@@ -332,7 +332,8 @@ GetValue(TmpCGI, Password, "oldpass=", sizeof(Password));
           /* end pwd check */
           snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
         } else {
-          /* success */
+          /* success; a password change ends the account's sessions */
+          session_end_others(User, Domain);
           *Password = '\0';
           send_template ("change_password_success.html");
 
@@ -386,7 +387,7 @@ GetValue(TmpCGI, Password, "oldpass=", sizeof(Password));
          GetValue(TmpCGI, returnhttp, "returnhttp=", sizeof(returnhttp));
          if (session_create(pw, ip_addr, returntext, returnhttp) != 0) {
            send_headers();
-           printf ("%s %s/" MAILDIR "<br>\n", html_text[144], pw->pw_dir);
+           printf ("%s %s<br>\n", html_text[144], pw->pw_dir);
            vclose();
            exit(0);
          }

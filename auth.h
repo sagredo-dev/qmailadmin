@@ -13,6 +13,7 @@ int session_create(const struct vqpasswd *pw, const char *ip_addr,
                    const char *returntext, const char *returnhttp);
 int session_check(const struct vqpasswd *pw, const char *ip_addr);
 void session_destroy(const struct vqpasswd *pw);
+void session_end_others(const char *user, const char *domain);
 char *session_value(const struct vqpasswd *pw, const char *key);
 void set_admin_type();
 
