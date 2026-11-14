@@ -48,6 +48,7 @@
 #include "printh.h"
 #include "user.h"
 #include "util.h"
+#include "auth.h"
 #include "storage.h"
 
 extern FILE *lang_fs;
@@ -420,7 +421,7 @@ void print_user_index (char *action, int colspan, char *user, char *dom, time_t 
   printf ("<form method=\"get\" action=\"%s/com/%s\">", CGIPATH, action);
   printh ("<input type=\"hidden\" name=\"user\" value=\"%H\">", user);
   printh ("<input type=\"hidden\" name=\"dom\" value=\"%H\">", dom);
-  printf ("<input type=\"hidden\" name=\"time\" value=\"%u\">", (unsigned int) mytime);
+  printh ("<input type=\"hidden\" name=\"tok\" value=\"%H\">", SessionToken);
   printh ("<input class=\"my-input\" type=\"text\" name=\"searchuser\" value=\"%H\">&nbsp;", SearchUser);
   printf ("<input class=\"btn btn-primary btn-sm\" type=\"submit\" value=\"%s\">", html_text[204]);
   printf ("</form>");
@@ -434,8 +435,8 @@ char *cgiurl (char *action)
 {
   static char url[256];
   
-  snprinth (url, sizeof(url), "%s/com/%s?user=%C&dom=%C&time=%d",
-    CGIPATH, action, Username, Domain, Mytime);
+  snprinth (url, sizeof(url), "%s/com/%s?user=%C&dom=%C&tok=%C",
+    CGIPATH, action, Username, Domain, SessionToken);
     
   return url;
 }

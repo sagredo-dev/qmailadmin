@@ -41,6 +41,7 @@
 #undef QMAILDIR
 #undef EZMLMDIR
 #include "alias.h"
+#include "auth.h"
 #include "cgi.h"
 #include "config.h"
 #include "limits.h"
@@ -858,6 +859,8 @@ void modusergo()
     else {
 //      snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H.", html_text[139], ActionUser, Domain );
       strcpy (StatusMessage, html_text[139]);
+      /* a password change ends the account's other sessions */
+      session_end_others(ActionUser, Domain);
     }
   }
 

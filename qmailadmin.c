@@ -178,8 +178,7 @@ int main(int argc, char *argv[])
  const char *tmpstr;
 #endif
  const char *ip_addr=getenv("REMOTE_ADDR");
- const char *x_forward=getenv("HTTP_X_FORWARDED_FOR");
- char *pi;
+char *pi;
  char *rm;
  char returnhttp[MAX_BUFF];
  char returntext[MAX_BUFF];
@@ -188,9 +187,17 @@ int main(int argc, char *argv[])
 
   init_globals();
 
-  if (x_forward) ip_addr = x_forward;
+  /* passwords and the session cookie (__Host- prefix, Secure) need https */
+  if (!session_https()) {
+    send_headers();
+    printf("<html><body><h1>qmailadmin</h1><p>qmailadmin must be used over https.</p></body></html>\n");
+    return 0;
+  }
+
+  /* the address the request came from; X-Forwarded-For is set by the
+   * client and must not decide anything */
   if (!ip_addr) ip_addr = "127.0.0.1";
-  pi=getenv("PATH_INFO");
+pi=getenv("PATH_INFO");
   if ( pi )  pi = strdup(pi);
 
   if (pi) snprintf (TmpBuf2, sizeof(TmpBuf2), "%s", pi + 5);
@@ -205,37 +212,54 @@ int main(int argc, char *argv[])
   }
 
   if (pi && strncmp(pi, "/com/", 5) == 0) {
+    int session;
+
     GetValue(TmpCGI, Username, "user=", sizeof(Username));
     GetValue(TmpCGI, Domain, "dom=", sizeof(Domain));
-    GetValue(TmpCGI, Time, "time=", sizeof(Time));
-    Mytime = atoi(Time);
     pw = vauth_getpw( Username, Domain );
 
     /* get the real uid and gid and change to that user */
     vget_assign(Domain,RealDir,sizeof(RealDir),&Uid,&Gid);
     qmailadmin_suid (Gid, Uid);
 
-    if ( chdir(RealDir) < 0 ) {
-      fprintf(stderr, "<h2>%s %s</h2>\n", html_text[171], RealDir );
+    session = (pw == NULL) ? -1 : session_check(pw, ip_addr);
+    if ( session == 0 && chdir(RealDir) < 0 ) {
+      session_destroy(pw);
+      send_headers();
+      snprintf (StatusMessage, sizeof(StatusMessage), "%s %s\n", html_text[171], RealDir);
+      show_login();
+      vclose();
+      exit(0);
+    }
+    if ( session != 0 ) {
+      send_headers();
+      /* 173 "login expired, please log in again"; 172 blamed another login */
+      snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[173]);
+      show_login();
+      vclose();
+      exit(0);
     }
     load_limits();
 
     set_admin_type();
 
-    if ( AdminType == USER_ADMIN || AdminType == DOMAIN_ADMIN ) {
-      auth_user_domain(ip_addr, pw);
-    } else {
-      auth_system(ip_addr, pw);
-    }
-
+    if (strcmp(TmpBuf2, "logout") == 0) session_destroy(pw);
+    send_headers();
     process_commands();
 
   } else if (pi && strncmp(pi, "/passwd/", 7) == 0) {
     char User[MAX_BUFF];
     char *dom;
 
+    send_headers();
+    /* passwords only in POST bodies, never in URLs (logs, history) */
+    if (strcmp(rm, "POST") != 0) {
+      send_template ("change_password.html");
+      return 0;
+    }
+
     GetValue(TmpCGI, Username, "address=", sizeof(Username));
-    GetValue(TmpCGI, Password, "oldpass=", sizeof(Password));
+GetValue(TmpCGI, Password, "oldpass=", sizeof(Password));
     GetValue(TmpCGI, Password1, "newpass1=", sizeof(Password1));
     GetValue(TmpCGI, Password2, "newpass2=", sizeof(Password2));
 
@@ -308,7 +332,8 @@ int main(int argc, char *argv[])
           /* end pwd check */
           snprintf (StatusMessage, sizeof(StatusMessage), "%s (%s)", html_text[140], verror(ret_code));
         } else {
-          /* success */
+          /* success; a password change ends the account's sessions */
+          session_end_others(User, Domain);
           *Password = '\0';
           send_template ("change_password_success.html");
 
@@ -320,8 +345,7 @@ int main(int argc, char *argv[])
     send_template ("change_password.html");
     return 0;
 
-  } else if (*rm) {
-   FILE *fs;
+  } else if (strcmp(rm, "POST") == 0) {
    char *dom;
 
        GetValue(TmpCGI, Username, "username=", sizeof(Username));
@@ -342,6 +366,7 @@ int main(int argc, char *argv[])
 
          pw = vauth_user( Username, Domain, Password, "" );
          if ( pw == NULL ) {
+           send_headers();
            snprintf (StatusMessage, sizeof(StatusMessage), "%s\n", html_text[198]);
 
 #ifdef ENABLE_AUTH_LOG
@@ -356,27 +381,18 @@ int main(int argc, char *argv[])
            exit(0);
          }
 
-         snprintf (TmpBuf, sizeof(TmpBuf), "%s/" MAILDIR, pw->pw_dir);
-         del_id_files( TmpBuf);
-
+         /* a new session id at every login */
          Mytime = time(NULL);
-         snprintf (TmpBuf, sizeof(TmpBuf), "%s/" MAILDIR "/%u.qw", pw->pw_dir, (unsigned int) Mytime);
-         fs = fopen(TmpBuf, "w");
-         if ( fs == NULL ) {
-           printf ("%s %s<br>\n", html_text[144], TmpBuf);
+         GetValue(TmpCGI, returntext, "returntext=", sizeof(returntext));
+         GetValue(TmpCGI, returnhttp, "returnhttp=", sizeof(returnhttp));
+         if (session_create(pw, ip_addr, returntext, returnhttp) != 0) {
+           send_headers();
+           printf ("%s %s<br>\n", html_text[144], pw->pw_dir);
            vclose();
            exit(0);
          }
-         memset(TmpBuf, 0, sizeof(TmpBuf)); 
-         /* set session vars */
-         GetValue(TmpCGI, returntext, "returntext=", sizeof(returntext));
-         GetValue(TmpCGI, returnhttp, "returnhttp=", sizeof(returnhttp));
-         snprinth (TmpBuf, sizeof(TmpBuf), "ip_addr=%C&returntext=%C&returnhttp=%C\n",
-                 ip_addr, returntext, returnhttp); 
-         fputs(TmpBuf,fs); 
-        // fputs(ip_addr, fs);
-         fclose(fs);
-         vget_assign(Domain, TmpBuf1, sizeof(TmpBuf1), &Uid, &Gid);
+         send_headers();
+vget_assign(Domain, TmpBuf1, sizeof(TmpBuf1), &Uid, &Gid);
          set_admin_type();
 
          /* show the main menu for domain admins, modify user page
@@ -391,9 +407,10 @@ int main(int argc, char *argv[])
          exit(0);
        }
   }
+  send_headers();
   show_login();
   vclose();
-  
+
   return 0;
 }
 
@@ -443,7 +460,6 @@ void init_globals()
 {
   char *accept_lang;
   char *langptr, *qptr;
-  char *charset;
   int lang_err;
   int i;
   float maxq, thisq;
@@ -560,17 +576,32 @@ void init_globals()
   open_colortable();
 
   umask(VPOPMAIL_UMASK);
+}
+
+/* Send the HTTP response headers, once. Called when it is known whether the
+ * response sets or clears the session cookie, before any other output.
+ */
+void send_headers()
+{
+  static int sent = 0;
+  char *charset;
+
+  if (sent) return;
+  sent = 1;
 
   charset = html_text[0];
   printf ("Content-Type: text/html; charset=%s\n",
     *charset == '\0' ? "iso-8859-1" : charset);
-#ifdef NO_CACHE
-  printf ("Cache-Control: no-cache\n"); 
-  printf ("Cache-Control: no-store\n"); 
-  printf ("Pragma: no-cache\n"); 
-  printf ("Expires: Thu, 01 Dec 1994 16:00:00 GMT\n");
-#endif    
-  printf ("\n"); 
+  printf ("%s", session_cookie());
+  /* pages show account data and carry the request token: never cache
+   * them, never send their URL to other sites, never frame them */
+  printf ("Cache-Control: no-store\n");
+  printf ("Pragma: no-cache\n");
+  printf ("Referrer-Policy: no-referrer\n");
+  printf ("X-Content-Type-Options: nosniff\n");
+  printf ("Content-Security-Policy: frame-ancestors 'none'\n");
+  printf ("X-Frame-Options: DENY\n");
+  printf ("\n");
 }
 
 void del_id_files( char *dirname )

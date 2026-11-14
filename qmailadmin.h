@@ -60,6 +60,7 @@
 
 void del_id_files( char *);
 void init_globals();
+void send_headers();
 void quickAction (char *username, int action);
 
 /* copied from maildirquota.c in vpopmail
