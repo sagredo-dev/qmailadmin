@@ -3,7 +3,8 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.71])
 AC_INIT([qmailadmin],[1.3.0])
 AC_CONFIG_SRCDIR([qmailadmin.c])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign no-dependencies])
+AM_MAINTAINER_MODE([disable])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_HOST
 
