@@ -71,6 +71,64 @@ char onchange_buf[MAX_BUFF];
 #define GROUP_MODERATOR 1
 #define GROUP_DIGEST 2
 
+/* ezmlm-idx 6 and later take a list's moderator or digest group as a
+ * separate argument: "ezmlm-sub dir mod addr". Older versions (ezmlm-0.53
+ * with ezmlm-idx 0.4x, still the version some distributions ship) only take
+ * a directory and read "dir mod addr" as two addresses for the main list, so
+ * they need "ezmlm-sub dir/mod addr". ezmlm-idx 0.4x prints its version for
+ * "ezmlm-sub -V" ("ezmlm-0.53+ezmlm-idx-0.40"); ezmlm-idx 7 prints only its
+ * usage. It is asked once per request. Returns 1 for the separate argument,
+ * also when no version is printed.
+ */
+static int ezmlm_takes_group_arg(void)
+{
+  static int known = 0, result = 1;
+  char buf[256], *p;
+  int handles[2], status;
+  size_t got = 0;
+  ssize_t r;
+  pid_t pid;
+
+  if (known) return result;
+  known = 1;
+  if (pipe(handles) != 0) return result;
+  pid = fork();
+  if (pid == 0) {
+    close(handles[0]);
+    dup2(handles[1], 1);
+    dup2(handles[1], 2);
+    snprintf(buf, sizeof(buf), "%s/ezmlm-sub", EZMLMDIR);
+    execl(buf, "ezmlm-sub", "-V", (char *)NULL);
+    _exit(127);
+  }
+  close(handles[1]);
+  while (pid > 0 && got < sizeof(buf) - 1 &&
+         (r = read(handles[0], buf + got, sizeof(buf) - 1 - got)) > 0)
+    got += r;
+  close(handles[0]);
+  if (pid > 0) waitpid(pid, &status, 0);
+  buf[got] = '\0';
+  if ((p = strstr(buf, "ezmlm-idx-")) != NULL)
+    result = (atoi(p + strlen("ezmlm-idx-")) >= 6);
+  return result;
+}
+
+/* Fill dir with the list directory for an ezmlm-list/-sub/-unsub call on
+ * group mod and return the group argument to pass after it, or NULL. */
+static const char *ezmlm_group(int mod, char *dir, size_t size)
+{
+  const char *group = NULL;
+
+  if (mod == GROUP_MODERATOR) group = "mod";
+  else if (mod == GROUP_DIGEST) group = "digest";
+  if (group != NULL && !ezmlm_takes_group_arg()) {
+    snprintf(dir, size, "%s/%s/%s", RealDir, ActionUser, group);
+    return NULL;
+  }
+  snprintf(dir, size, "%s/%s", RealDir, ActionUser);
+  return group;
+}
+
 void set_options();
 void default_options();
 
@@ -687,9 +745,10 @@ void show_list_group_now(int mod)
   /* mod = 0 for subscribers, 1 for moderators, 2 for digest users */
   
  FILE *fs;
- int handles[2],pid,z = 0,subuser_count = 0; 
+ int handles[2],pid,z = 0,subuser_count = 0;
  char buf[256];
  char *addr;
+ const char *group;
 
   if ( AdminType!=DOMAIN_ADMIN ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
@@ -698,6 +757,7 @@ void show_list_group_now(int mod)
   }
 
   lowerit(ActionUser);
+  group = ezmlm_group(mod, TmpBuf, sizeof(TmpBuf));
   pipe(handles);
 
   pid=fork();
@@ -705,11 +765,8 @@ void show_list_group_now(int mod)
     close(handles[0]);
     dup2(handles[1],fileno(stdout));
     sprintf(TmpBuf1, "%s/ezmlm-list", EZMLMDIR);
-    sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
-    if(mod == GROUP_MODERATOR) {
-        execl(TmpBuf1, "ezmlm-list", TmpBuf, "mod", (char *)NULL);
-    } else if(mod == GROUP_DIGEST) {
-        execl(TmpBuf1, "ezmlm-list", TmpBuf, "digest", (char *)NULL);
+    if (group != NULL) {
+        execl(TmpBuf1, "ezmlm-list", TmpBuf, group, (char *)NULL);
     } else {
     	execl(TmpBuf1, "ezmlm-list", TmpBuf, (char *)NULL);
     }
@@ -824,15 +881,14 @@ int ezmlm_sub (int mod, char *email)
  int pid;
  char subpath[MAX_BUFF];
  char listpath[MAX_BIG_BUFF];
+ const char *group;
 
+  group = ezmlm_group(mod, listpath, sizeof(listpath));
   pid=fork();
   if (pid==0) {
     snprintf(subpath, sizeof(subpath), "%s/ezmlm-sub", EZMLMDIR);
-    snprintf(listpath, sizeof(listpath), "%s/%s", RealDir, ActionUser);
-    if (mod == GROUP_MODERATOR) {
-        execl(subpath, "ezmlm-sub", listpath, "mod", email, (char *)NULL);
-    } else if (mod == GROUP_DIGEST) {
-        execl(subpath, "ezmlm-sub", listpath, "digest", email, (char *)NULL);
+    if (group != NULL) {
+        execl(subpath, "ezmlm-sub", listpath, group, email, (char *)NULL);
     } else {
         execl(subpath, "ezmlm-sub", listpath, email, (char *)NULL);
     }
@@ -902,6 +958,7 @@ void dellistgroupnow(int mod)
 {
  int pid;
  char *p;
+ const char *group;
 
   if ( AdminType!=DOMAIN_ADMIN ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
@@ -917,14 +974,12 @@ void dellistgroupnow(int mod)
     if ((p = strchr (Newu, '='))) *p = '@';
   }
 
+  group = ezmlm_group(mod, TmpBuf, sizeof(TmpBuf));
   pid=fork();
   if (pid==0) {
     sprintf(TmpBuf1, "%s/ezmlm-unsub", EZMLMDIR);
-    sprintf(TmpBuf, "%s/%s", RealDir, ActionUser);
-    if(mod == GROUP_MODERATOR) {
-        execl(TmpBuf1, "ezmlm-unsub", TmpBuf, "mod", Newu, (char *)NULL);
-    } else if(mod == GROUP_DIGEST ) {
-        execl(TmpBuf1, "ezmlm-unsub", TmpBuf, "digest", Newu, (char *)NULL);
+    if (group != NULL) {
+        execl(TmpBuf1, "ezmlm-unsub", TmpBuf, group, Newu, (char *)NULL);
     } else {
         execl(TmpBuf1, "ezmlm-unsub", TmpBuf, Newu, (char *)NULL);
     }
