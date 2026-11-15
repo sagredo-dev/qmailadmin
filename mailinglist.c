@@ -165,7 +165,7 @@ void show_mailing_list_line(char *user, char* dom, time_t mytime, char *dir)
   sort_dosort();
 
   for (i = 0; (addr = sort_get_entry(i)); ++i) {
-    sprintf (testfn, ".qmail-%s-digest-owner", addr);
+    snprintf (testfn, sizeof(testfn), ".qmail-%s-digest-owner", addr);
     /* convert ':' in addr to '.' */
     str_replace2 (addr, ':', '.');
 
@@ -374,13 +374,13 @@ void delmailinglistnow()
 #endif
 
   /* make dotqmail name */
-  strcpy(dotqmail_name, ActionUser);
+  snprintf(dotqmail_name, sizeof(dotqmail_name), "%s", ActionUser);
   for(dotnum=0;dotqmail_name[dotnum]!='\0';dotnum++) {
     if(dotqmail_name[dotnum]=='.') dotqmail_name[dotnum] = ':';
   }
 
-  sprintf(TmpBuf2, ".qmail-%s", dotqmail_name);
-  sprintf(TmpBuf3, ".qmail-%s-", dotqmail_name);
+  snprintf(TmpBuf2, sizeof(TmpBuf2), ".qmail-%s", dotqmail_name);
+  snprintf(TmpBuf3, sizeof(TmpBuf3), ".qmail-%s-", dotqmail_name);
   while( (mydirent=readdir(mydir)) != NULL ) {
 
     /* delete the main .qmail-"list" file */
@@ -424,7 +424,7 @@ void ezmlm_setreplyto (char *filename, char *newtext)
   char buf[256];
 
   snprintf (realfn, sizeof(realfn), "%s/%s/%s", RealDir, ActionUser, filename);
-  sprintf (tempfn, "%s.tmp", realfn);
+  if (snprintf (tempfn, sizeof(tempfn), "%s.tmp", realfn) >= (int)sizeof(tempfn)) return;
 
   headerfile = fopen(realfn, "r");
   if (!headerfile) return;
@@ -560,7 +560,7 @@ void ezmlm_make (int newlist)
 #endif
 
   /* make dotqmail name */
-  strcpy(dotqmail_name, ActionUser);
+  snprintf(dotqmail_name, sizeof(dotqmail_name), "%s", ActionUser);
   for(dotnum=0;dotqmail_name[dotnum]!='\0';dotnum++) {
     if(dotqmail_name[dotnum]=='.') dotqmail_name[dotnum] = ':';
   }
@@ -1116,7 +1116,7 @@ void set_options() {
    */
 
   /* make dotqmail name (ActionUser with '.' replaced by ':') */
-  strcpy(dotqmail_name, ActionUser);
+  snprintf(dotqmail_name, sizeof(dotqmail_name), "%s", ActionUser);
   for(dotnum=0;dotqmail_name[dotnum]!='\0';dotnum++) {
     if(dotqmail_name[dotnum]=='.') dotqmail_name[dotnum] = ':';
   }

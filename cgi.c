@@ -50,8 +50,11 @@ void get_cgi()
   qs = getenv("QUERY_STRING");
   if (qs != NULL) qslen = strlen (qs);
   count = atoi( safe_getenv("CONTENT_LENGTH"));
+  /* the forms are small; refuse nonsense lengths instead of allocating them */
+  if (count < 0 || count > 1024 * 1024) count = 0;
 
   TmpCGI = malloc(count+qslen+2);
+  if (TmpCGI == NULL) exit(1);
   memset(TmpCGI,0,count+qslen+2);
 
   i = 0;
@@ -89,14 +92,14 @@ int GetValue( char *source,  char *dest,  char *name, int   dest_max)
   }
 
   for(k=0,j=i; source[j]!='&' && k<dest_max-1 && source[j]!=0;++k,++j) {
-    if ( source[j] == '%' ) {
+    if ( source[j] == '%' && source[j+1] != 0 && source[j+2] != 0 ) {
       if ( source[j+1] == '0' && source[j+2]=='D'){
         --k;
       } else if (source[j+1]=='0'&&source[j+2]=='A'){
         dest[k] = '\n';
       } else {
-        dest[k] = (CGIValues[(int) source[j+1]]<<4) + 
-            CGIValues[(int) source[j+2]];
+        dest[k] = (CGIValues[(unsigned char) source[j+1]]<<4) +
+            CGIValues[(unsigned char) source[j+2]];
       }
       j += 2;
     } else   if ( source[j] == '+' ) {
@@ -105,9 +108,9 @@ int GetValue( char *source,  char *dest,  char *name, int   dest_max)
       dest[k] = source[j];
     }
   }
-  dest[k] = 0; 
+  dest[k] = 0;
   --k;
-  while(isspace(dest[k])) {
+  while(k >= 0 && isspace((unsigned char)dest[k])) {
     dest[k] = 0;
     --k;
   }

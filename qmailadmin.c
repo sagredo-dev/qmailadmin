@@ -200,7 +200,8 @@ char *pi;
 pi=getenv("PATH_INFO");
   if ( pi )  pi = strdup(pi);
 
-  if (pi) snprintf (TmpBuf2, sizeof(TmpBuf2), "%s", pi + 5);
+  /* the command after "/com/" */
+  if (pi && strlen(pi) >= 5) snprintf (TmpBuf2, sizeof(TmpBuf2), "%s", pi + 5);
   rm = getenv("REQUEST_METHOD");
   rm = (rm == NULL ? "" : strdup(rm));
 
@@ -437,13 +438,14 @@ void load_lang (char *lang)
 
   fseek (lang_fs, 0, SEEK_END);
   lang_size = ftell (lang_fs);
-  lang_entries = malloc (lang_size);
+  if (lang_size < 0) return;
+  lang_entries = malloc (lang_size + 1);
 
   if (lang_entries == NULL) return;
   rewind (lang_fs);
 
-  fread (lang_entries, 1, lang_size, lang_fs);
-  /* error handling for incomplete reads? */
+  /* strtok() below needs a terminated string */
+  lang_entries[fread (lang_entries, 1, lang_size, lang_fs)] = '\0';
 
   id = strtok (lang_entries, " \t");
   while (id) {
