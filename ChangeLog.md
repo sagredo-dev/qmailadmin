@@ -1,8 +1,56 @@
 # ChangeLog
 
-## 1.2.29-dev
+## 1.3-dev
 Roberto Puzzanghera
   - alias.c can now display the :default option
+  - logdir moved to /var/log/vpopmail just like in vpopmail-6.7.0
+Changes made by yitzhaq
+  - Template and CSS fixes for the add/modify user pages and error headings, written by
+    Esteban Manchado Velázquez (@emanchado, 1977–2021) (#11).
+  - Sessions, following the OWASP Session Management Cheat Sheet
+    (https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html):
+    - A login creates a session with a random 128-bit handle and a random 256-bit secret
+      from /dev/urandom, sent only as a cookie, one per session:
+      __Host-qmailadmin-<handle>=<secret>; Path=/; Max-Age=7200; Secure; HttpOnly;
+      SameSite=Strict. They are no longer in URLs.
+    - Each session is a file, qmailadmin-session.<handle>.qw, in the account's directory
+      (no longer in the Maildir). An account can have several sessions at once, also in
+      tabs of one browser.
+    - A separate random request token (tok=) replaces time= in all links and forms. Every
+      command needs both the cookie and the token, compared in constant time; this protects
+      against cross-site requests.
+    - A session ends after 30 minutes without a request, or 2 hours after login. Logout
+      removes it on the server and expires the cookie. A login removes the account's idle
+      session files.
+    - A password change ends the account's other sessions.
+    - The IPAUTH address is REMOTE_ADDR only; X-Forwarded-For is not used.
+    - qmailadmin requires https. Login and password changes are only accepted by POST.
+    - Responses send Cache-Control: no-store, Referrer-Policy: no-referrer,
+      X-Content-Type-Options: nosniff and frame-ancestors 'none' / X-Frame-Options: DENY.
+    - A refused session shows "login expired" instead of the message about another login.
+    - Upgrading: users have to log in again; custom templates must build links with ##&
+      (it now sends tok= instead of time=).
+  - Permissions, input checks and output escaping:
+    - Every command checks the admin role. Ordinary users can use their own settings page,
+      the menu and logout. Domain forwards (.qmail-<name>) can only be added by domain
+      admins; a user's own forwarding is unchanged.
+    - Names of mailboxes, forwards, autoresponders and lists: 1-64 characters (letters,
+      digits and . - + = _ &), not starting with '.' or '-', no "..".
+    - Deleting a mailing list requires an existing list directory.
+    - List owner, Reply-To address and forward targets must be plain addresses; addresses
+      may not start with '-'; sqlsupport only accepts -6; the list prefix is one line.
+    - Vacation and autoresponder subjects are one line.
+    - Values repeated in status messages, and the autoresponder text, are HTML-escaped.
+    - No crash on the modify user page for a user that does not exist.
+  - Memory safety, checked with valgrind (no errors after the change for the same requests):
+    - CGI parsing: no read past a trailing '%', no negative table index for %xx above 0x7f,
+      no write before the value buffer, and Content-Length is checked.
+    - List names are copied with bounds. The language file is terminated before parsing.
+      A PATH_INFO shorter than "/com/" is handled.
+  - Mailing lists: moderator and digest commands use the syntax of the installed ezmlm-idx,
+    asked from "ezmlm-sub -V": "dir mod" for ezmlm-idx 6 and later, "dir/mod" before that.
+    With ezmlm-idx 0.4x (for example Debian's old ezmlm-idx 0.53 package) they acted on the main list.
+  - modusergo: don't read control/defaultdelivery anymore
 
 ## 1.2.28
 Roberto Puzzanghera
