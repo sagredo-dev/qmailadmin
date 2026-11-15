@@ -1,9 +1,9 @@
 # ChangeLog
 
-## 1.3-dev
+## 1.3.0
 Roberto Puzzanghera
   - alias.c can now display the :default option
-  - logdir moved to /var/log/vpopmail just like in vpopmail-6.7.0
+  - logdir moved to /var/log/vpopmail just like in vpopmail-5.7.0
 
 Changes made by [@yitzhaq](https://github.com/yitzhaq)
   - Template and CSS fixes for the add/modify user pages and error headings, written by
@@ -50,7 +50,7 @@ Changes made by [@yitzhaq](https://github.com/yitzhaq)
       A PATH_INFO shorter than "/com/" is handled.
   - Mailing lists: moderator and digest commands use the syntax of the installed ezmlm-idx,
     asked from "ezmlm-sub -V": "dir mod" for ezmlm-idx 6 and later, "dir/mod" before that.
-    With ezmlm-idx 0.4x (for example Debian's old ezmlm-idx 0.53 package) they acted on the main list.
+    With ezmlm-idx 0.4x (for example Debian's old ezmlm 0.53 package) they acted on the main list.
   - modusergo: don't read control/defaultdelivery anymore
 
 ## 1.2.28
