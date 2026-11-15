@@ -4,9 +4,10 @@
 Roberto Puzzanghera
   - alias.c can now display the :default option
   - logdir moved to /var/log/vpopmail just like in vpopmail-6.7.0
-Changes made by yitzhaq
+
+Changes made by [@yitzhaq](https://github.com/yitzhaq)
   - Template and CSS fixes for the add/modify user pages and error headings, written by
-    Esteban Manchado Velázquez (@emanchado, 1977–2021) (#11).
+    Esteban Manchado Velázquez ([@emanchado](https://github.com/emanchado), 1977–2021) (#11).
   - Sessions, following the OWASP Session Management Cheat Sheet
     (https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html):
     - A login creates a session with a random 128-bit handle and a random 256-bit secret
