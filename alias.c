@@ -504,9 +504,17 @@ void moddotqmail()
   send_template("mod_dotqmail.html");
 }
 
-void moddotqmailnow() 
+void moddotqmailnow()
 {
-  if ( strcmp(ActionUser,"default")==0) {
+  if (AdminType != DOMAIN_ADMIN) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
+    vclose();
+    exit(0);
+  }
+
+  /* .qmail-default is not edited here (fixup_local_name() lowercases the
+   * name later, so compare without case) */
+  if ( strcasecmp(ActionUser,"default")==0) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
     vclose();
     exit(0);
@@ -536,7 +544,12 @@ void moddotqmailnow()
 
 void adddotqmail()
 {
-  count_forwards();
+  if (AdminType != DOMAIN_ADMIN) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
+    vclose();
+    exit(0);
+  }
+count_forwards();
   load_limits();
   if ( MaxForwards != -1 && CurForwards >= MaxForwards ) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s %d\n", 
@@ -551,8 +564,9 @@ void adddotqmail()
 
 void adddotqmailnow()
 {
-  if (AdminType!=DOMAIN_ADMIN && 
-      !(AdminType==USER_ADMIN && strcmp(ActionUser, Username)==0)) {
+  /* the forward name (Alias) can be any name of the domain, so only domain
+   * admins may add one */
+  if (AdminType!=DOMAIN_ADMIN) {
     snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
     vclose();
     exit(0);

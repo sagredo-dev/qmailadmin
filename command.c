@@ -52,8 +52,77 @@
 #include "user.h"
 #include "util.h"
 
+/* The commands an ordinary mailbox user (USER_ADMIN) may use: the menu, their
+ * own settings page and logout. Everything else changes or shows the domain
+ * and is for domain admins only. Many handlers check this themselves, but not
+ * all did, so it is enforced here for every command.
+ */
+static int user_command(const char *command)
+{
+  static const char *allowed[] = { "showmenu", "moduser", "modusernow",
+                                   "logout", NULL };
+  int i;
+
+  for (i = 0; allowed[i] != NULL; i++)
+    if (strcmp(command, allowed[i]) == 0) return 1;
+  return 0;
+}
+
+/* Commands whose newu= is the name of something new (a mailbox, list or
+ * autoresponder), not an address. */
+static int newu_is_name(const char *command)
+{
+  static const char *commands[] = { "addusernow", "addmailinglistnow",
+    "modmailinglistnow", "addautorespondnow", "modautorespondnow", NULL };
+  int i;
+
+  for (i = 0; commands[i] != NULL; i++)
+    if (strcmp(command, commands[i]) == 0) return 1;
+  return 0;
+}
+
+/* The parameters that name a mailbox, forward, list or autoresponder end up
+ * in file and directory names; check them all here. Returns 1 when valid. */
+static int names_valid(const char *command)
+{
+  char value[MAX_BUFF];
+
+  if (GetValue(TmpCGI, value, "modu=", sizeof(value)) == 0 &&
+      *value && !valid_local_name(value)) return 0;
+  if (GetValue(TmpCGI, value, "moduser=", sizeof(value)) == 0 &&
+      *value && !valid_local_name(value)) return 0;
+  if (newu_is_name(command) &&
+      GetValue(TmpCGI, value, "newu=", sizeof(value)) == 0 &&
+      *value && !valid_local_name(value)) return 0;
+  if (strcmp(command, "adddotqmailnow") == 0 &&
+      GetValue(TmpCGI, value, "alias=", sizeof(value)) == 0 &&
+      *value && !valid_local_name(value)) return 0;
+  return 1;
+}
+
 void process_commands()
 {
+  if (AdminType != DOMAIN_ADMIN && !user_command(TmpBuf2)) {
+    /* back to the user's own settings page */
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
+    strcpy (ActionUser, Username);
+    moduser();
+    vclose();
+    exit(0);
+  }
+
+  if (!names_valid(TmpBuf2)) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[148]);
+    if (AdminType == DOMAIN_ADMIN) {
+      show_menu(Username, Domain, Mytime);
+    } else {
+      strcpy (ActionUser, Username);
+      moduser();
+    }
+    vclose();
+    exit(0);
+  }
+
   if (strcmp(TmpBuf2, "showmenu") == 0 ) {
     show_menu(Username, Domain, Mytime);
 
@@ -307,7 +376,13 @@ void setdefaultaccount()
  struct vqpasswd *pw;
  FILE *fs;
 
-  if ((pw = vauth_getpw( ActionUser, Domain )) == NULL) {
+  if (AdminType != DOMAIN_ADMIN) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
+    vclose();
+    exit(0);
+  }
+
+if ((pw = vauth_getpw( ActionUser, Domain )) == NULL) {
     snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H",
       html_text[223], ActionUser, Domain);
   } else {

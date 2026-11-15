@@ -322,6 +322,21 @@ void delmailinglist()
   send_template( "del_mailinglist_confirm.html" );
 }
 
+/* 1 when <domain dir>/<name> is an ezmlm list: a real directory (not a
+ * symlink) with the inlocal file ezmlm-make writes. */
+static int is_ezmlm_list(const char *name)
+{
+  char path[MAX_BUFF];
+  struct stat st;
+
+  if (!valid_local_name(name)) return 0;
+  snprintf(path, sizeof(path), "%s/%s", RealDir, name);
+  if (lstat(path, &st) != 0 || !S_ISDIR(st.st_mode)) return 0;
+  snprintf(path, sizeof(path), "%s/%s/inlocal", RealDir, name);
+  if (lstat(path, &st) != 0 || !S_ISREG(st.st_mode)) return 0;
+  return 1;
+}
+
 void delmailinglistnow()
 {
  DIR *mydir;
@@ -335,6 +350,14 @@ void delmailinglistnow()
 
   if (fixup_local_name (ActionUser)) {
     // invalid address given, abort
+    vclose();
+    exit(0);
+  }
+
+  /* everything below deletes files: only for an existing list */
+  if (!is_ezmlm_list(ActionUser)) {
+    snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[188], ActionUser);
+    show_mailing_lists(Username, Domain, Mytime);
     vclose();
     exit(0);
   }
@@ -484,6 +507,14 @@ void ezmlm_make (int newlist)
 #ifdef EZMLMIDX
   /* check the list owner entry */
   GetValue(TmpCGI, list_owner, "listowner=", sizeof(list_owner)); // Get the listowner
+  /* the owner becomes an ezmlm-make argument and a line in the owner's
+   * .qmail file: only a plain address */
+  if ( strlen(list_owner) > 0 && check_email_addr(list_owner) ) {
+    snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[148], list_owner);
+    if (newlist) addmailinglist(); else modmailinglist();
+    vclose();
+    exit(0);
+  }
   if ( strlen(list_owner) > 0 ) {
     sprintf (owneremail, "-5%s", list_owner);
     arguments[argc++] = owneremail;
@@ -511,6 +542,8 @@ void ezmlm_make (int newlist)
 
   /* check for sql support */
   GetValue(TmpCGI, tmp, "sqlsupport=", sizeof(tmp));
+  /* the form only sends -6; anything else would be another ezmlm-make option */
+  if( strlen(tmp) > 0 && strcmp(tmp, "-6") != 0 ) *tmp = '\0';
   if( strlen(tmp) > 0 ) {
     arguments[argc++] = tmpstr;
     tmpstr += sprintf (tmpstr, "%s", tmp) + 1;
@@ -552,7 +585,8 @@ void ezmlm_make (int newlist)
   /* Check for prefix setting */
   GetValue(TmpCGI, tmp, "prefix=", sizeof(tmp));
   
-  /* strip leading '[' and trailing ']' from tmp */
+  /* strip leading '[' and trailing ']' from tmp; the prefix is one line */
+  tmp[strcspn(tmp, "\r\n")] = '\0';
   tmpstr = strchr (tmp, ']');
   if (tmpstr != NULL) *tmpstr = '\0';
   tmpstr = tmp;
@@ -584,7 +618,13 @@ void ezmlm_make (int newlist)
     } else {
         if (replyto == REPLYTO_ADDRESS) {
             GetValue (TmpCGI, replyto_addr, "replyaddr=", sizeof(replyto_addr));
-            sprintf (TmpBuf, "Reply-To: %s\n", replyto_addr);
+            /* one header line with one address, nothing else */
+            if (check_email_addr(replyto_addr)) {
+              snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[148], replyto_addr);
+              strcpy (TmpBuf, "Reply-To: <#l#>@<#h#>\n");
+            } else {
+              snprintf (TmpBuf, sizeof(TmpBuf), "Reply-To: %s\n", replyto_addr);
+            }
         } else {  /* REPLYTO_LIST */
             strcpy (TmpBuf, "Reply-To: <#l#>@<#h#>\n");
             }

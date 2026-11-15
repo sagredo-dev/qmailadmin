@@ -5,6 +5,8 @@
 int check_local_user( char *user );
 int fixup_local_name( char *addr );
 int check_email_addr( char *addr );
+int valid_local_name(const char *name);
+void one_line(char *s);
 int open_lang( char *lang);
 int open_colortable();
 char *strstart( char *sstr, char *tstr);

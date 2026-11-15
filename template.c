@@ -380,6 +380,7 @@ int send_template_now(char *filename)
           /* show quota usage */
           case 'Q':
             vpw = vauth_getpw(ActionUser, Domain);
+            if (vpw == NULL) break;
             if (strncmp(vpw->pw_shell, "NOQUOTA", 2) != 0) {
               storage_t diskquota = 0;
               storage_t maxmsg = 0;
@@ -395,6 +396,7 @@ int send_template_now(char *filename)
           /* display user's quota (mod user page) */
           case 'q':
             vpw = vauth_getpw(ActionUser, Domain);
+            if (vpw == NULL) break;
             if (strncmp(vpw->pw_shell, "NOQUOTA", 2) != 0) { 
                quota_to_megabytes(qconvert, vpw->pw_shell); 
                printf("%s", qconvert);
@@ -648,6 +650,7 @@ void check_mailbox_flags(char newchar)
  static struct vqpasswd *vpw = NULL;
 
   if (vpw==NULL) vpw = vauth_getpw(ActionUser, Domain); 
+  if (vpw==NULL) return;
 
   switch (newchar) {
 

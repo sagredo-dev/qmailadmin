@@ -318,6 +318,13 @@ void moduser()
     vclose();
     exit(0);
   }
+  /* the page reads the user's settings: only for an existing user */
+  if (vauth_getpw(ActionUser, Domain) == NULL) {
+    snprinth (StatusMessage, sizeof(StatusMessage), "%s %H@%H", html_text[223], ActionUser, Domain);
+    show_menu(Username, Domain, Mytime);
+    vclose();
+    exit(0);
+  }
   send_template( "mod_user.html" );
 } 
 
@@ -367,7 +374,7 @@ void addusernow()
   GetValue(TmpCGI,Newu, "newu=", sizeof(Newu));
 
   if ( fixup_local_name(Newu) ) {
-    snprintf (StatusMessage, sizeof(StatusMessage), "%s %s\n", html_text[148], Newu);
+    snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[148], Newu);
     adduser();
     vclose();
     exit(0);
@@ -589,7 +596,12 @@ int call_hooks(char *hook_type, char *p1, char *p2, char *p3, char *p4)
 
 void deluser()
 {
-  send_template( "del_user_confirm.html" );
+  if (AdminType != DOMAIN_ADMIN) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
+    vclose();
+    exit(0);
+  }
+send_template( "del_user_confirm.html" );
 }
 
 void delusergo()
@@ -616,7 +628,9 @@ void delusergo()
   if (strcmp(forward, "on") == 0) {
     GetValue(TmpCGI, forwardto, "forwardto=", sizeof(forwardto));    
     if(adddotqmail_shared(ActionUser, forwardto, -1)!=0) {
-       snprintf (StatusMessage, sizeof(StatusMessage), html_text[315], forwardto);
+       char escaped[MAX_BUFF];
+       snprinth (escaped, sizeof(escaped), "%H", forwardto);
+       snprintf (StatusMessage, sizeof(StatusMessage), html_text[315], escaped);
     }
   } 
 
@@ -636,16 +650,27 @@ void count_users()
   }
 }
 
-void setremotecatchall() 
+void setremotecatchall()
 {
-  send_template("setremotecatchall.html");
+  if (AdminType != DOMAIN_ADMIN) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
+    vclose();
+    exit(0);
+  }
+send_template("setremotecatchall.html");
 }
 
 void set_qmaildefault(char *opt)
 {
  FILE *fs;
 
-  if ( (fs = fopen(".qmail-default", "w")) == NULL ) {
+  if (AdminType != DOMAIN_ADMIN) {
+    snprintf (StatusMessage, sizeof(StatusMessage), "%s", html_text[142]);
+    vclose();
+    exit(0);
+  }
+
+if ( (fs = fopen(".qmail-default", "w")) == NULL ) {
     printf ("%s %s<br>\n", html_text[144], ".qmail-default");
   } else {
     fprintf(fs,"| %s/bin/vdelivermail '' %s\n", VPOPMAILDIR, opt);
@@ -740,6 +765,7 @@ int makevacation (FILE *d, char *dir)
  char fn[156];
   
   GetValue(TmpCGI, subject, "vsubject=", sizeof(subject));
+  one_line(subject);  /* a line break would add headers to every reply */
 
   /* if no subject, error */
   if ( *subject == '\0' ) {
@@ -768,7 +794,7 @@ int makevacation (FILE *d, char *dir)
 #endif
 
   if ( (f = fopen(fn, "w")) == NULL ) {
-    snprintf (StatusMessage, sizeof(StatusMessage), "%s %s\n", html_text[150], fn);
+    snprinth (StatusMessage, sizeof(StatusMessage), "%s %H\n", html_text[150], fn);
     fprintf(stderr, "user.c: %s %s\n", html_text[150], fn);
     return 1;
   }
@@ -1034,13 +1060,19 @@ void modusergo()
       count=0;
       while( tmpstr != NULL && count < MAX_FORWARD_PER_USER) {
         if ((*tmpstr != '|') && (*tmpstr != '/')) {
+          char fwdaddr[MAX_BUFF];
+
           if (strchr (tmpstr, '@') == NULL) {
-            fprintf(fs, "&%s@%s\n", tmpstr, Domain);
+            snprintf(fwdaddr, sizeof(fwdaddr), "%s@%s", tmpstr, Domain);
           } else {
-            fprintf(fs, "&%s\n", tmpstr);
+            snprintf(fwdaddr, sizeof(fwdaddr), "%s", tmpstr);
           }
-          emptydotqmail = 0;
-          ++count;
+          /* each target becomes a &address line of .qmail */
+          if (check_email_addr(fwdaddr) == 0) {
+            fprintf(fs, "&%s\n", fwdaddr);
+            emptydotqmail = 0;
+            ++count;
+          }
         }
         tmpstr = strtok(NULL," ,;\n");
       }

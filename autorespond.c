@@ -189,6 +189,7 @@ void addautorespondnow()
 #endif
   if ( (fs = fopen(TmpBuf, "w")) == NULL ) ack("150", TmpBuf);
   fprintf(fs, "From: %s@%s\n", ActionUser,Domain);
+  one_line(Alias);  /* a line break would add headers to every reply */
   fprintf(fs, "Subject: %s\n", Alias);
   for (i = 400; i < 450; i++) {
 	 if (html_text[i] == NULL)
@@ -349,6 +350,7 @@ void modautorespondnow()
   sprintf(TmpBuf, "%s/message", TmpBuf2);
   if ( (fs = fopen(TmpBuf, "w")) == NULL ) ack("150", TmpBuf);
   fprintf(fs, "From: %s@%s\n", ActionUser,Domain);
+  one_line(Alias);  /* a line break would add headers to every reply */
   fprintf(fs, "Subject: %s\n", Alias);
   for (i = 400; i < 450; i++) {
 	 if (html_text[i] == NULL)
@@ -457,15 +459,19 @@ void show_autoresponder(char *ActionUser, char *Domain)
                           */
 
                           while(1) {
-                fgets(TmpBuf2, sizeof(TmpBuf2), fs);
+                if (fgets(TmpBuf2, sizeof(TmpBuf2), fs) == NULL) {
+                                   *TmpBuf2 = '\0';
+                                   break;
+                                }
                                 if ((*TmpBuf2 == '\r') || (*TmpBuf2 == '\n'))
                                    break;
                           }
 
-                          printf("%s", TmpBuf2);
+                          /* the text is HTML-escaped: it must not end the textarea */
+                          printh("%H", TmpBuf2);
 
               while (fgets(TmpBuf2, sizeof(TmpBuf2), fs)) {
-                printf ("%s", TmpBuf2);
+                printh ("%H", TmpBuf2);
               }
               printf ("</textarea>\n</div>\n");
               fclose(fs);

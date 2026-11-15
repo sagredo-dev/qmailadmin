@@ -181,17 +181,45 @@ void show_counts()
  * Make sure 'addr' is a valid email address.  Returns 1 if it's bad,
  * 0 if it's good.
  */
+/* A name used for a mailbox, forward, autoresponder or mailing list: it
+ * becomes part of file and directory names (.qmail-<name>, <domain>/<name>)
+ * and of ezmlm arguments. 1 to 64 ASCII letters, digits and . - + = _ &,
+ * not starting with '.' or '-', without "..". Returns 1 when valid.
+ */
+int valid_local_name(const char *name)
+{
+  size_t len = strlen(name), i;
+
+  if (len == 0 || len > 64) return 0;
+  if (name[0] == '.' || name[0] == '-' || strstr(name, "..") != NULL) return 0;
+  for (i = 0; i < len; i++) {
+    unsigned char c = (unsigned char)name[i];
+    if (!(isascii(c) && isalnum(c)) && strchr(".-+=_&", c) == NULL) return 0;
+  }
+  return 1;
+}
+
+/* cut s at the first line break: for values written as one header line */
+void one_line(char *s)
+{
+  s[strcspn(s, "\r\n")] = '\0';
+}
+
 int check_email_addr( char *addr )
 {
  char *taddr = addr;
  char *atpos = NULL;
  char *dotpos = NULL;
 
+  /* a leading '-' would be read as an option by ezmlm-sub and others */
+  if (*addr == '-') return 1;
+
   for(taddr = addr; *taddr != '\0'; ++taddr) {
     if (*taddr == '@') {
       if (atpos != NULL) return 1; /* double @ */
       atpos = taddr;
-    } else if(!isalnum(*taddr) && (strchr (".-+=_&", *taddr) == NULL)) {
+    } else if(!(isascii((unsigned char)*taddr) && isalnum((unsigned char)*taddr)) &&
+              (strchr (".-+=_&", *taddr) == NULL)) {
       return 1;
     }
   }
