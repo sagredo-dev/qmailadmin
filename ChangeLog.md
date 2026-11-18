@@ -5,7 +5,14 @@ Roberto Puzzanghera
   - alias.c can now display the :default option
   - logdir moved to /var/log/vpopmail just like in vpopmail-5.7.0
 
-Changes made by [@yitzhaq](https://github.com/yitzhaq)
+Changes and fixes made by [@yitzhaq](https://github.com/yitzhaq)
+  - [security fix] Fixed a privilege escalation where  ordinary mailbox users could
+    invoke commands reserved for domain administrators.
+  - [security fix] Fixed a cross-Site Scripting (XSS) due to missing HTML escaping of
+    user-controlled data.
+  - [security fix] Fixed an injection through CR/LF characters in user-supplied values.
+  - [security fix] Fixed CGI parsing and buffer-handling issues, including out-of-bounds
+    memory accesses and potential crashes or memory corruption.
   - Template and CSS fixes for the add/modify user pages and error headings, written by
     Esteban Manchado Velázquez ([@emanchado](https://github.com/emanchado), 1977–2021) (#11).
   - Sessions, following the OWASP Session Management Cheat Sheet
